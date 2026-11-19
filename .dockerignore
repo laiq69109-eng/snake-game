@@ -4,3 +4,7 @@ test.mjs
 node_modules
 qa-*
 known_hosts
+.git
+.env*
+docs
+tests

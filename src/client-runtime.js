@@ -36,7 +36,7 @@ function stopRealtime(){
 }
 function ensureRealtime(){
   if(solo||!session?.token||typeof WebSocket==='undefined'||realtimeSocket||realtimeRetry)return;
-  const g=generation,socket=new WebSocket((location.protocol==='https:'?'wss:':'ws:')+'//'+location.host+'/realtime');realtimeSocket=socket;
+  const g=generation,socket=new WebSocket(SERVICE_ORIGIN.replace(/^http/,'ws')+'/realtime');realtimeSocket=socket;
   const authTimeout=setTimeout(()=>{if(!realtimeReady&&realtimeSocket===socket)socket.close();},5000);
   socket.onopen=()=>{if(g!==generation)return socket.close();socket.send(JSON.stringify({type:'hello',...session}));};
   socket.onmessage=event=>{

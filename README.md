@@ -8,6 +8,12 @@
 
 `src/` 是源文件。修改后运行 `npm run build`，同时更新网页服务 `game-worker.js` 和完全独立的 `solo.html`。
 
+## 静态游戏入口
+
+`docs/index.html` 包含完整的页面和单机引擎，不依赖后端来加载或运行单机。可在仓库 Settings > Pages 中选择 Deploy from a branch、main 和 /docs 后保存。邀请链接保留 /snake-game/ 路径。
+
+联机 API 和 WebSocket 连接 https://snake-game-laiq69109.onrender.com 。后端 CORS_ORIGINS 环境变量需设置为 https://laiq69109-eng.github.io ，只放行这个明确的前端来源。同源访问仍然可用，其他跨域来源继续拒绝。GitHub Pages 与后端分别发布；入口是否在微信内可用必须实测。
+
 ## 流畅度优化
 
 逻辑步进与显示刷新解耦，蛇身在格点间按真实时间插值，适应高刷新屏幕，游戏速度不随帧率改变。单机全程本地计算；联机优先使用 /realtime WebSocket 实时状态推送（每50ms检查，位置变化时推送）、本机移动预测和服务器校正，对手通过状态缓冲平滑显示。网络断开时自动重连并回退 HTTP，同步中断时依据往返延迟仅短暂预测600–2000ms，避免蛇无限前进。WebSocket 压缩和状态去重降低流量，HTML与脚本启用gzip。网格和星星缓存为画布图层，计时器和排行榜只在内容改变时更新。

@@ -8,6 +8,7 @@
   "branch": "main",
   "autoDeploy": "no",
   "envVars": [
-    { "key": "TRUST_PROXY", "value": "1" }
+    { "key": "TRUST_PROXY", "value": "1" },
+    { "key": "CORS_ORIGINS", "value": "https://laiq69109-eng.github.io" }
   ]
 }

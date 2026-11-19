@@ -1,7 +1,7 @@
 import {WebSocketServer,WebSocket} from 'ws';
 import {advance,turn} from './src/engine.js';
 
-export function attachRealtime(server,db,publicOrigin){
+export function attachRealtime(server,db,publicOrigin,allowedOrigins=()=>[]){
   const wss=new WebSocketServer({noServer:true,maxPayload:2048,perMessageDeflate:{threshold:128,concurrencyLimit:4,serverNoContextTakeover:true,clientNoContextTakeover:true,zlibDeflateOptions:{level:3}}});
   const clients=new Map();
   const lastSent=new Map();
@@ -20,7 +20,7 @@ export function attachRealtime(server,db,publicOrigin){
   }
   server.on('upgrade',(req,socket,head)=>{
     let origin;try{origin=publicOrigin(req);}catch{socket.destroy();return;}
-    if(req.url!=='/realtime'||(req.headers.origin&&req.headers.origin!==origin)){socket.write('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');socket.destroy();return;}
+    if(req.url!=='/realtime'||(req.headers.origin&&req.headers.origin!==origin&&!allowedOrigins().includes(req.headers.origin))){socket.write('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n');socket.destroy();return;}
     wss.handleUpgrade(req,socket,head,ws=>wss.emit('connection',ws));
   });
   wss.on('connection',ws=>{

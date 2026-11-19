@@ -1,5 +1,6 @@
 import {SIZE,STEP,createSolo,resumeSolo,start,advance,turn} from '/engine.js';
 import {MotionBuffer} from '/motion.js';
+const SERVICE_ORIGIN=globalThis.SNAKE_API_ORIGIN||location.origin;
 const $=id=>document.getElementById(id), canvas=$('board'),ctx=canvas.getContext('2d');let room=null,session=null,solo=false,offset=0,busy=false,polling=false,nextDir=null,pollTimer,toastTimer,lastStatus='',leaving=false,pausedAt=null,bestScore=0,mode='solo',generation=0;
 if(!ctx.roundRect)ctx.roundRect=function(x,y,w,h){this.rect(x,y,w,h);};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -10,7 +11,7 @@ function selectMode(value){mode=value;const single=value==='solo';$('solo-tab').
 $('solo-tab').onclick=()=>selectMode('solo');$('multi-tab').onclick=()=>selectMode('multi');
 const invited=new URLSearchParams(location.search).get('room');if(/^\d{6}$/.test(invited||'')){selectMode('multi');$('code').value=invited;$('join').textContent='加入 →';}
 function name(){const n=$('name').value.trim()||'小蛇'+Math.floor(Math.random()*1000);try{localStorage.setItem('snake-name',n);}catch{}return n;}
-async function api(action,body={}){const sent=Date.now(),controller=new AbortController(),t=setTimeout(()=>controller.abort(),8000);try{const res=await fetch('/api/'+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...session,...body}),signal:controller.signal});const data=await res.json();if(!res.ok)throw Object.assign(new Error(data.error||'连接失败'),{status:res.status});data._rtt=Date.now()-sent;return data;}finally{clearTimeout(t);}}
+async function api(action,body={}){const sent=Date.now(),controller=new AbortController(),t=setTimeout(()=>controller.abort(),8000);try{const res=await fetch(SERVICE_ORIGIN+'/api/'+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...session,...body}),signal:controller.signal});const data=await res.json();if(!res.ok)throw Object.assign(new Error(data.error||'连接失败'),{status:res.status});data._rtt=Date.now()-sent;return data;}finally{clearTimeout(t);}}
 function apply(data){
   if(leaving||!data.room)return;
   if(room?.code===data.room.code&&data.room.now<lastServerAt)return;
@@ -35,7 +36,7 @@ $('start').onclick=begin;$('again').onclick=begin;
 function reset(){generation++;stopRealtime();pendingInputs=[];prediction=null;remoteMotion.reset();ownMotion.reset();visuals.clear();lastServerAt=0;clockReady=false;lastUIKey='';pausedAt=null;clearTimeout(pollTimer);session=null;room=null;solo=false;offset=0;lastStatus='';nextDir=null;try{sessionStorage.removeItem('snake-session');}catch{}$('connection').textContent='即点即玩 · 无需下载';updateUI();}
 async function leave(){if(!solo&&room?.status==='playing'&&!confirm('离开后将退出本局，确定离开吗？'))return;leaving=true;const old=session;reset();if(old?.token)try{await api('leave',old);}catch{}leaving=false;}
 for(const id of ['leave','exit'])$(id).onclick=leave;
-async function invite(){const text=location.origin+'/?room='+room.code;try{if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(text);else{const a=document.createElement('textarea');a.value=text;document.body.append(a);a.select();const ok=document.execCommand('copy');a.remove();if(!ok)throw Error();}toast('邀请链接已复制，发给好友就好啦');}catch{prompt('长按复制链接，发送给微信好友',text);}}
+async function invite(){const url=new URL(location.href);url.search='';url.hash='';url.searchParams.set('room',room.code);const text=url.href;try{if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(text);else{const a=document.createElement('textarea');a.value=text;document.body.append(a);a.select();const ok=document.execCommand('copy');a.remove();if(!ok)throw Error();}toast('邀请链接已复制，发给好友就好啦');}catch{prompt('长按复制链接，发送给微信好友',text);}}
 for(const id of ['invite','match-invite'])$(id).onclick=invite;
 $('solo').onclick=()=>{if(busy)return;generation++;clearTimeout(pollTimer);document.activeElement?.blur();solo=true;leaving=false;pausedAt=null;session={id:'me'};room=createSolo(name(),Date.now());seedSolo();try{sessionStorage.removeItem('snake-session');}catch{}offset=0;lastStatus='';$('connection').textContent='单机游戏 · 本地运行';updateUI();};
 function pauseSolo(){if(!solo||room?.status!=='playing')return;if(pausedAt===null){pausedAt=Date.now();}else{resumeSolo(room,pausedAt,Date.now());pausedAt=null;ownMotion.reset();ownMotion.push(room);visuals.clear();}updateUI();}
