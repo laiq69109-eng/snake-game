@@ -1,0 +1,6 @@
+data
+test.mjs
+*.log
+node_modules
+qa-*
+known_hosts

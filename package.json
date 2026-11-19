@@ -1,0 +1,20 @@
+{
+  "name": "snake-party-independent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node app.mjs",
+    "test": "node --test test.mjs tests/*.test.mjs",
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "ws": "8.23.0"
+  },
+  "devDependencies": {
+    "playwright-core": "1.65.1"
+  }
+}

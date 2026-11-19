@@ -1,0 +1,5 @@
+data/
+*.log
+known_hosts
+node_modules/
+qa-*
