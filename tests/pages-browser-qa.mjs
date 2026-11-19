@@ -14,7 +14,22 @@ const errors=[],browser=await chromium.launch({executablePath:'C:/Program Files/
 async function page(){const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,permissions:['clipboard-read','clipboard-write']});const p=await context.newPage();p.on('pageerror',e=>errors.push(e.message));await p.goto(url);return p;}
 try{
   const a=await page();let calls=0;a.on('request',req=>{if(req.url().startsWith(backend))calls++;});await a.locator('#solo').click();await a.waitForTimeout(3400);assert.ok((await a.evaluate(()=>window.__snakeStats().head.x))>5);assert.equal(calls,0,'Solo must work without contacting the API');await a.locator('#exit').click();
-  const players=[a,await page(),await page()];await a.locator('#multi-tab').click();await a.locator('#create').click();await a.waitForFunction(()=>document.querySelector('#room-code').textContent.length===6);const code=await a.locator('#room-code').textContent();
+  const players=[a,await page(),await page()];
+  let healthRequests=0,roomPosts=0;
+  await a.route(backend+'/health',route=>{
+    healthRequests++;
+    if(healthRequests===1)return route.fulfill({status:503,contentType:'text/html',headers:{'access-control-allow-origin':origin},body:'Starting service'});
+    return route.continue();
+  });
+  a.on('request',req=>{if(req.url()===backend+'/api/create'&&req.method()==='POST')roomPosts++;});
+  await a.locator('#multi-tab').click();
+  await a.locator('#create').click();
+  await a.waitForFunction(()=>document.querySelector('#connection').textContent.includes('正在启动联机服务'));
+  assert.equal(roomPosts,0);
+  await a.waitForFunction(()=>document.querySelector('#room-code').textContent.length===6);
+  assert.equal(healthRequests,2);
+  assert.equal(roomPosts,1);
+  const code=await a.locator('#room-code').textContent();
   for(const p of players.slice(1)){await p.locator('#multi-tab').click();await p.locator('#code').fill(code);await p.locator('#join').click();}
   await a.waitForFunction(()=>document.querySelector('#start').textContent.includes('3 人开局'));await a.bringToFront();await a.locator('#invite').click();const invite=await a.evaluate(()=>navigator.clipboard.readText());assert.equal(invite,url+'?room='+code);
   await a.locator('#start').click();await Promise.all(players.map(p=>p.waitForFunction(()=>window.__snakeStats().transport==='websocket')));await a.waitForTimeout(3400);const stats=await Promise.all(players.map(p=>p.evaluate(()=>window.__snakeStats())));assert.ok(stats.every(s=>s.head));assert.deepEqual(errors,[]);console.log(JSON.stringify({staticFrontend:true,soloWithoutBackend:true,threePlayerCrossOrigin:true,correctInvitePath:true,errors}));

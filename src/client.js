@@ -12,6 +12,34 @@ $('solo-tab').onclick=()=>selectMode('solo');$('multi-tab').onclick=()=>selectMo
 const invited=new URLSearchParams(location.search).get('room');if(/^\d{6}$/.test(invited||'')){selectMode('multi');$('code').value=invited;$('join').textContent='加入 →';}
 function name(){const n=$('name').value.trim()||'小蛇'+Math.floor(Math.random()*1000);try{localStorage.setItem('snake-name',n);}catch{}return n;}
 async function api(action,body={}){const sent=Date.now(),controller=new AbortController(),t=setTimeout(()=>controller.abort(),8000);try{const res=await fetch(SERVICE_ORIGIN+'/api/'+action,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...session,...body}),signal:controller.signal});const data=await res.json();if(!res.ok)throw Object.assign(new Error(data.error||'连接失败'),{status:res.status});data._rtt=Date.now()-sent;return data;}finally{clearTimeout(t);}}
+
+async function waitForMatchServer(){
+  if(SERVICE_ORIGIN===location.origin)return;
+  const deadline=Date.now()+70000;
+  while(Date.now()<deadline){
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),Math.min(10000,deadline-Date.now()));
+    try{
+      const response=await fetch(SERVICE_ORIGIN+'/health',{cache:'no-store',signal:controller.signal});
+      if(response.ok&&response.headers.get('content-type')?.includes('application/json')){
+        const status=await response.json();
+        if(status.ok===true){
+          setText('connection','联机服务已就绪');
+          return;
+        }
+      }
+    }catch{
+      // The host may serve a startup page without cross-origin headers until ready.
+    }finally{
+      clearTimeout(timeout);
+    }
+    setText('connection','正在启动联机服务 · 请稍候');
+    const remaining=deadline-Date.now();
+    if(remaining>0)await new Promise(resolve=>setTimeout(resolve,Math.min(1800,remaining)));
+  }
+  setText('connection','暂时无法连接联机服务');
+  throw new Error('联机服务暂时无法连接，请稍后重试。单机游戏仍可使用。');
+}
 function apply(data){
   if(leaving||!data.room)return;
   if(room?.code===data.room.code&&data.room.now<lastServerAt)return;
@@ -26,8 +54,8 @@ function apply(data){
   if(!realtimeReady)stats.transport='http';remoteMotion.push(room);rebuildPrediction();updateUI();ensureRealtime();
 }
 async function task(fn){if(busy)return;busy=true;for(const id of ['create','join','start','again'])$(id).disabled=true;try{await fn();}catch(e){toast(e.name==='AbortError'?'连接超时，请检查网络后再试':e.message);}finally{busy=false;for(const id of ['create','join','start','again'])$(id).disabled=false;updateUI();}}
-$('create').onclick=()=>task(async()=>{leaving=false;solo=false;apply(await api('create',{name:name()}));schedule();});
-$('join').onclick=()=>task(async()=>{const code=$('code').value.trim();if(!/^\d{6}$/.test(code))return toast('请输入 6 位数字房间码');leaving=false;solo=false;apply(await api('join',{code,name:name()}));schedule();});
+$('create').onclick=()=>task(async()=>{leaving=false;solo=false;await waitForMatchServer();apply(await api('create',{name:name()}));schedule();});
+$('join').onclick=()=>task(async()=>{const code=$('code').value.trim();if(!/^\d{6}$/.test(code))return toast('请输入 6 位数字房间码');leaving=false;solo=false;await waitForMatchServer();apply(await api('join',{code,name:name()}));schedule();});
 $('code').onkeydown=e=>{if(e.key==='Enter')$('join').click();};
 function schedule(){clearTimeout(pollTimer);if(!realtimeReady)pollTimer=setTimeout(sync,room?.status==='playing'?75:850);}
 async function sync(){if(!session||solo||polling||leaving||realtimeReady)return;polling=true;const g=generation,input=pendingInputs[0],dir=input?.dir??nextDir;nextDir=null;try{const result=await api('sync',{dir,seq:input?.seq});if(g!==generation)return;apply(result);setText('connection','联机在线 · '+Math.round(networkRtt)+' ms');}catch(e){if(g!==generation)return;$('connection').textContent='连接中断 · 正在重连';if(e.status===401||e.status===404){toast(e.message);reset();}}finally{polling=false;if(session&&!solo&&!leaving)schedule();}}

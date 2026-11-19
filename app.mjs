@@ -26,7 +26,7 @@ export const server=http.createServer(async(req,res)=>{
   try{
     const url=new URL(req.url,requestOrigin(req));
     if(req.method==='OPTIONS'&&url.pathname.startsWith('/api/')){const headers=corsHeaders(req);res.writeHead(headers['access-control-allow-origin']?204:403,headers);res.end();return;}
-    if(url.pathname==='/health'){res.writeHead(200,{'content-type':'application/json','cache-control':'no-store'});res.end('{"ok":true}');return;}
+    if(url.pathname==='/health'){res.writeHead(200,{'content-type':'application/json','cache-control':'no-store',...corsHeaders(req)});res.end('{"ok":true}');return;}
     let body='';for await(const part of req){body+=part.toString('utf8');if(body.length>4096){res.writeHead(413);res.end('Request too large');return;}}
     const headers=new Headers();for(const [k,v] of Object.entries(req.headers)){if(v&&k!=='content-length'&&k!=='host')headers.set(k,Array.isArray(v)?v.join(','):v);}
     const request=new Request(url,{method:req.method,headers,...(['GET','HEAD'].includes(req.method)?{}:{body})});
@@ -48,3 +48,4 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
   server.listen(port,host,()=>console.log('Snake Party listening on http://'+host+':'+port));
   for(const signal of ['SIGTERM','SIGINT'])process.on(signal,()=>{realtime.close();server.close(()=>{db.close();process.exit(0);});});
 }
+
