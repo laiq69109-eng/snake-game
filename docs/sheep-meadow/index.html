@@ -79,9 +79,16 @@ p,h1,h2{margin:0}
 .tile[data-type="10"]{--face:#faeadf;--face-base:#e9d8c5}
 .tile[data-type="13"]{--face:#ecf4f9;--face-base:#d7e5ea}
 .board-tile{position:absolute;box-shadow:0 2px 0 #9b784f,0 var(--shadow,4px) 5px #3b422b4d,inset 0 -1px #b188524f}
-.board-tile.covered{background:linear-gradient(151deg,#c2bb96,#adab81);border-color:#d6cca4;box-shadow:0 2px 0 #827453,0 2px 3px #39382148}
-.board-tile.covered svg{opacity:.69;filter:saturate(.63) brightness(.85)}
-.board-tile.covered:active{filter:none}
+.board-tile svg{width:86%;height:86%}
+.board-tile::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;border:1px solid #ffffdc;box-shadow:inset 0 0 8px #fffced}
+.board-tile:not(.covered)::after{animation:ready-glow 3.4s var(--glow-delay,0s) ease-in-out infinite}
+@keyframes ready-glow{0%,100%{opacity:.15}50%{opacity:.6}}
+.board-tile.covered,.board-tile.covered:active{opacity:.45;filter:saturate(.28);background:#a9a378;border-color:#f7e9bb;box-shadow:0 1px 0 #665b37,inset 0 -1px #6e624b}
+.board-tile.revealing{box-shadow:0 2px 0 #9b784f,0 calc(var(--shadow,4px) + 4px * var(--reveal-shadow,0)) calc(5px + 3px * var(--reveal-shadow,0)) #3b422b59,inset 0 -1px #b188524f}
+.board-tile.revealing::after{animation:none;opacity:var(--reveal-light,0);border:2px solid #fff9cd;box-shadow:inset 0 0 10px #fffade,0 0 7px #fbf7bd}
+.pile-count{position:absolute;top:-2px;right:-2px;z-index:1;pointer-events:none;display:grid;place-items:center;
+  min-width:15px;height:15px;padding:0 3px;background:#355b42;border:1px solid #fff9df;color:#fffdf2;border-radius:7px;
+  font-size:10px;font-weight:850;line-height:1;font-variant-numeric:tabular-nums}
 .board-tile:focus-visible{outline-offset:-4px}
 .guide{display:grid;justify-items:center;gap:0;position:absolute;transform:translate(-50%,-93%);z-index:250;color:#fff9de;pointer-events:none;filter:drop-shadow(0 2px 2px #21442a45)}
 .guide span{background:#38634a;padding:4px 10px;border-radius:100px;font-size:13px;font-weight:850;white-space:nowrap}
@@ -155,7 +162,7 @@ p,h1,h2{margin:0}
 @media (max-width:400px){.app{padding-left:13px;padding-right:13px}.hero{border-radius:24px}.tool{font-size:12px}.game{gap:10px}.tray{gap:3px}}
 @media (max-width:340px){.app{padding-left:9px;padding-right:9px}.tools{gap:4px}.tool{gap:3px;padding:4px}.tool .icon{width:15px;height:15px}.dock{padding-left:7px;padding-right:7px}.level-head h1{font-size:23px}}
 @media (max-height:650px){.app{padding-top:max(8px,env(safe-area-inset-top));padding-bottom:max(10px,env(safe-area-inset-bottom))}.topbar{margin-bottom:10px}.game{gap:8px}.hero{min-height:300px}.home{gap:15px}.hero-copy{padding-top:20px}.home-actions button{min-height:48px}.dock{padding-top:5px;padding-bottom:3px}.tool{min-height:40px}}
-@media (prefers-reduced-motion:reduce){.guide svg,.dock.warn{animation:none}.board.fall{transition:none}}
+@media (prefers-reduced-motion:reduce){.guide svg,.dock.warn,.board-tile:not(.covered)::after{animation:none}.board.fall{transition:none}}
 </style>
 </head>
 <body>
@@ -410,20 +417,19 @@ p,h1,h2{margin:0}
 <div class="toast" id="toast" role="status" hidden></div>
 <script>
 const LEVELS = [
-  ['初到牧场',36,3,5,4,3], ['雾藏羊群',108,7,11,5,4],
-  ['苜蓿坡',120,8,11,5,4], ['林间小径',132,8,12,5,4],
-  ['风铃谷',144,9,12,5,4], ['羊毛集市',156,9,13,5,5],
-  ['落日围栏',168,10,13,5,5], ['月光草甸',180,10,14,5,5],
-  ['山顶哨站',192,11,14,5,5], ['云端牧场',204,12,14,5,5]
-];
-// Card footprint and spacing vary by level to alternate dense and open boards.
-const GEOMETRY = [
-  [65,69,86,91], [63,69,71,73], [62,65,72,74], [64,70,71,73],
-  [60,61,72,76], [62,64,71,64], [57,56,72,64], [56,54,72,65],
-  [60,59,71,64], [61,62,70,64]
+  ['初到牧场',36,3,5,4,3], ['雾藏羊群',108,7,14,5,4],
+  ['苜蓿坡',120,6,11,5,4], ['林间小径',132,7,12,5,4],
+  ['风铃谷',144,6,12,5,5], ['羊毛集市',156,7,13,5,5],
+  ['落日围栏',168,7,13,5,5], ['月光草甸',180,6,14,6,5],
+  ['山顶哨站',192,7,14,6,5], ['云端牧场',204,7,14,6,5]
 ];
 const BOARD_W = 400;
 const BOARD_H = 364;
+const STACK_X = 4;
+const STACK_Y = 5;
+const GAP_X = 10;
+const GAP_Y = 8;
+const LAYOUT_VERSION = 2;
 const CAPACITY = 7;
 const ALL_TOOLS = ['undo', 'move', 'mix'];
 
@@ -446,56 +452,93 @@ function shuffle(array, rng) {
   return array;
 }
 
-// The collision silhouette uses the same 16% corner radius as the card face.
-function overlaps(a, b, w, h) {
-  const dx = Math.abs(a.x - b.x);
-  const dy = Math.abs(a.y - b.y);
-  if (dx >= w || dy >= h) return false;
-  const rx = .32 * w;
-  const ry = .32 * h;
-  return (Math.max(0, dx - w + rx) / rx) ** 2 +
-    (Math.max(0, dy - h + ry) / ry) ** 2 < 1;
+function neighbors(pile, cols, rows) {
+  const col = pile%cols;
+  const row = Math.floor(pile/cols);
+  const ids = [];
+  for (let y = Math.max(0,row-1); y <= Math.min(rows-1,row+1); y++) {
+    for (let x = Math.max(0,col-1); x <= Math.min(cols-1,col+1); x++) {
+      if (x !== col || y !== row) ids.push(y*cols+x);
+    }
+  }
+  return ids;
 }
-function positions(config, rng, geometry) {
+
+function stackHeights(count, peak, cols, rows, rng) {
+  const heights = Array(cols*rows).fill(2);
+  const adjacent = heights.map((_,id) => neighbors(id,cols,rows));
+  const order = heights.map((_,id) => ({
+    id,
+    distance:Math.abs(id%cols-(cols-1)/2)+Math.abs(Math.floor(id/cols)-(rows-1)/2),
+    tie:rng()
+  })).sort((a,b) => a.distance-b.distance || a.tie-b.tie);
+
+  // Build the central terraces before the outer ones, including diagonal
+  // neighbors in the height check so distant tall stacks never stick out.
+  for (let placed = 2*heights.length; placed < count; placed++) {
+    const spot = order.find(({id}) => heights[id] < peak &&
+      adjacent[id].every(other => heights[other] >= heights[id]));
+    if (!spot) return null;
+    heights[spot.id]++;
+  }
+  return heights;
+}
+
+function positions(config, rng) {
   const [, count, depth, , cols, rows] = config;
-  const easy = depth === 3;
-  const [w,h,dx,dy] = geometry;
-  const piles = cols * rows;
-  const basic = Math.max(2, Math.floor(count / piles) - 2);
-  const heights = Array(piles).fill(easy ? depth : basic);
-  if (!easy) {
-    heights[integer(rng, piles)] = depth;
-    for (let n = heights.reduce((a,b) => a+b, 0); n < count; n++) {
-      const possible = heights.map((_,i) => i).filter(i => heights[i] < depth);
-      heights[possible[integer(rng, possible.length)]]++;
+  const heights = stackHeights(count,depth,cols,rows,rng);
+  if (!heights) return null;
+  const peak = Math.max(...heights);
+  const stackWidth = (peak-1)*STACK_X;
+  const stackHeight = (peak-1)*STACK_Y;
+  const maxW = Math.floor((BOARD_W-12-(cols-1)*GAP_X)/cols)-stackWidth;
+  const maxH = Math.floor((BOARD_H-12-(rows-1)*GAP_Y)/rows)-stackHeight;
+  const w = Math.min(70,maxW,maxH);
+  const h = Math.min(maxH,Math.round(w*1.1));
+  const dx = w+stackWidth+GAP_X;
+  const dy = h+stackHeight+GAP_Y;
+  const left = Math.floor((BOARD_W-w-stackWidth-(cols-1)*dx)/2);
+  const top = Math.floor((BOARD_H-h-stackHeight-(rows-1)*dy)/2);
+  const cards = [];
+  const piles = heights.map((height,pile) => {
+    const x = left+(pile%cols)*dx;
+    const y = top+Math.floor(pile/cols)*dy;
+    const ids = [];
+    for (let z = 0; z < height; z++) {
+      const id = cards.length;
+      ids.push(id);
+      cards.push({id,pile,z,x:x+z*STACK_X,y:y+z*STACK_Y,above:[],below:[]});
     }
-  }
-  const top = (BOARD_H - h - (rows-1)*dy - (depth-1)*2.6) / 2;
-  const left = (BOARD_W - w - (cols-1)*dx) / 2;
-  const cards = heights.flatMap((height, pile) => {
-    const col = pile % cols;
-    const row = Math.floor(pile / cols);
-    const sway = easy ? 5 : 13;
-    const x = left + col*dx + (rng()-.5)*sway + (row%2 ? 3 : -3);
-    const y = top + row*dy + (rng()-.5)*sway + Math.abs(col-(cols-1)/2)*2;
-    const direction = rng() < .5 ? -1 : 1;
-    return Array.from({length:height}, (_,z) => ({
-      x: Math.round(x + direction*(z-(height-1)/2)*2.3 + (rng()-.5)*3),
-      y: Math.round(y + (height-1-z)*2.65 + (rng()-.5)*2),
-      z, pile, above:[], below:[]
-    }));
+    for (const id of ids) {
+      // IDs are storage keys. Only the stack and z define obstruction.
+      const card = cards[id];
+      card.above = ids.slice(card.z+1);
+      card.below = ids.slice(0,card.z);
+    }
+    return {x,y,ids};
   });
-  cards.sort((a,b) => a.z-b.z || a.y-b.y || a.x-b.x || a.pile-b.pile);
-  for (let id = 0; id < cards.length; id++) {
-    const card = cards[id];
-    card.id = id;
-    for (let j = 0; j < id; j++) {
-      if (!overlaps(card, cards[j], w, h)) continue;
-      card.below.push(j);
-      cards[j].above.push(id);
+  return {cards,piles,w,h,dx,dy,cols,rows};
+}
+
+function validLayout(layout, count) {
+  if (!layout || layout.cards.length !== count) return false;
+  const {cards,piles,cols,rows,w,h,dx,dy} = layout;
+  if (w <= STACK_X || h <= STACK_Y || dx < w+GAP_X || dy < h+GAP_Y) return false;
+  for (const [id,pile] of piles.entries()) {
+    const size = pile.ids.length;
+    if (size < 2 || size > 7 ||
+        neighbors(id,cols,rows).some(other => Math.abs(piles[other].ids.length-size) > 1)) return false;
+  }
+  for (const a of cards) {
+    if (a.x < 0 || a.y < 0 || a.x+w > BOARD_W || a.y+h > BOARD_H) return false;
+    if (a.above.some(id => cards[id].pile !== a.pile || cards[id].z <= a.z)) return false;
+    for (let j = a.id+1; j < cards.length; j++) {
+      const b = cards[j];
+      // Faces in the same row can share y and still be separated along x.
+      if (a.pile !== b.pile && Math.abs(a.x-b.x) < w && Math.abs(a.y-b.y) < h) return false;
     }
   }
-  return {cards, w, h};
+  return true;
 }
 
 // Choose the three-copy groups first. The harder routes keep several incomplete
@@ -572,6 +615,7 @@ function labelPositions(layout, route, level, rng) {
         const freshness = 1 / (1 + index - revealedAt[id]);
         const nearby = card.above.some(upper => cards[upper].type === type);
         score += diversity*.6 + freshness*(step === 3 ? 3.4 : step === 2 ? 2.7 : .3);
+        if (level === 2) score += .7*(layout.piles[card.pile].ids.length-1-card.z);
         if (usedPiles.includes(card.pile)) score -= 3.9;
         if (nearby) score -= 3.5;
         if (startLayer.has(id)) score -= topTypes[type] ** 2 * 2.9;
@@ -644,8 +688,9 @@ function generate(seed, level) {
     const key = JSON.stringify([seed,level,attempt]);
     const rng = randomFrom(key);
     const route = groupRoute(LEVELS[level-1], level, rng);
-    const geometry = level === 2 && attempt >= limit-4 ? [72,83,69,69] : GEOMETRY[level-1];
-    const layout = positions(LEVELS[level-1],rng,geometry);
+    const config = LEVELS[level-1];
+    const layout = positions(config,rng);
+    if (!validLayout(layout,config[1])) continue;
     layout.solution = labelPositions(layout, route, level, rng);
     if (!verifyOptimal(layout)) continue;
     layout.attempts = attempt+1;
@@ -827,6 +872,10 @@ class PastureAudio {
         this.tone(146,115,.105,t,'sine',.31);
         this.tone(128,96,.11,t+.11,'triangle',.22);
         break;
+      case 'reveal':
+        this.rustle(2350,950,.052,t+.026,.115);
+        this.tone(345,435,.066,t+.034,'sine',.068);
+        break;
       case 'pulse':
         this.tone(106,57,.14,t,'sine',.33);
         this.tone(91,57,.11,t+.16,'sine',.28);
@@ -900,6 +949,7 @@ let scene = 'home';
 let modal = '';
 let previousFocus = null;
 let cards = [];
+let countBadges = [];
 let dirty = false;
 let toastUntil = 0;
 let refillUntil = 0;
@@ -1014,7 +1064,7 @@ function setGame(level, seed, resume=false) {
     session.state?.alive?.length === layout.cards.length;
   let refill = '';
   if (!canResume) {
-    session = {level,seed,state:Rules.fresh(layout)};
+    session = {level,seed,state:Rules.fresh(layout),layoutVersion:LAYOUT_VERSION};
     if (profile.reward) {
       refill = '通关补给已领取 · 道具各 1 次';
       profile.reward = false;
@@ -1023,6 +1073,16 @@ function setGame(level, seed, resume=false) {
       refill ||= '今日补给已领取 · 道具各 1 次';
       profile.day = today();
     }
+  } else if (session.layoutVersion !== LAYOUT_VERSION) {
+    // A previous release used the same tile IDs for a different geometry.
+    // Keep played rounds, including the tray, undo, and spent tools. A round
+    // with no picks or tools can use the new generator's verified board.
+    const {state} = session;
+    if (!state.result && !state.undo && !state.tray.length && !state.park.length &&
+        state.alive.every(Boolean) && ALL_TOOLS.every(tool => state.uses[tool] === 1)) {
+      session.state = Rules.fresh(layout);
+    }
+    session.layoutVersion = LAYOUT_VERSION;
   }
   gameSession = {layout,...session};
   profile.current = session.state.result === 'won' ? Math.min(level+1,LEVELS.length) : level;
@@ -1035,12 +1095,19 @@ function setGame(level, seed, resume=false) {
   $('level-number').textContent = '第 '+String(level).padStart(2,'0')+' 关 / '+LEVELS.length;
   $('level-name').textContent = LEVELS[level-1][0];
   const fragment = document.createDocumentFragment();
+  countBadges = [];
   cards = layout.cards.map(card => {
     const button = tile(session.state.types[card.id],true,card.id);
     button.classList.add('board-tile');
     button.style.cssText = 'left:'+card.x/BOARD_W*100+'%;top:'+card.y/BOARD_H*100+
       '%;width:'+layout.w/BOARD_W*100+'%;height:'+layout.h/BOARD_H*100+
-      '%;z-index:'+card.id+';--shadow:'+Math.min(7,3+card.z*.44)+'px';
+      '%;z-index:'+(card.z+1)+';--shadow:'+Math.min(6,3+card.z*.44)+'px;--glow-delay:'+(-card.pile%6*.38)+'s';
+    const badge = document.createElement('span');
+    badge.className = 'pile-count';
+    badge.hidden = true;
+    badge.setAttribute('aria-hidden','true');
+    button.append(badge);
+    countBadges.push(badge);
     fragment.append(button);
     return button;
   });
@@ -1058,24 +1125,35 @@ function setGame(level, seed, resume=false) {
   if (session.state.result) openOutcome(session.state.result);
   queueSave();
 }
-function syncBoard() {
+function syncBoard(onlyPile = null, showReveal = false) {
   const {layout,state,level} = gameSession;
-  for (const card of layout.cards) {
-    const el = cards[card.id];
-    const alive = state.alive[card.id];
-    if (el.hidden === alive) el.hidden = !alive;
-    if (!alive) continue;
-    const covered = !Rules.available(layout,state,card.id);
-    if (el.classList.contains('covered') !== covered) {
+  const piles = onlyPile === null ? layout.piles : [layout.piles[onlyPile]];
+  for (const {ids} of piles) {
+    const remaining = ids.reduce((n,id) => n+Number(state.alive[id]),0);
+    for (const id of ids) {
+      const el = cards[id];
+      const alive = state.alive[id];
+      if (el.hidden === alive) el.hidden = !alive;
+      if (!alive) {
+        if (el.classList.contains('revealing')) stopTileMotion(el);
+        continue;
+      }
+      const covered = !Rules.available(layout,state,id);
+      const wasCovered = el.classList.contains('covered');
+      if (covered && el.classList.contains('revealing')) stopTileMotion(el);
       el.classList.toggle('covered',covered);
       el.setAttribute('aria-disabled',String(covered));
-    }
-    if (el.tabIndex !== (covered ? -1 : 0)) el.tabIndex = covered ? -1 : 0;
-    if (+el.dataset.type !== state.types[card.id]) {
-      const type = state.types[card.id];
-      el.dataset.type = type;
-      el.querySelector('use').setAttribute('href','#tile-'+type);
-      el.setAttribute('aria-label',TILE_NAMES[type]);
+      el.tabIndex = covered ? -1 : 0;
+      const type = state.types[id];
+      if (+el.dataset.type !== type) {
+        el.dataset.type = type;
+        el.querySelector('use').setAttribute('href','#tile-'+type);
+      }
+      const badge = countBadges[id];
+      badge.hidden = covered;
+      if (!covered) badge.textContent = remaining;
+      el.setAttribute('aria-label',TILE_NAMES[type]+(covered ? '，被上方的牌盖住' : '，此摞剩余 '+remaining+' 张'));
+      if (showReveal && wasCovered && !covered) revealTile(el);
     }
   }
   const first = layout.cards[layout.solution[0]];
@@ -1164,9 +1242,10 @@ function pick(el,source) {
   const {layout,state,level} = gameSession;
   const id = +el.dataset.id;
   if (source === 'board' && !Rules.available(layout,state,id)) {
-    if (state.alive[id]) {
+    if (state.alive[id] && performance.now() >= (Number(el.dataset.rejectUntil) || 0)) {
+      el.dataset.rejectUntil = String(performance.now()+180);
       audio.play('blocked');
-      nudge(el,10,180);
+      nudge(el,4,180);
     }
     return;
   }
@@ -1176,7 +1255,7 @@ function pick(el,source) {
   const type = state.types[id];
   if (level === 1 && !profile.lesson) profile.lesson = true;
   const keyboardFocus = document.activeElement === el && el.matches(':focus-visible');
-  syncBoard();
+  if (source === 'board') syncBoard(layout.cards[id].pile,true);
   syncHud();
   if (source === 'park') paintPark();
   if (keyboardFocus) {
@@ -1275,6 +1354,12 @@ function bindTiles(root,source) {
 }
 bindTiles(deck,'board');
 bindTiles(park,'park');
+deck.addEventListener('mousedown',event => {
+  if (event.target.closest('.board-tile.covered')) event.preventDefault();
+});
+deck.addEventListener('focusin',event => {
+  if (event.target.matches('.board-tile.covered')) event.target.blur();
+});
 byTool.forEach(button => button.addEventListener('click',() => useTool(button.dataset.tool)));
 
 // One frame loop owns flying tiles, particles, shakes, and delayed audio.
@@ -1300,9 +1385,35 @@ function trajectory(el,from,to,p,lift,turn=0) {
   const scale = mix(1,to.w*.91/from.w,t)+Math.sin(Math.PI*t)*.13;
   el.style.transform = pose(mix(from.x,to.x,t)-bend,mix(from.y,to.y,t)-rise,Math.sin(Math.PI*t)*turn,scale);
 }
-function animated(el,start,duration,draw,remove=true) {
-  effects.push({el,start,duration,draw,remove});
+function animated(el,start,duration,draw,remove=true,finish=null) {
+  effects.push({el,start,duration,draw,remove,finish});
   wake();
+}
+function stopTileMotion(el) {
+  const index = effects.findIndex(effect => effect.el === el && !effect.remove);
+  if (index < 0) return;
+  const [effect] = effects.splice(index,1);
+  el.style.transform = '';
+  effect.finish?.();
+}
+function revealTile(el) {
+  audio.play('reveal');
+  stopTileMotion(el);
+  const lift = reduceMotion.matches ? 0 : 6;
+  el.classList.add('revealing');
+  el.style.transform = 'translateY('+(-lift)+'px)';
+  el.style.setProperty('--reveal-light','1');
+  el.style.setProperty('--reveal-shadow','1');
+  animated(el,performance.now(),400,progress => {
+    const settle = (1-Math.min(1,progress*400/180))**3;
+    el.style.transform = 'translateY('+(-lift*settle)+'px)';
+    el.style.setProperty('--reveal-light',String((1-progress)**1.5));
+    el.style.setProperty('--reveal-shadow',String(settle));
+  },false,() => {
+    el.classList.remove('revealing');
+    el.style.removeProperty('--reveal-light');
+    el.style.removeProperty('--reveal-shadow');
+  });
 }
 function glide(type,from,to,now,lift) {
   if (!from || !to || !from.w || !to.w) return;
@@ -1311,8 +1422,7 @@ function glide(type,from,to,now,lift) {
 }
 function nudge(el,distance,duration,twist=false) {
   if (reduceMotion.matches) return;
-  const active = effects.find(effect => effect.el === el);
-  if (active) effects.splice(effects.indexOf(active),1);
+  stopTileMotion(el);
   animated(el,performance.now(),duration,p => {
     const swing = Math.sin(p*Math.PI*5)*(1-p);
     el.style.transform = twist ? 'rotate('+(swing*distance)+'deg) scale('+(1-Math.sin(Math.PI*p)*.12)+')' :
@@ -1358,7 +1468,10 @@ function comboLabel(count,at,now) {
 function resetMotion() {
   if (frame) cancelAnimationFrame(frame);
   frame = 0;
-  for (const effect of effects) if (!effect.remove) effect.el.style.transform = '';
+  for (const effect of effects) {
+    if (!effect.remove) effect.el.style.transform = '';
+    effect.finish?.();
+  }
   flights.length = 0;
   effects.length = 0;
   layer.replaceChildren();
@@ -1378,13 +1491,14 @@ function tick(now) {
     trajectory(sprite,from,slotAnchors[action.index],Math.max(0,(now-t)/duration),Math.min(80,from.w*1.3),8);
   }
   for (let i = effects.length-1; i >= 0; i--) {
-    const {el,start,duration,draw,remove} = effects[i];
+    const {el,start,duration,draw,remove,finish} = effects[i];
     const p = Math.max(0,(now-start)/duration);
     if (p < 1) {
       draw(p);
     } else {
       if (remove) el.remove();
       else el.style.transform = '';
+      finish?.();
       effects.splice(i,1);
     }
   }
