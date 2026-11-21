@@ -76,12 +76,14 @@ p,h1,h2{margin:0}
 .tile[data-type="9"]{--face:#e4f3e9;--face-base:#d4e6d9}
 .tile[data-type="10"]{--face:#faeadf;--face-base:#e9d8c5}
 .tile[data-type="13"]{--face:#ecf4f9;--face-base:#d7e5ea}
-.board-tile{position:absolute;border-radius:11%;box-shadow:0 2px 0 var(--tile-edge,#9b784f),0 var(--shadow,4px) 5px #3b422b4d,inset 0 -1px #b188524f}
+.board-tile{position:absolute;border-radius:11%;border-bottom:1px solid #785e42;box-shadow:0 2px 0 var(--tile-edge,#9b784f),0 var(--shadow,4px) 5px #3b422b4d,inset 0 -1px #b188524f}
 .board-tile svg{width:86%;height:86%}
 .board-tile::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;border:1px solid #ffffdc;box-shadow:inset 0 0 8px #fffced}
 .board-tile:not(.covered)::after{animation:ready-glow 3.4s var(--glow-delay,0s) ease-in-out infinite}
-@keyframes ready-glow{0%,100%{opacity:.15}50%{opacity:.6}}
-.board-tile.covered,.board-tile.covered:active{opacity:1;filter:brightness(.88) saturate(.95);border:1px solid rgba(90,70,40,.35);
+.board-tile:not(.covered){filter:brightness(1.04)}
+@keyframes ready-glow{0%,100%{opacity:.35}50%{opacity:.70}}
+.board-tile.covered::before{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(48,40,24,.10);z-index:1;pointer-events:none}
+.board-tile.covered,.board-tile.covered:active{opacity:1;filter:brightness(.78) saturate(.92);border:1px solid rgba(90,70,40,.35);border-bottom-color:#71573d;
   box-shadow:0 2px 0 var(--tile-edge,#9b784f),0 3px 3px #3b422b32}
 .board-tile.revealing{box-shadow:0 2px 0 #9b784f,0 calc(var(--shadow,4px) + 4px * var(--reveal-shadow,0)) calc(5px + 3px * var(--reveal-shadow,0)) #3b422b59,inset 0 -1px #b188524f}
 .board-tile.revealing::after{animation:none;opacity:var(--reveal-light,0);border:2px solid #fff9cd;box-shadow:inset 0 0 10px #fffade,0 0 7px #fbf7bd}
@@ -150,6 +152,9 @@ p,h1,h2{margin:0}
 .switch-row{display:flex;align-items:center;justify-content:space-between;min-height:43px;padding:6px 0;font-weight:750;font-size:15px;border-bottom:1px solid #dde3c6}
 .switch-row input{width:22px;height:22px;accent-color:#477357}
 .outcome{text-align:center}
+.revive-action{width:100%;margin-top:12px}
+.reserve-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.reserve-grid button{aspect-ratio:52/57}
 .outcome h2{padding:0}
 .outcome-mark{margin:0 auto 5px;width:84px;height:84px;display:grid;place-items:center;border-radius:32px;background:#e8efca;border:1px solid #d6e2af}
 .outcome-mark svg{width:74px;height:74px}
@@ -265,6 +270,48 @@ p,h1,h2{margin:0}
     <path d="M24 29q-4 10 1 19m7-21q-5 11 0 24" fill="none" stroke="#865f49" stroke-width="3.8"/>
     <path d="M40 30q0-7 6-8m-9 7q0-6-3-8" stroke="#85614b" stroke-width="1.8" fill="none" stroke-linecap="round"/>
     <path d="M40 38h.1m4 0h.1" stroke="#423832" stroke-width="2.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="tile-14" viewBox="0 0 64 64">
+    <path d="M24 25q0-17 11-17t11 19m-1-1q18-15 11 5l-8 6" fill="none" stroke="#427784" stroke-width="4"/>
+    <path d="M21 29 9 20l-3 5 16 20q0 7 7 7h14q6 0 6-7l-2-20H23Z" fill="#7fc2c5" stroke="#477e88" stroke-width="2.3"/>
+    <path d="M29 31v11" stroke="#caece2" stroke-width="3" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="tile-15" viewBox="0 0 64 64">
+    <path d="M32 21C8 9 5 33 21 49q11 14 22 0c16-17 14-39-11-28Z" fill="#e66972" stroke="#984952" stroke-width="2.3"/>
+    <path d="m17 20 9-3-3-6 9 5 5-10 2 11 10-2-7 7-10-2-9 5 2-6Z" fill="#6ba971" stroke="#4d855c" stroke-width="1.6"/>
+    <path d="m19 31 1 2m11-4 1 2m10 0 1 2m-17 6 1 2m10 0 1 2m-6 4 1 2" stroke="#ffe3a1" stroke-width="2.6" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="tile-16" viewBox="0 0 64 64">
+    <path d="M18 13h23l-3 23q2 5 10 6 8 2 6 9H13q-3-4 0-12l6-8Z" fill="#efb847" stroke="#9c702f" stroke-width="2.3"/>
+    <path d="M17 12h25v6H17Zm-5 37h42v5H12Z" fill="#658675" stroke="#4b6a5d" stroke-width="1.8"/>
+    <path d="m23 22-2 13" stroke="#fff0ac" stroke-width="3" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="tile-17" viewBox="0 0 64 64">
+    <path d="M16 54 44 13" fill="none" stroke="#937640" stroke-width="3" stroke-linecap="round"/>
+    <g fill="#e8bf56" stroke="#a9853d" stroke-width="1.8">
+      <path d="M23 45q-12-5-10-17 12 4 10 17Zm1-1q6-14 18-13-4 12-18 13ZM30 34q-12-6-9-18 10 6 9 18Zm1-1q5-12 18-12-5 10-18 12Zm6-10Q27 14 32 6q9 6 5 17Zm2-3q1-11 12-14 0 10-12 14Z"/>
+    </g>
+  </symbol>
+  <symbol id="tile-18" viewBox="0 0 64 64">
+    <path d="M27 24Q16 23 13 12q15-1 19 11 3-12 18-14-1 12-16 16" fill="#78a77a" stroke="#537b60" stroke-width="2"/>
+    <g fill="#707fb3" stroke="#495482" stroke-width="2.2"><circle cx="24" cy="34" r="12"/><circle cx="41" cy="33" r="12"/><circle cx="33" cy="45" r="11"/></g>
+    <path d="m21 29 3 2 2-3m11 2 3 2 3-3m-14 12 3 2 3-2" fill="none" stroke="#c6c9e3" stroke-linecap="round" stroke-width="2.4"/>
+  </symbol>
+  <symbol id="tile-19" viewBox="0 0 64 64">
+    <path d="M28 37 43 17l4 3-15 21Z" fill="#cea170" stroke="#8c6b49" stroke-width="2"/>
+    <path d="m40 16 6-9 11 8-7 8q-7 3-10-7Z" fill="none" stroke="#619590" stroke-width="4" stroke-linejoin="round"/>
+    <path d="m18 31 20 14q-10 14-23 10-6-10 3-24Z" fill="#8fb6b8" stroke="#527f83" stroke-width="2.2"/>
+    <path d="m25 38-6 10" stroke="#d9eeeb" stroke-width="2.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="tile-20" viewBox="0 0 64 64">
+    <path d="M29 25q-4-13 6-17l4 5q-8 3-6 13" fill="#879667" stroke="#697c52" stroke-width="2"/>
+    <path d="M32 22C3 7 0 52 22 53q10 4 20 0c23 1 21-43-10-31Z" fill="#ed934e" stroke="#a96738" stroke-width="2.3"/>
+    <path d="M24 24q-12 12-3 26m11-25q-3 13 0 26m7-27q11 13 3 26" fill="none" stroke="#c4773c" stroke-width="2.2"/>
+  </symbol>
+  <symbol id="tile-21" viewBox="0 0 64 64">
+    <path d="M31 32C17 5-1 12 11 32q3 5 10 6-12 1-9 10 8 15 20-6 11 21 20 7 4-9-9-12 9-2 12-9C62 8 42 8 33 32Z" fill="#bb91c9" stroke="#80638e" stroke-width="2.2"/>
+    <path d="M16 23q6-1 9 7m21-7q-5 1-7 7" fill="none" stroke="#f2cfdd" stroke-width="4" stroke-linecap="round"/>
+    <path d="M32 44V29m0 1-6-9m6 9 6-10" fill="none" stroke="#68566a" stroke-width="2.5" stroke-linecap="round"/>
   </symbol>
   <symbol id="i-sound" viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3zM16 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></symbol>
   <symbol id="i-mute" viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3zM16 10l5 5m0-5-5 5"/></symbol>
@@ -400,6 +447,7 @@ p,h1,h2{margin:0}
       <div class="tray" id="tray" aria-label="七格收集托盘"></div>
       <div class="dock-foot">
         <span id="dock-hint">凑齐 3 张相同图案即可消除</span>
+        <button id="reserve-btn" type="button" hidden></button>
         <button id="seed-btn" type="button">分享牌局</button>
       </div>
     </div>
@@ -416,10 +464,10 @@ p,h1,h2{margin:0}
 <script>
 const LEVELS = [
   ['初到牧场',33,2,3,5,4], ['雾藏羊群',108,6,14,6,4],
-  ['苜蓿坡',120,6,11,6,4], ['林间小径',132,6,12,6,4],
-  ['风铃谷',144,7,12,6,4], ['羊毛集市',156,7,13,5,5],
-  ['落日围栏',168,7,13,5,5], ['月光草甸',180,7,14,6,5],
-  ['山顶哨站',192,7,14,6,5], ['云端牧场',204,7,14,6,5]
+  ['苜蓿坡',120,6,15,6,4], ['林间小径',132,6,16,6,4],
+  ['风铃谷',144,7,17,6,4], ['羊毛集市',156,7,18,5,5],
+  ['落日围栏',168,7,19,5,5], ['月光草甸',180,7,20,6,5],
+  ['山顶哨站',192,7,21,6,5], ['云端牧场',204,7,22,6,5]
 ];
 const BOARD_W = 400;
 const BOARD_H = 364;
@@ -427,7 +475,7 @@ const TILE_W = 52;
 const TILE_H = 57;
 const DX = TILE_W + 2;
 const DY = TILE_H + 2;
-const LAYOUT_VERSION = 4;
+const LAYOUT_VERSION = 5;
 const LAYER_COUNTS = [
   [20,13],
   [24,20,18,16,15,15],
@@ -462,8 +510,8 @@ function shuffle(array, rng) {
   return array;
 }
 
-function offset(z) {
-  return [4*z,5*z];
+function offset(z,tutorial) {
+  return z % 2 ? (tutorial ? [12,14] : [DX/2,DY/2]) : [0,0];
 }
 
 function cardOverlap(a,b) {
@@ -488,7 +536,7 @@ function positions(config, counts) {
     }
     maxCols = width;
     maxRows = height;
-    const [ox,oy] = offset(z);
+    const [ox,oy] = offset(z,counts.length===2);
     const x0 = Math.max(0,Math.min(cols-width,Math.round((cols-width)/2-ox/DX)));
     const y0 = Math.max(0,Math.min(rows-height,Math.round((rows-height)/2-oy/DY)));
     const cells = Array.from({length:width*height},(_,i) => ({
@@ -519,7 +567,7 @@ function positions(config, counts) {
     for (let id = 0; id < card.id; id++) {
       const lower = cards[id];
       // Staggering can cover neighboring cells, but never cards in the same layer.
-      if (lower.z === card.z || !cardOverlap(card,lower)) continue;
+      if (lower.z === card.z || cardOverlap(card,lower) < TILE_W*TILE_H*.15) continue;
       card.below.push(id);
       lower.above.push(card.id);
     }
@@ -536,7 +584,7 @@ function validLayout(layout, count) {
       layers.some((layer,z)=>layer.length*100 < base*55 || z && layer.length > layers[z-1].length)) return false;
   for (const card of cards) {
     if (card.x < 0 || card.y < 0 || card.x+w > BOARD_W || card.y+h > BOARD_H) return false;
-    if (card.above.some(id => cards[id].z <= card.z || !cardOverlap(card,cards[id]))) return false;
+    if (card.above.some(id => cards[id].z <= card.z || cardOverlap(card,cards[id]) < w*h*.15)) return false;
     if (layers[card.z].some(id => id !== card.id && cardOverlap(card,cards[id]))) return false;
   }
   return true;
@@ -551,7 +599,9 @@ function groupRoute(config, level, rng) {
   })), rng);
   if (level === 1) return groups.flatMap(group => [1,2,3].map(step => ({...group,step})));
   const open = [];
-  const route = [];
+  // Deal an accessible run of triples before the nested, split groups.
+  const route = groups.splice(0,Math.floor(groups.length*.55))
+    .flatMap(group=>[1,2,3].map(step=>({...group,step,cluster:true})));
   const pressure = [0,0,6,5,6,5,6,6,5,6,6][level];
   let load = 0;
   while (groups.length || open.length) {
@@ -596,11 +646,11 @@ function labelPositions(layout, route, level, rng) {
   const {cards} = layout;
   const pool = exposedPool(cards);
   const startLayer = new Set(pool.exposed);
-  const topTypes = new Uint8Array(14);
+  const topTypes = new Uint8Array(LEVELS.at(-1)[3]);
   const revealedAt = new Int16Array(cards.length);
   const layers = new Map();
   const groupCells = new Map();
-  return route.map(({id:group, type, step}, index) => {
+  return route.map(({id:group, type, step, cluster}, index) => {
     const seen = layers.get(group) || [];
     const usedCells = groupCells.get(group) || [];
     let chosen = -1;
@@ -609,7 +659,9 @@ function labelPositions(layout, route, level, rng) {
       const card = cards[id];
       const diversity = seen.includes(card.z) ? 0 : 1;
       let score = rng();
-      if (level === 1) {
+      if (cluster) {
+        score += card.z*2;
+      } else if (level === 1) {
         score += card.z*.63 + (!seen.length || group%3 !== 0 ? 0 : diversity*.8);
         if (index < 3) score += card.z*2;
       } else {
@@ -648,8 +700,8 @@ function trials(layout, seed, total = 96) {
   for (let run = 0; run < total; run++) {
     const {cards} = layout;
     const pool = exposedPool(cards);
-    const holding = new Uint8Array(14);
-    const faceUp = new Uint8Array(14);
+    const holding = new Uint8Array(LEVELS.at(-1)[3]);
+    const faceUp = new Uint8Array(holding.length);
     const noise = [.12, .55, 1.1, 2.1][run%4];
     let load = 0;
     let picked = 0;
@@ -681,28 +733,45 @@ function trials(layout, seed, total = 96) {
   }
   return {wins, total, rate:wins/total};
 }
+// Reference deals were measured with the same four visible-card strategies.
+// They bound generation time on phones when random deals miss a narrow band.
+const REFERENCE_ATTEMPTS = [
+  [], [11,16,164,181], [171,353,434,1383], [126,247,393,409], [22,35,113,186],
+  [17,94,125,138], [30,44,86,104], [23,32,94,110], [45,106,136,143], [1,4,13,16]
+];
 function generate(seed, level, savedTutorialSize) {
   const config = savedTutorialSize === 36 ? [LEVELS[0][0],36,2,5,5,4] :
     savedTutorialSize === 18 ? [LEVELS[0][0],18,2,3,4,3] : LEVELS[level-1];
   const counts = savedTutorialSize === 36 ? [20,16] :
     savedTutorialSize === 18 ? [11,7] : LAYER_COUNTS[level-1];
-  const limit = level === 2 ? 200 : level === 1 ? 1 : 12;
-  const target = level === 2 ? .2 : [.31,.23,.35,.19,.25,.32,.21,.17][level-3];
-  let hardest;
-  for (let attempt = 0; attempt < limit; attempt++) {
-    const key = JSON.stringify([seed,level,attempt]);
+  const limit = level === 1 ? 1 : 16;
+  const layout = positions(config,counts);
+  if (!validLayout(layout,config[1])) throw new Error('牌局布局无效');
+  for (let attempt = 0; attempt <= limit; attempt++) {
+    const fallback = attempt === limit;
+    const variants = REFERENCE_ATTEMPTS[level-1];
+    const variantRng = randomFrom(JSON.stringify([seed,level,'reference']));
+    const key = fallback ? JSON.stringify(['pasture-reference',level,variants[integer(variantRng,variants.length)]]) :
+      JSON.stringify([seed,level,attempt]);
     const rng = randomFrom(key);
     const route = groupRoute(config, level, rng);
-    const layout = positions(config,counts);
-    if (!validLayout(layout,config[1])) continue;
     layout.solution = labelPositions(layout, route, level, rng);
+    if (fallback) {
+      // A bijection changes the artwork while preserving all matching decisions.
+      const types = shuffle(Array.from({length:config[3]},(_,i)=>i),variantRng);
+      for (const card of layout.cards) card.type = types[card.type];
+    }
     if (!verifyOptimal(layout)) continue;
     layout.attempts = attempt+1;
     layout.difficulty = trials(layout, key, level === 1 ? 24 : 96);
-    if (level === 1 || layout.difficulty.rate < target) return layout;
-    if (!hardest || layout.difficulty.rate < hardest.difficulty.rate) hardest = layout;
+    if (level === 1) return layout;
+    const wins = layout.difficulty.wins;
+    if (level === 2 ? wins < 8 || wins > 14 : wins !== 10-level) continue;
+    // Check with a fresh random stream to reduce selection on sampling noise.
+    const confirm = trials(layout,key+'|confirmation',384);
+    if (level === 2 ? confirm.rate >= .08 && confirm.rate <= .15 :
+        Math.abs(confirm.rate*96-(10-level)) <= 1) return layout;
   }
-  if (hardest) return hardest;
   throw new Error('未能生成可通关的牌局');
 }
 
@@ -710,14 +779,22 @@ const Rules = {
   fresh({cards}) {
     return {
       alive:cards.map(() => true), types:cards.map(card => card.type),
-      tray:[], park:[], uses:{undo:1, move:1, mix:1}, undo:null, result:null
+      tray:[], park:[], reserve:[], revived:false, uses:{undo:1, move:1, mix:1}, undo:null, result:null
     };
   },
   available(layout, state, id) {
     return state.alive[id] && layout.cards[id].above.every(upper => !state.alive[upper]);
   },
   remaining(state) {
-    return state.alive.reduce((n,alive) => n+Number(alive), 0) + state.tray.length + state.park.length;
+    return state.alive.reduce((n,alive) => n+Number(alive), 0) + state.tray.length + state.park.length + (state.reserve?.length || 0);
+  },
+  revive(state) {
+    if (state.result !== 'lost' || state.revived || state.tray.length !== CAPACITY) return false;
+    state.reserve = state.tray.splice(0);
+    state.revived = true;
+    state.result = null;
+    state.undo = null;
+    return true;
   },
   groupIntoTray(tray, types, id) {
     let last = tray.length-1;
@@ -728,11 +805,11 @@ const Rules = {
   },
   place(layout, state, id, source) {
     if (state.result || state.tray.length >= CAPACITY) return null;
-    if (source === 'board' && !this.available(layout,state,id)) return null;
-    if (source === 'park' && !state.park.includes(id)) return null;
-    const from = source === 'park' ? state.park.indexOf(id) : -1;
+    const buffer = source === 'park' ? state.park : source === 'reserve' ? state.reserve : null;
+    if (source === 'board' ? !this.available(layout,state,id) : !buffer?.includes(id)) return null;
+    const from = buffer ? buffer.indexOf(id) : -1;
     if (source === 'board') state.alive[id] = false;
-    else state.park.splice(from, 1);
+    else buffer.splice(from, 1);
     const index = this.groupIntoTray(state.tray,state.types,id);
     const matched = state.tray.filter(other => state.types[other] === state.types[id]);
     const cleared = matched.length === 3 ? matched : [];
@@ -755,7 +832,7 @@ const Rules = {
         if (other !== id) this.groupIntoTray(state.tray,state.types,other);
       }
       if (source === 'board') state.alive[id] = true;
-      else state.park.splice(from,0,id);
+      else state[source].splice(from,0,id);
       state.undo = null;
       affected = [id];
     } else if (tool === 'move') {
@@ -927,7 +1004,7 @@ class PastureAudio {
 }
 
 const $ = (id) => document.getElementById(id);
-const TILE_NAMES = ['绵羊','胡萝卜','铃铛','羊毛球','木桶','花朵','蜜罐','薰衣草','苹果','蜗牛','蘑菇','藤篮','风车','蜜蜂'];
+const TILE_NAMES = ['绵羊','胡萝卜','铃铛','羊毛球','木桶','花朵','蜜罐','薰衣草','苹果','蜗牛','蘑菇','藤篮','风车','蜜蜂','水壶','草莓','雨靴','麦穗','蓝莓','铲子','南瓜','蝴蝶'];
 const TOOLS = {undo:'撤销', move:'移出三张', mix:'洗牌'};
 const byTool = Array.from(document.querySelectorAll('[data-tool]'));
 const board = $('board');
@@ -1163,6 +1240,10 @@ function syncBoard(removed = null) {
 }
 function syncHud() {
   const {state} = gameSession;
+  const stored = state.reserve?.length || 0;
+  $('reserve-btn').hidden = !stored;
+  $('reserve-btn').textContent = '取回复活牌（'+stored+'）';
+  $('dock-hint').hidden = !!stored;
   for (const btn of byTool) {
     const tool = btn.dataset.tool;
     btn.querySelector('b').textContent = state.uses[tool];
@@ -1269,7 +1350,7 @@ if ('ResizeObserver' in window) new ResizeObserver(updateSize).observe(board.par
 
 // Accepted picks reserve board spots immediately. Ordered landing frames commit
 // the corresponding tray snapshot and show the triple on that same frame.
-function pick(el,source) {
+function pick(el,source,origin) {
   if (modal || !gameSession || gameSession.state.result) return;
   const {layout,state,level} = gameSession;
   const id = +el.dataset.id;
@@ -1281,7 +1362,7 @@ function pick(el,source) {
     }
     return;
   }
-  const from = box(el);
+  const from = origin || box(el);
   const action = Rules.place(layout,state,id,source);
   if (!action) return;
   const type = state.types[id];
@@ -1321,7 +1402,7 @@ function landing(flight, now) {
     if (action.result === 'lost') board.classList.add('fall');
     pulseAt = Infinity;
     audio.play(action.result);
-    spokenAt = now+(action.result === 'won' ? 530 : 570);
+    spokenAt = now+120;
     outcomeAt = now+(reduceMotion.matches ? 80 : 330);
   }
 }
@@ -1349,7 +1430,8 @@ function useTool(tool) {
   measure();
   audio.play(tool);
   if (tool === 'undo') {
-    const to = last.source === 'board' ? box(cards[last.id]) : parkAnchors[state.park.indexOf(last.id)];
+    const to = last.source === 'board' ? box(cards[last.id]) : last.source === 'reserve' ?
+      box($('reserve-btn')) : parkAnchors[state.park.indexOf(last.id)];
     glide(state.types[last.id],from,to,now,95);
     if (last.source === 'board') nudge(cards[last.id],4,175);
   }
@@ -1634,7 +1716,41 @@ function openOutcome(result) {
     else setGame(won ? level+1 : level,seed);
   });
   $('outcome-other').addEventListener('click',() => won ? openShare(true) : showHome());
+  if (!won && !state.revived) {
+    const revive = document.createElement('button');
+    revive.id = 'revive-btn';
+    revive.className = 'primary revive-action';
+    revive.textContent = '免费复活 · 清空托盘';
+    dialogContent.querySelector('.dialog-actions').before(revive);
+    revive.addEventListener('click',() => {
+      if (!Rules.revive(state)) return;
+      closeModal(false);
+      resetMotion();
+      board.classList.remove('fall');
+      syncHud();
+      paintTray(state.tray);
+      persist();
+      audio.play('reveal');
+      note('七张牌已收好，可点「取回复活牌」放回托盘');
+      $('reserve-btn').focus({preventScroll:true});
+    });
+  }
 }
+$('reserve-btn').addEventListener('click',() => {
+  const {state} = gameSession;
+  if (!state.reserve?.length || state.result) return;
+  openModal('reserve','<h2 id="dialog-title">复活牌</h2><p>点一张放回托盘，凑齐三张即可消除。</p><div class="reserve-grid"></div>');
+  const grid = dialogContent.querySelector('.reserve-grid');
+  for (const id of state.reserve) {
+    const btn = tile(state.types[id],true,id);
+    grid.append(btn);
+    btn.addEventListener('click',() => {
+      const origin = box(btn);
+      closeModal();
+      pick(btn,'reserve',origin);
+    });
+  }
+});
 function shareLine(score) {
   const {level, seed} = gameSession;
   const query = '?'+new URLSearchParams({seed,level:String(level)});
