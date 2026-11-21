@@ -51,13 +51,11 @@ p,h1,h2{margin:0}
 .home-progress{padding:4px 3px 0;display:flex;align-items:center;gap:12px;color:#4e6549;font-size:13px;font-weight:700}
 .home-track{height:7px;background:#d0ddaf;box-shadow:inset 0 1px 2px #79965845;border-radius:30px;flex:1;overflow:hidden}
 .home-track span{display:block;background:#668c58;height:100%;border-radius:inherit}
-.home-progress strong,.remaining strong,.count{font-variant-numeric:tabular-nums}
+.home-progress strong,.count{font-variant-numeric:tabular-nums}
 .game{display:flex;flex-direction:column;flex:1;min-height:0;gap:12px}
 .level-head{display:flex;align-items:end;justify-content:space-between;gap:6px;flex:none;padding:0 1px}
 .level-number{color:#507154;font-weight:830;font-size:13px;letter-spacing:.115em;line-height:1.25}
 .level-head h1{font-size:clamp(23px,6.8vw,32px);line-height:1.22;font-weight:900;letter-spacing:.055em;margin-top:4px}
-.remaining{display:flex;align-items:center;gap:8px;padding:7px 10px 7px 12px;border-radius:11px;color:#466142;background:#e5edce;border:1px solid #d6e2b9;font-size:13px;font-weight:760;white-space:nowrap}
-.remaining strong{font-size:21px;line-height:1;color:#2b563d}
 .game-area{flex:1;min-height:0;display:grid;place-items:center;container-type:size}
 .board{position:relative;width:min(100%,calc(100cqh * 400 / 364));aspect-ratio:400/364;isolation:isolate;border-radius:23px;overflow:hidden;
   background:#ccdd9f;box-shadow:0 3px 0 #b6c98d,0 6px 16px #5e7c361f;transform-origin:center 75%}
@@ -78,17 +76,15 @@ p,h1,h2{margin:0}
 .tile[data-type="9"]{--face:#e4f3e9;--face-base:#d4e6d9}
 .tile[data-type="10"]{--face:#faeadf;--face-base:#e9d8c5}
 .tile[data-type="13"]{--face:#ecf4f9;--face-base:#d7e5ea}
-.board-tile{position:absolute;box-shadow:0 2px 0 #9b784f,0 var(--shadow,4px) 5px #3b422b4d,inset 0 -1px #b188524f}
+.board-tile{position:absolute;border-radius:11%;box-shadow:0 2px 0 var(--tile-edge,#9b784f),0 var(--shadow,4px) 5px #3b422b4d,inset 0 -1px #b188524f}
 .board-tile svg{width:86%;height:86%}
 .board-tile::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;border:1px solid #ffffdc;box-shadow:inset 0 0 8px #fffced}
 .board-tile:not(.covered)::after{animation:ready-glow 3.4s var(--glow-delay,0s) ease-in-out infinite}
 @keyframes ready-glow{0%,100%{opacity:.15}50%{opacity:.6}}
-.board-tile.covered,.board-tile.covered:active{opacity:.45;filter:saturate(.28);background:#a9a378;border-color:#f7e9bb;box-shadow:0 1px 0 #665b37,inset 0 -1px #6e624b}
+.board-tile.covered,.board-tile.covered:active{opacity:.92;filter:brightness(.82) saturate(.85);border-color:var(--face-base);
+  box-shadow:0 2px 0 var(--tile-edge,#9b784f),0 3px 3px #3b422b32}
 .board-tile.revealing{box-shadow:0 2px 0 #9b784f,0 calc(var(--shadow,4px) + 4px * var(--reveal-shadow,0)) calc(5px + 3px * var(--reveal-shadow,0)) #3b422b59,inset 0 -1px #b188524f}
 .board-tile.revealing::after{animation:none;opacity:var(--reveal-light,0);border:2px solid #fff9cd;box-shadow:inset 0 0 10px #fffade,0 0 7px #fbf7bd}
-.pile-count{position:absolute;top:-2px;right:-2px;z-index:1;pointer-events:none;display:grid;place-items:center;
-  min-width:15px;height:15px;padding:0 3px;background:#355b42;border:1px solid #fff9df;color:#fffdf2;border-radius:7px;
-  font-size:10px;font-weight:850;line-height:1;font-variant-numeric:tabular-nums}
 .board-tile:focus-visible{outline-offset:-4px}
 .guide{display:grid;justify-items:center;gap:0;position:absolute;transform:translate(-50%,-93%);z-index:250;color:#fff9de;pointer-events:none;filter:drop-shadow(0 2px 2px #21442a45)}
 .guide span{background:#38634a;padding:4px 10px;border-radius:100px;font-size:13px;font-weight:850;white-space:nowrap}
@@ -367,7 +363,6 @@ p,h1,h2{margin:0}
   <section id="game" class="game" hidden>
     <div class="level-head">
       <div><div id="level-number" class="level-number"></div><h1 id="level-name"></h1></div>
-      <div class="remaining"><span>剩余牌数</span><strong id="left-count"></strong></div>
     </div>
     <div class="game-area">
       <div class="board" id="board">
@@ -417,19 +412,35 @@ p,h1,h2{margin:0}
 <div class="toast" id="toast" role="status" hidden></div>
 <script>
 const LEVELS = [
-  ['初到牧场',36,3,5,4,3], ['雾藏羊群',108,7,14,5,4],
-  ['苜蓿坡',120,6,11,5,4], ['林间小径',132,7,12,5,4],
-  ['风铃谷',144,6,12,5,5], ['羊毛集市',156,7,13,5,5],
-  ['落日围栏',168,7,13,5,5], ['月光草甸',180,6,14,6,5],
-  ['山顶哨站',192,7,14,6,5], ['云端牧场',204,7,14,6,5]
+  ['初到牧场',18,2,3,4,3], ['雾藏羊群',108,7,14,7,5],
+  ['苜蓿坡',120,7,11,7,5], ['林间小径',132,8,12,7,5],
+  ['风铃谷',144,8,12,7,5], ['羊毛集市',156,8,13,7,5],
+  ['落日围栏',168,9,13,7,5], ['月光草甸',180,10,14,7,5],
+  ['山顶哨站',192,10,14,7,5], ['云端牧场',204,10,14,7,5]
 ];
 const BOARD_W = 400;
 const BOARD_H = 364;
-const STACK_X = 4;
-const STACK_Y = 5;
-const GAP_X = 10;
-const GAP_Y = 8;
-const LAYOUT_VERSION = 2;
+const TILE_W = 52;
+const TILE_H = 57;
+const DX = TILE_W + 2;
+const DY = TILE_H + 2;
+const LAYOUT_VERSION = 3;
+const LAYER_COUNTS = [
+  [12,6],
+  [35,24,15,15,9,6,4],
+  [35,24,20,15,12,8,6],
+  [35,24,24,18,12,9,6,4],
+  [35,24,24,20,15,12,8,6],
+  [35,24,24,20,18,15,12,8],
+  [35,24,24,24,20,15,12,8,6],
+  [35,24,24,24,20,18,15,10,6,4],
+  [35,24,24,24,20,20,18,12,9,6],
+  [35,24,24,24,24,20,18,15,12,8]
+];
+const WINDOWS = {
+  4:[2,2], 6:[3,2], 8:[4,2], 9:[3,3], 10:[4,3], 12:[4,3],
+  15:[5,3], 16:[4,4], 18:[5,4], 20:[5,4], 24:[6,4], 35:[7,5]
+};
 const CAPACITY = 7;
 const ALL_TOOLS = ['undo', 'move', 'mix'];
 
@@ -452,91 +463,65 @@ function shuffle(array, rng) {
   return array;
 }
 
-function neighbors(pile, cols, rows) {
-  const col = pile%cols;
-  const row = Math.floor(pile/cols);
-  const ids = [];
-  for (let y = Math.max(0,row-1); y <= Math.min(rows-1,row+1); y++) {
-    for (let x = Math.max(0,col-1); x <= Math.min(cols-1,col+1); x++) {
-      if (x !== col || y !== row) ids.push(y*cols+x);
-    }
-  }
-  return ids;
+function offset(z) {
+  return [4*z + (z%2 ? 26 : 0), 5*z + (z%2 ? 28 : 0)];
 }
 
-function stackHeights(count, peak, cols, rows, rng) {
-  const heights = Array(cols*rows).fill(2);
-  const adjacent = heights.map((_,id) => neighbors(id,cols,rows));
-  const order = heights.map((_,id) => ({
-    id,
-    distance:Math.abs(id%cols-(cols-1)/2)+Math.abs(Math.floor(id/cols)-(rows-1)/2),
-    tie:rng()
-  })).sort((a,b) => a.distance-b.distance || a.tie-b.tie);
-
-  // Build the central terraces before the outer ones, including diagonal
-  // neighbors in the height check so distant tall stacks never stick out.
-  for (let placed = 2*heights.length; placed < count; placed++) {
-    const spot = order.find(({id}) => heights[id] < peak &&
-      adjacent[id].every(other => heights[other] >= heights[id]));
-    if (!spot) return null;
-    heights[spot.id]++;
-  }
-  return heights;
+function cardOverlap(a,b) {
+  return Math.max(0,TILE_W-Math.abs(a.x-b.x))*Math.max(0,TILE_H-Math.abs(a.y-b.y));
 }
 
-function positions(config, rng) {
-  const [, count, depth, , cols, rows] = config;
-  const heights = stackHeights(count,depth,cols,rows,rng);
-  if (!heights) return null;
-  const peak = Math.max(...heights);
-  const stackWidth = (peak-1)*STACK_X;
-  const stackHeight = (peak-1)*STACK_Y;
-  const maxW = Math.floor((BOARD_W-12-(cols-1)*GAP_X)/cols)-stackWidth;
-  const maxH = Math.floor((BOARD_H-12-(rows-1)*GAP_Y)/rows)-stackHeight;
-  const w = Math.min(70,maxW,maxH);
-  const h = Math.min(maxH,Math.round(w*1.1));
-  const dx = w+stackWidth+GAP_X;
-  const dy = h+stackHeight+GAP_Y;
-  const left = Math.floor((BOARD_W-w-stackWidth-(cols-1)*dx)/2);
-  const top = Math.floor((BOARD_H-h-stackHeight-(rows-1)*dy)/2);
+function positions(config, counts) {
+  const [, , , , cols, rows] = config;
   const cards = [];
-  const piles = heights.map((height,pile) => {
-    const x = left+(pile%cols)*dx;
-    const y = top+Math.floor(pile/cols)*dy;
-    const ids = [];
-    for (let z = 0; z < height; z++) {
-      const id = cards.length;
-      ids.push(id);
-      cards.push({id,pile,z,x:x+z*STACK_X,y:y+z*STACK_Y,above:[],below:[]});
+  const layers = counts.map((count,z) => {
+    const [width,height] = WINDOWS[count];
+    const [ox,oy] = offset(z);
+    const x0 = Math.max(0,Math.min(cols-width,Math.round((cols-width)/2-ox/DX)));
+    const y0 = Math.max(0,Math.min(rows-height,Math.round((rows-height)/2-oy/DY)));
+    const cells = Array.from({length:width*height},(_,i) => ({c:i%width,r:Math.floor(i/width)}));
+    if (cells.length > count) {
+      // Trim opposite window corners, leaving the inner grid fully packed.
+      cells.pop();
+      cells.shift();
     }
-    for (const id of ids) {
-      // IDs are storage keys. Only the stack and z define obstruction.
-      const card = cards[id];
-      card.above = ids.slice(card.z+1);
-      card.below = ids.slice(0,card.z);
-    }
-    return {x,y,ids};
+    return cells.map(({c,r}) => {
+      const col = x0+c, row = y0+r;
+      const card = {id:cards.length,z,col,row,x:col*DX+ox,y:row*DY+oy,above:[],below:[]};
+      cards.push(card);
+      return card.id;
+    });
   });
-  return {cards,piles,w,h,dx,dy,cols,rows};
+  const minX = Math.min(...cards.map(card => card.x));
+  const minY = Math.min(...cards.map(card => card.y));
+  const maxX = Math.max(...cards.map(card => card.x))+TILE_W;
+  const maxY = Math.max(...cards.map(card => card.y))+TILE_H;
+  const left = Math.floor((BOARD_W-minX-maxX)/2);
+  const top = Math.floor((BOARD_H-minY-maxY)/2);
+  for (const card of cards) {
+    card.x += left;
+    card.y += top;
+  }
+  for (const card of cards) {
+    for (let id = 0; id < card.id; id++) {
+      const lower = cards[id];
+      // Staggering can cover neighboring cells, but never cards in the same layer.
+      if (lower.z === card.z || !cardOverlap(card,lower)) continue;
+      card.below.push(id);
+      lower.above.push(card.id);
+    }
+  }
+  return {cards,layers,w:TILE_W,h:TILE_H,dx:DX,dy:DY,cols,rows,left,top};
 }
 
 function validLayout(layout, count) {
   if (!layout || layout.cards.length !== count) return false;
-  const {cards,piles,cols,rows,w,h,dx,dy} = layout;
-  if (w <= STACK_X || h <= STACK_Y || dx < w+GAP_X || dy < h+GAP_Y) return false;
-  for (const [id,pile] of piles.entries()) {
-    const size = pile.ids.length;
-    if (size < 2 || size > 7 ||
-        neighbors(id,cols,rows).some(other => Math.abs(piles[other].ids.length-size) > 1)) return false;
-  }
-  for (const a of cards) {
-    if (a.x < 0 || a.y < 0 || a.x+w > BOARD_W || a.y+h > BOARD_H) return false;
-    if (a.above.some(id => cards[id].pile !== a.pile || cards[id].z <= a.z)) return false;
-    for (let j = a.id+1; j < cards.length; j++) {
-      const b = cards[j];
-      // Faces in the same row can share y and still be separated along x.
-      if (a.pile !== b.pile && Math.abs(a.x-b.x) < w && Math.abs(a.y-b.y) < h) return false;
-    }
+  const {cards,w,h,dx,dy,layers} = layout;
+  if (dx-w !== 2 || dy-h !== 2 || layers.some((layer,z)=>z && layer.length > layers[z-1].length)) return false;
+  for (const card of cards) {
+    if (card.x < 0 || card.y < 0 || card.x+w > BOARD_W || card.y+h > BOARD_H) return false;
+    if (card.above.some(id => cards[id].z <= card.z || !cardOverlap(card,cards[id]))) return false;
+    if (layers[card.z].some(id => id !== card.id && cardOverlap(card,cards[id]))) return false;
   }
   return true;
 }
@@ -598,10 +583,10 @@ function labelPositions(layout, route, level, rng) {
   const topTypes = new Uint8Array(14);
   const revealedAt = new Int16Array(cards.length);
   const layers = new Map();
-  const groupPiles = new Map();
+  const groupCells = new Map();
   return route.map(({id:group, type, step}, index) => {
     const seen = layers.get(group) || [];
-    const usedPiles = groupPiles.get(group) || [];
+    const usedCells = groupCells.get(group) || [];
     let chosen = -1;
     let high = -Infinity;
     for (const id of pool.exposed) {
@@ -615,8 +600,8 @@ function labelPositions(layout, route, level, rng) {
         const freshness = 1 / (1 + index - revealedAt[id]);
         const nearby = card.above.some(upper => cards[upper].type === type);
         score += diversity*.6 + freshness*(step === 3 ? 3.4 : step === 2 ? 2.7 : .3);
-        if (level === 2) score += .7*(layout.piles[card.pile].ids.length-1-card.z);
-        if (usedPiles.includes(card.pile)) score -= 3.9;
+        if (level === 2) score += .4*(layout.layers.length-1-card.z);
+        if (usedCells.some(other => other.col === card.col && other.row === card.row)) score -= 3.9;
         if (nearby) score -= 3.5;
         if (startLayer.has(id)) score -= topTypes[type] ** 2 * 2.9;
       }
@@ -625,7 +610,7 @@ function labelPositions(layout, route, level, rng) {
     cards[chosen].type = type;
     if (startLayer.has(chosen)) topTypes[type]++;
     layers.set(group, [...seen, cards[chosen].z]);
-    groupPiles.set(group,[...usedPiles,cards[chosen].pile]);
+    groupCells.set(group,[...usedCells,cards[chosen]]);
     pool.remove(chosen, lower => { revealedAt[lower] = index+1; });
     return chosen;
   });
@@ -680,16 +665,17 @@ function trials(layout, seed, total = 96) {
   }
   return {wins, total, rate:wins/total};
 }
-function generate(seed, level) {
+function generate(seed, level, resumeOldTutorial = false) {
+  const config = resumeOldTutorial ? [LEVELS[0][0],36,2,5,5,4] : LEVELS[level-1];
+  const counts = resumeOldTutorial ? [20,16] : LAYER_COUNTS[level-1];
   const limit = level === 2 ? 200 : level === 1 ? 1 : 12;
   const target = level === 2 ? .2 : [.31,.23,.35,.19,.25,.32,.21,.17][level-3];
   let hardest;
   for (let attempt = 0; attempt < limit; attempt++) {
     const key = JSON.stringify([seed,level,attempt]);
     const rng = randomFrom(key);
-    const route = groupRoute(LEVELS[level-1], level, rng);
-    const config = LEVELS[level-1];
-    const layout = positions(config,rng);
+    const route = groupRoute(config, level, rng);
+    const layout = positions(config,counts);
     if (!validLayout(layout,config[1])) continue;
     layout.solution = labelPositions(layout, route, level, rng);
     if (!verifyOptimal(layout)) continue;
@@ -949,7 +935,6 @@ let scene = 'home';
 let modal = '';
 let previousFocus = null;
 let cards = [];
-let countBadges = [];
 let dirty = false;
 let toastUntil = 0;
 let refillUntil = 0;
@@ -1059,9 +1044,13 @@ function setGame(level, seed, resume=false) {
   seed = cleanSeed(seed);
   closeModal(false);
   resetMotion();
-  const layout = generate(seed,level);
-  const canResume = resume && session && session.level === level && session.seed === seed &&
-    session.state?.alive?.length === layout.cards.length;
+  const saved = resume && session?.level === level && session.seed === seed ? session.state : null;
+  const untouched = saved && !saved.result && !saved.undo && !saved.tray.length && !saved.park.length &&
+    saved.alive.every(Boolean) && ALL_TOOLS.every(tool => saved.uses[tool] === 1);
+  // A started 36-card tutorial keeps its tiles and tray while using two new layers.
+  const oldTutorial = level === 1 && saved?.alive.length === 36 && !untouched;
+  const layout = generate(seed,level,oldTutorial);
+  const canResume = saved?.alive.length === layout.cards.length;
   let refill = '';
   if (!canResume) {
     session = {level,seed,state:Rules.fresh(layout),layoutVersion:LAYOUT_VERSION};
@@ -1074,14 +1063,7 @@ function setGame(level, seed, resume=false) {
       profile.day = today();
     }
   } else if (session.layoutVersion !== LAYOUT_VERSION) {
-    // A previous release used the same tile IDs for a different geometry.
-    // Keep played rounds, including the tray, undo, and spent tools. A round
-    // with no picks or tools can use the new generator's verified board.
-    const {state} = session;
-    if (!state.result && !state.undo && !state.tray.length && !state.park.length &&
-        state.alive.every(Boolean) && ALL_TOOLS.every(tool => state.uses[tool] === 1)) {
-      session.state = Rules.fresh(layout);
-    }
+    if (untouched) session.state = Rules.fresh(layout);
     session.layoutVersion = LAYOUT_VERSION;
   }
   gameSession = {layout,...session};
@@ -1095,19 +1077,13 @@ function setGame(level, seed, resume=false) {
   $('level-number').textContent = '第 '+String(level).padStart(2,'0')+' 关 / '+LEVELS.length;
   $('level-name').textContent = LEVELS[level-1][0];
   const fragment = document.createDocumentFragment();
-  countBadges = [];
   cards = layout.cards.map(card => {
     const button = tile(session.state.types[card.id],true,card.id);
     button.classList.add('board-tile');
     button.style.cssText = 'left:'+card.x/BOARD_W*100+'%;top:'+card.y/BOARD_H*100+
       '%;width:'+layout.w/BOARD_W*100+'%;height:'+layout.h/BOARD_H*100+
-      '%;z-index:'+(card.z+1)+';--shadow:'+Math.min(6,3+card.z*.44)+'px;--glow-delay:'+(-card.pile%6*.38)+'s';
-    const badge = document.createElement('span');
-    badge.className = 'pile-count';
-    badge.hidden = true;
-    badge.setAttribute('aria-hidden','true');
-    button.append(badge);
-    countBadges.push(badge);
+      '%;z-index:'+(card.z+1)+';--shadow:'+Math.min(6,2+card.z*.5)+'px;--glow-delay:'+(-card.id%6*.38)+
+      's;--tile-edge:hsl(35 31% '+(51+card.z%4*3)+'%)';
     fragment.append(button);
     return button;
   });
@@ -1125,37 +1101,43 @@ function setGame(level, seed, resume=false) {
   if (session.state.result) openOutcome(session.state.result);
   queueSave();
 }
-function syncBoard(onlyPile = null, showReveal = false) {
+function syncBoard(removed = null) {
   const {layout,state,level} = gameSession;
-  const piles = onlyPile === null ? layout.piles : [layout.piles[onlyPile]];
-  for (const {ids} of piles) {
-    const remaining = ids.reduce((n,id) => n+Number(state.alive[id]),0);
-    for (const id of ids) {
-      const el = cards[id];
-      const alive = state.alive[id];
-      if (el.hidden === alive) el.hidden = !alive;
-      if (!alive) {
-        if (el.classList.contains('revealing')) stopTileMotion(el);
-        continue;
+  const affected = removed ? [removed,...removed.below.map(id => layout.cards[id])] : layout.cards;
+  let revealed, bestOverlap = -1;
+  for (const card of affected) {
+    const {id} = card;
+    const el = cards[id];
+    const alive = state.alive[id];
+    if (el.hidden === alive) el.hidden = !alive;
+    if (!alive) {
+      if (el.classList.contains('revealing')) stopTileMotion(el);
+      continue;
+    }
+    const covered = !Rules.available(layout,state,id);
+    const wasCovered = el.classList.contains('covered');
+    if (covered && el.classList.contains('revealing')) stopTileMotion(el);
+    el.classList.toggle('covered',covered);
+    el.setAttribute('aria-disabled',String(covered));
+    el.tabIndex = covered ? -1 : 0;
+    const type = state.types[id];
+    if (+el.dataset.type !== type) {
+      el.dataset.type = type;
+      el.querySelector('use').setAttribute('href','#tile-'+type);
+    }
+    el.setAttribute('aria-label',TILE_NAMES[type]+(covered ? '，被上方的牌盖住' : ''));
+    if (removed && wasCovered && !covered) {
+      // Give one local card the reveal animation and sound, preferring the
+      // matching grid slot when several overlapping faces become available.
+      const sameCell = card.col === removed.col && card.row === removed.row;
+      const score = cardOverlap(card,removed)+(sameCell ? layout.w*layout.h : 0);
+      if (score > bestOverlap) {
+        bestOverlap = score;
+        revealed = el;
       }
-      const covered = !Rules.available(layout,state,id);
-      const wasCovered = el.classList.contains('covered');
-      if (covered && el.classList.contains('revealing')) stopTileMotion(el);
-      el.classList.toggle('covered',covered);
-      el.setAttribute('aria-disabled',String(covered));
-      el.tabIndex = covered ? -1 : 0;
-      const type = state.types[id];
-      if (+el.dataset.type !== type) {
-        el.dataset.type = type;
-        el.querySelector('use').setAttribute('href','#tile-'+type);
-      }
-      const badge = countBadges[id];
-      badge.hidden = covered;
-      if (!covered) badge.textContent = remaining;
-      el.setAttribute('aria-label',TILE_NAMES[type]+(covered ? '，被上方的牌盖住' : '，此摞剩余 '+remaining+' 张'));
-      if (showReveal && wasCovered && !covered) revealTile(el);
     }
   }
+  if (revealed) revealTile(revealed);
   const first = layout.cards[layout.solution[0]];
   guide.hidden = !(level === 1 && !profile.lesson && Rules.available(layout,state,first.id));
   if (!guide.hidden) {
@@ -1165,7 +1147,6 @@ function syncBoard(onlyPile = null, showReveal = false) {
 }
 function syncHud() {
   const {state} = gameSession;
-  $('left-count').textContent = Rules.remaining(state);
   for (const btn of byTool) {
     const tool = btn.dataset.tool;
     btn.querySelector('b').textContent = state.uses[tool];
@@ -1255,7 +1236,7 @@ function pick(el,source) {
   const type = state.types[id];
   if (level === 1 && !profile.lesson) profile.lesson = true;
   const keyboardFocus = document.activeElement === el && el.matches(':focus-visible');
-  if (source === 'board') syncBoard(layout.cards[id].pile,true);
+  if (source === 'board') syncBoard(layout.cards[id]);
   syncHud();
   if (source === 'park') paintPark();
   if (keyboardFocus) {
