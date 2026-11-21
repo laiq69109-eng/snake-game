@@ -67,14 +67,17 @@ p,h1,h2{margin:0}
   box-shadow:0 2px 0 #a5835b,0 3px 5px #41351838,inset 0 -1px #bc96594f}
 .tile svg{width:85%;height:85%;pointer-events:none;display:block}
 .tile[data-type="1"]{--face:#fff1d9;--face-base:#f8dcb4}
-.tile[data-type="2"],.tile[data-type="12"]{--face:#fff7d5;--face-base:#f4e5ab}
+.tile[data-type="2"]{--face:#f1edff;--face-base:#dfdcf4}
 .tile[data-type="3"]{--face:#fceef1;--face-base:#eed6e4}
-.tile[data-type="4"],.tile[data-type="11"]{--face:#f5edda;--face-base:#ecd6b7}
-.tile[data-type="5"],.tile[data-type="8"]{--face:#ffece4;--face-base:#f3d8cb}
-.tile[data-type="6"]{--face:#fff3cf;--face-base:#f2deb0}
+.tile[data-type="4"]{--face:#f2e3cd;--face-base:#e5cfb3}
+.tile[data-type="5"]{--face:#ffece4;--face-base:#f3d8cb}
+.tile[data-type="6"]{--face:#fff0c9;--face-base:#f4dea3}
 .tile[data-type="7"]{--face:#f1ebfa;--face-base:#e3d9ed}
+.tile[data-type="8"]{--face:#eff5d6;--face-base:#dae7ba}
 .tile[data-type="9"]{--face:#e4f3e9;--face-base:#d4e6d9}
 .tile[data-type="10"]{--face:#faeadf;--face-base:#e9d8c5}
+.tile[data-type="11"]{--face:#e6f0e2;--face-base:#cfdfc9}
+.tile[data-type="12"]{--face:#dff2f9;--face-base:#c5e0ee}
 .tile[data-type="13"]{--face:#ecf4f9;--face-base:#d7e5ea}
 .board-tile{position:absolute;border-radius:11%;border-bottom:1px solid #785e42;box-shadow:0 2px 0 var(--tile-edge,#9b784f),0 var(--shadow,4px) 5px #3b422b4d,inset 0 -1px #b188524f}
 .board-tile svg{width:86%;height:86%}
@@ -82,9 +85,14 @@ p,h1,h2{margin:0}
 .board-tile:not(.covered)::after{animation:ready-glow 3.4s var(--glow-delay,0s) ease-in-out infinite}
 .board-tile:not(.covered){filter:brightness(1.04)}
 @keyframes ready-glow{0%,100%{opacity:.35}50%{opacity:.70}}
-.board-tile.covered::before{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(48,40,24,.10);z-index:1;pointer-events:none}
-.board-tile.covered,.board-tile.covered:active{opacity:1;filter:brightness(.78) saturate(.92);border:1px solid rgba(90,70,40,.35);border-bottom-color:#71573d;
-  box-shadow:0 2px 0 var(--tile-edge,#9b784f),0 3px 3px #3b422b32}
+.tile.board-tile.covered{
+  --face:#e8dfc9;--face-base:#d8cdb2;
+  background:var(--face);border:1px solid rgba(90,70,40,.35);
+  box-shadow:0 2px 0 var(--face-base),0 3px 3px #3b422b32;
+  filter:brightness(.84) saturate(.9)
+}
+.tile.board-tile.covered svg{opacity:.75}
+.hide-covered-art .tile.board-tile.covered svg{visibility:hidden}
 .board-tile.revealing{box-shadow:0 2px 0 #9b784f,0 calc(var(--shadow,4px) + 4px * var(--reveal-shadow,0)) calc(5px + 3px * var(--reveal-shadow,0)) #3b422b59,inset 0 -1px #b188524f}
 .board-tile.revealing::after{animation:none;opacity:var(--reveal-light,0);border:2px solid #fff9cd;box-shadow:inset 0 0 10px #fffade,0 0 7px #fbf7bd}
 .board-tile:focus-visible{outline-offset:-4px}
@@ -203,12 +211,12 @@ p,h1,h2{margin:0}
     <path d="M19 19c6 1 10 4 13 7" stroke="#f9d4e2" fill="none" stroke-width="2.2" stroke-linecap="round"/>
   </symbol>
   <symbol id="tile-4" viewBox="0 0 64 64">
-    <path d="M16 24v-2a16 16 0 0 1 32 0v2" fill="none" stroke="#746052" stroke-width="3"/>
-    <path d="M12 25h40l-5 24c-1 8-29 8-30 0Z" fill="#c89159" stroke="#805739" stroke-width="2.3" stroke-linejoin="round"/>
-    <path d="M23 30l3 22m6-21v23m9-24-3 22" stroke="#93613e" stroke-width="2" stroke-linecap="round"/>
-    <ellipse cx="32" cy="25" rx="20" ry="6.5" fill="#ebb67c" stroke="#805739" stroke-width="2.2"/>
-    <ellipse cx="32" cy="25" rx="15" ry="3.6" fill="#94603e"/>
-    <path d="M15 36q17 7 34 0m-32 10q15 6 30 0" fill="none" stroke="#697d79" stroke-width="3.1"/>
+    <path d="M14 14h36v36c0 7-36 7-36 0Z" fill="#a9713d" stroke="#674930" stroke-width="2.4"/>
+    <path d="M23 17v35m11-34v36m9-37v35" fill="none" stroke="#80542f" stroke-width="2"/>
+    <ellipse cx="32" cy="14" rx="18" ry="5.5" fill="#d6ac75" stroke="#674930" stroke-width="2.3"/>
+    <ellipse cx="32" cy="14" rx="13" ry="2.7" fill="#654831"/>
+    <path d="M13 24q19 6 38 0v5q-19 6-38 0Zm0 17q19 6 38 0v5q-19 6-38 0Z" fill="#6b6257" stroke="#504a43" stroke-width="1.5"/>
+    <path d="M20 27h1m-1 17h1" stroke="#dfd5c3" stroke-width="2.4" stroke-linecap="round"/>
   </symbol>
   <symbol id="tile-5" viewBox="0 0 64 64">
     <path d="M32 32q-4 14 1 24m-3-9q10-11 19-5-6 10-16 8m-3-3q-8-10-17-6 5 10 17 9" fill="#8abe5f" stroke="#527e45" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/>
@@ -217,12 +225,12 @@ p,h1,h2{margin:0}
     <path d="M32 24h.1m-2 4h.1m4 1h.1" stroke="#c6814b" stroke-width="1.9" stroke-linecap="round"/>
   </symbol>
   <symbol id="tile-6" viewBox="0 0 64 64">
-    <path d="M22 19h21m-20-5h19v6H23Z" fill="#e3a657" stroke="#915835" stroke-width="2"/>
-    <path d="M22 20h20c-1 5 7 7 7 14l-2 16c-1 6-29 6-30 0l-2-16c0-7 8-9 7-14Z" fill="#efa841" stroke="#9a5c30" stroke-width="2.3"/>
-    <path d="M17 34q15-7 30 0l-1 11q-14 5-28 0Z" fill="#fff0a8" stroke="#ce8638" stroke-width="1.8"/>
-    <path d="M32 33c-2 4-5 6-5 8a5 5 0 0 0 10 0c0-2-3-4-5-8Z" fill="#db8635"/>
-    <path d="M20 13q12-5 24 0v5H20Z" fill="#9f7857" stroke="#765039" stroke-width="2"/>
-    <path d="M21 29l5-4" stroke="#ffe491" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M20 23h24c1 5 11 7 12 16 2 12-9 17-24 17S7 51 8 40c1-10 11-12 12-17Z" fill="#e8a02c" stroke="#995d22" stroke-width="2.5"/>
+    <path d="M14 40q1-5 6-7m4 17q8 2 15 0" fill="none" stroke="#ffda75" stroke-width="3.2" stroke-linecap="round"/>
+    <path d="M17 23h30v5q-3 1-3 6v4c0 6-8 7-8 1v-7q0-4-4-3-5 3-8-1Z" fill="#ffca43" stroke="#b8751d" stroke-width="2"/>
+    <path d="M20 14q12-7 24 0l6 11-6 2-5-3-7 3-7-3-6 3-6-2Z" fill="#fff4de" stroke="#96694f" stroke-width="2.1" stroke-linejoin="round"/>
+    <path d="m23 15-3 6m12-8v7m9-5 3 6" stroke="#dc8d79" stroke-width="2.6"/>
+    <path d="M19 20q13 3 27 0" fill="none" stroke="#ae624d" stroke-width="2.4"/>
   </symbol>
   <symbol id="tile-7" viewBox="0 0 64 64">
     <path d="M32 51V14m0 40c-1-13-8-22-21-27 0 12 10 21 21 22m0 0c2-13 10-20 21-22-1 10-10 19-21 22" fill="#88ad59" stroke="#567544" stroke-width="2.2" stroke-linecap="round"/>
@@ -251,11 +259,12 @@ p,h1,h2{margin:0}
     <path d="M28 41l-1 8" stroke="#d39d75" stroke-width="2" stroke-linecap="round"/>
   </symbol>
   <symbol id="tile-11" viewBox="0 0 64 64">
-    <path d="M20 24c0-8 6-13 13-13 8 0 12 4 12 13" fill="none" stroke="#714d3d" stroke-width="3.6"/>
-    <path d="M13 25h38l-6 26q-13 6-26 0Z" fill="#d6a164" stroke="#835639" stroke-width="2.3" stroke-linejoin="round"/>
-    <path d="M15 33q17 5 34 0m-32 8q15 5 30 0m-27 7q12 4 24 0m-19-20 2 24m11-24-2 24" stroke="#a06a43" fill="none" stroke-width="1.8"/>
-    <path d="M13 25q19-4 38 0l-1 5q-18 4-36 0Z" fill="#ebbe80" stroke="#835639" stroke-width="2"/>
-    <path d="M21 37l3 1m5 9h4m5-10 6-1" stroke="#f6d798" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M17 33C17 0 47 0 47 33" fill="none" stroke="#526d4a" stroke-width="6.5"/>
+    <path d="M17 33C17 0 47 0 47 33" fill="none" stroke="#7d9b6a" stroke-width="3.8"/>
+    <path d="M8 32h48l-9 20q-15 6-30 0Z" fill="#c9a86a" stroke="#826740" stroke-width="2.3" stroke-linejoin="round"/>
+    <path d="m13 36 17 17m-4-19 18 18m-4-18 9 9" fill="none" stroke="#947543" stroke-width="2.5"/>
+    <path d="M49 35 31 53m4-19L18 50m3-16-7 8" fill="none" stroke="#f2d397" stroke-width="3"/>
+    <rect x="7" y="29" width="50" height="6" rx="3" fill="#e0c18a" stroke="#826740" stroke-width="2.1"/>
   </symbol>
   <symbol id="tile-12" viewBox="0 0 64 64">
     <path d="M27 26l-4-13 11-5 7 11-9 11" fill="#ffdf71" stroke="#ad7845" stroke-width="2"/>
@@ -364,7 +373,7 @@ p,h1,h2{margin:0}
       <span class="brand-mark"><svg viewBox="0 0 64 64" aria-hidden="true"><use href="#tile-0"/></svg></span>
       <span>绵羊牧场</span>
     </button>
-    <button class="circle" id="settings-btn" type="button" aria-label="音效设置"><svg class="icon"><use href="#i-sound"/></svg></button>
+    <button class="circle" id="settings-btn" type="button" aria-label="游戏设置"><svg class="icon"><use href="#i-sound"/></svg></button>
   </header>
   <section class="home" id="home">
     <div class="hero">
@@ -1022,7 +1031,7 @@ const VOLUME = .72;
 let saved = {};
 try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch {}
 const profile = Object.assign({cleared:[], lesson:false, day:'', reward:false, current:1}, saved.profile);
-const settings = Object.assign({volume:VOLUME, muted:false, voice:true},saved.settings);
+const settings = Object.assign({volume:VOLUME, muted:false, voice:true, hideCoveredArt:false},saved.settings);
 const audio = new PastureAudio(settings);
 let session = saved.session || null;
 let gameSession = null;
@@ -1201,6 +1210,7 @@ function setGame(level, seed, resume=false) {
 }
 function syncBoard(removed = null) {
   const {layout,state,level} = gameSession;
+  deck.classList.toggle('hide-covered-art',settings.hideCoveredArt);
   const affected = removed ? [removed,...removed.below.map(id => layout.cards[id])] : layout.cards;
   let revealed, bestOverlap = -1;
   for (const card of affected) {
@@ -1223,7 +1233,8 @@ function syncBoard(removed = null) {
       el.dataset.type = type;
       el.querySelector('use').setAttribute('href','#tile-'+type);
     }
-    el.setAttribute('aria-label',TILE_NAMES[type]+(covered ? '，被上方的牌盖住' : ''));
+    el.setAttribute('aria-label',covered && settings.hideCoveredArt ? '被盖住的牌' :
+      TILE_NAMES[type]+(covered ? '，被上方的牌盖住' : ''));
     if (removed && wasCovered && !covered) {
       // Give one local card the reveal animation and sound, preferring the
       // matching grid slot when several overlapping faces become available.
@@ -1669,10 +1680,17 @@ function openLevels() {
     setGame(+btn.dataset.level,$('seed-input').value)));
 }
 function openSettings() {
-  openModal('settings','<h2 id="dialog-title">音效设置</h2>'+
+  openModal('settings','<h2 id="dialog-title">游戏设置</h2>'+
     '<label class="switch-row">静音<input id="mute-toggle" type="checkbox"></label>'+
     '<label class="slider"><span>音量 <output id="volume-label"></output></span><input id="volume-slider" type="range" min="0" max="100" step="1"></label>'+
-    '<label class="switch-row">通关与失败播报<input id="voice-toggle" type="checkbox"></label>');
+    '<label class="switch-row">通关与失败播报<input id="voice-toggle" type="checkbox"></label>'+
+    '<label class="switch-row">困难模式 · 隐藏被盖牌图案<input id="covered-art-toggle" type="checkbox"></label>');
+  $('covered-art-toggle').checked = settings.hideCoveredArt;
+  $('covered-art-toggle').addEventListener('change',event => {
+    settings.hideCoveredArt = event.target.checked;
+    if (gameSession) syncBoard();
+    persist();
+  });
   $('mute-toggle').checked = settings.muted;
   $('voice-toggle').checked = settings.voice;
   $('volume-slider').value = Math.round(settings.volume*100);
