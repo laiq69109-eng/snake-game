@@ -56,7 +56,7 @@ p,h1,h2{margin:0}
 .level-head{display:flex;align-items:end;justify-content:space-between;gap:6px;flex:none;padding:0 1px}
 .level-number{color:#507154;font-weight:830;font-size:13px;letter-spacing:.115em;line-height:1.25}
 .level-head h1{font-size:clamp(23px,6.8vw,32px);line-height:1.22;font-weight:900;letter-spacing:.055em;margin-top:4px}
-.game-area{flex:1;min-height:0;display:grid;place-items:center;container-type:size}
+.game-area{position:relative;flex:1;min-height:0;display:grid;place-items:center;container-type:size;margin-inline:-12px}
 .board{position:relative;width:min(100%,calc(100cqh * 400 / 364));aspect-ratio:400/364;isolation:isolate;border-radius:23px;overflow:hidden;
   background:#ccdd9f;box-shadow:0 3px 0 #b6c98d,0 6px 16px #5e7c361f;transform-origin:center 75%}
 .board::after{content:"";position:absolute;inset:0;border:1px solid #a8bd7e;box-shadow:inset 0 1px #f0f6d3;border-radius:inherit;pointer-events:none;z-index:300}
@@ -81,15 +81,17 @@ p,h1,h2{margin:0}
 .board-tile::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;border:1px solid #ffffdc;box-shadow:inset 0 0 8px #fffced}
 .board-tile:not(.covered)::after{animation:ready-glow 3.4s var(--glow-delay,0s) ease-in-out infinite}
 @keyframes ready-glow{0%,100%{opacity:.15}50%{opacity:.6}}
-.board-tile.covered,.board-tile.covered:active{opacity:.92;filter:brightness(.82) saturate(.85);border-color:var(--face-base);
+.board-tile.covered,.board-tile.covered:active{opacity:1;filter:brightness(.88) saturate(.95);border:1px solid rgba(90,70,40,.35);
   box-shadow:0 2px 0 var(--tile-edge,#9b784f),0 3px 3px #3b422b32}
 .board-tile.revealing{box-shadow:0 2px 0 #9b784f,0 calc(var(--shadow,4px) + 4px * var(--reveal-shadow,0)) calc(5px + 3px * var(--reveal-shadow,0)) #3b422b59,inset 0 -1px #b188524f}
 .board-tile.revealing::after{animation:none;opacity:var(--reveal-light,0);border:2px solid #fff9cd;box-shadow:inset 0 0 10px #fffade,0 0 7px #fbf7bd}
 .board-tile:focus-visible{outline-offset:-4px}
-.guide{display:grid;justify-items:center;gap:0;position:absolute;transform:translate(-50%,-93%);z-index:250;color:#fff9de;pointer-events:none;filter:drop-shadow(0 2px 2px #21442a45)}
-.guide span{background:#38634a;padding:4px 10px;border-radius:100px;font-size:13px;font-weight:850;white-space:nowrap}
-.guide svg{color:#38634a;animation:bob .95s ease-in-out infinite alternate}
-@keyframes bob{to{transform:translateY(4px)}}
+.guide{position:absolute;z-index:250;color:#fff9de;background:#38634a;padding:4px 10px;border-radius:100px;
+  font-size:13px;font-weight:850;white-space:nowrap;pointer-events:none;filter:drop-shadow(0 2px 2px #21442a45)}
+.guide::after{content:"";position:absolute;left:var(--guide-point,50%);top:100%;transform:translateX(-50%);
+  border:4px solid transparent;border-top:8px solid #38634a;border-bottom:0}
+.guide.guide-left::after{left:100%;top:50%;transform:translateY(-50%);border:4px solid transparent;
+  border-left:8px solid #38634a;border-right:0}
 .tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;flex:none}
 .tool{position:relative;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap;min-width:0;min-height:43px;
   padding:4px 9px 4px 5px;border-radius:11px;background:#fbf8e8;border:1px solid #d9dfbf;box-shadow:0 2px 0 #d1dcb0;font-weight:770;font-size:13px}
@@ -155,10 +157,11 @@ p,h1,h2{margin:0}
 .reward{font-weight:780;color:#57704a}
 .toast{position:fixed;z-index:40;left:50%;bottom:max(16px,env(safe-area-inset-bottom));max-width:calc(100% - 24px);transform:translateX(-50%);
   background:#304e3f;color:#fff8df;padding:9px 14px;border-radius:10px;box-shadow:0 3px 8px #203c2f4f;font-size:14px;text-align:center;pointer-events:none}
-@media (max-width:400px){.app{padding-left:13px;padding-right:13px}.hero{border-radius:24px}.tool{font-size:12px}.game{gap:10px}.tray{gap:3px}}
-@media (max-width:340px){.app{padding-left:9px;padding-right:9px}.tools{gap:4px}.tool{gap:3px;padding:4px}.tool .icon{width:15px;height:15px}.dock{padding-left:7px;padding-right:7px}.level-head h1{font-size:23px}}
+@media (max-width:400px){.app{padding-left:13px;padding-right:13px}.game-area{margin-inline:-10px}.hero{border-radius:24px}.tool{font-size:12px}.game{gap:10px}.tray{gap:3px}}
+@media (max-width:340px){.app{padding-left:9px;padding-right:9px}.game-area{margin-inline:-6px}.tools{gap:4px}.tool{gap:3px;padding:4px}.tool .icon{width:15px;height:15px}.dock{padding-left:7px;padding-right:7px}.level-head h1{font-size:23px}}
 @media (max-height:650px){.app{padding-top:max(8px,env(safe-area-inset-top));padding-bottom:max(10px,env(safe-area-inset-bottom))}.topbar{margin-bottom:10px}.game{gap:8px}.hero{min-height:300px}.home{gap:15px}.hero-copy{padding-top:20px}.home-actions button{min-height:48px}.dock{padding-top:5px;padding-bottom:3px}.tool{min-height:40px}}
-@media (prefers-reduced-motion:reduce){.guide svg,.dock.warn,.board-tile:not(.covered)::after{animation:none}.board.fall{transition:none}}
+@media (max-height:650px) and (max-width:340px){.in-game .topbar{margin-bottom:7px}.game{gap:5px}}
+@media (prefers-reduced-motion:reduce){.dock.warn,.board-tile:not(.covered)::after{animation:none}.board.fall{transition:none}}
 </style>
 </head>
 <body>
@@ -366,7 +369,7 @@ p,h1,h2{margin:0}
     </div>
     <div class="game-area">
       <div class="board" id="board">
-        <svg class="board-art" viewBox="0 0 400 364" aria-hidden="true">
+        <svg class="board-art" viewBox="0 0 400 364" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <rect width="400" height="364" fill="url(#board-meadow)"/>
           <path d="M0 82q92-50 207-13T400 55v26Q293 141 192 111T0 134Z" fill="#ecf0c6" opacity=".37"/>
           <path d="M248 0C228 49 290 88 274 142c-21 69-129 66-152 120-13 30 14 67 70 102h79c-81-47-99-74-89-96 20-43 129-62 141-121 12-65-54-107-30-147Z" fill="#e5dba1" opacity=".42"/>
@@ -379,8 +382,8 @@ p,h1,h2{margin:0}
           <path d="M211 353h21m-11-9v16" stroke="#eef1bd" stroke-width="2" opacity=".7" stroke-linecap="round"/>
         </svg>
         <div class="board-cards" id="board-cards" aria-label="叠放的卡牌"></div>
-        <div class="guide" id="guide" hidden><span>点这张牌</span><svg width="18" height="17" viewBox="0 0 18 17" aria-hidden="true"><path d="M9 1v13m-5-5 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       </div>
+      <div class="guide" id="guide" hidden>点这张牌</div>
     </div>
     <div class="tools" aria-label="道具和重开">
       <button type="button" class="tool" data-tool="undo"><svg class="icon"><use href="#i-undo"/></svg><span>撤销</span><b>1</b></button>
@@ -412,11 +415,11 @@ p,h1,h2{margin:0}
 <div class="toast" id="toast" role="status" hidden></div>
 <script>
 const LEVELS = [
-  ['初到牧场',18,2,3,4,3], ['雾藏羊群',108,7,14,7,5],
-  ['苜蓿坡',120,7,11,7,5], ['林间小径',132,8,12,7,5],
-  ['风铃谷',144,8,12,7,5], ['羊毛集市',156,8,13,7,5],
-  ['落日围栏',168,9,13,7,5], ['月光草甸',180,10,14,7,5],
-  ['山顶哨站',192,10,14,7,5], ['云端牧场',204,10,14,7,5]
+  ['初到牧场',33,2,3,5,4], ['雾藏羊群',108,6,14,6,4],
+  ['苜蓿坡',120,6,11,6,4], ['林间小径',132,6,12,6,4],
+  ['风铃谷',144,7,12,6,4], ['羊毛集市',156,7,13,5,5],
+  ['落日围栏',168,7,13,5,5], ['月光草甸',180,7,14,6,5],
+  ['山顶哨站',192,7,14,6,5], ['云端牧场',204,7,14,6,5]
 ];
 const BOARD_W = 400;
 const BOARD_H = 364;
@@ -424,23 +427,19 @@ const TILE_W = 52;
 const TILE_H = 57;
 const DX = TILE_W + 2;
 const DY = TILE_H + 2;
-const LAYOUT_VERSION = 3;
+const LAYOUT_VERSION = 4;
 const LAYER_COUNTS = [
-  [12,6],
-  [35,24,15,15,9,6,4],
-  [35,24,20,15,12,8,6],
-  [35,24,24,18,12,9,6,4],
-  [35,24,24,20,15,12,8,6],
-  [35,24,24,20,18,15,12,8],
-  [35,24,24,24,20,15,12,8,6],
-  [35,24,24,24,20,18,15,10,6,4],
-  [35,24,24,24,20,20,18,12,9,6],
-  [35,24,24,24,24,20,18,15,12,8]
+  [20,13],
+  [24,20,18,16,15,15],
+  [24,22,20,19,18,17],
+  [24,24,23,22,20,19],
+  [24,23,22,21,20,18,16],
+  [25,24,23,23,22,20,19],
+  [25,25,25,24,24,23,22],
+  [30,28,27,26,25,23,21],
+  [30,30,29,28,27,25,23],
+  [30,30,30,30,29,28,27]
 ];
-const WINDOWS = {
-  4:[2,2], 6:[3,2], 8:[4,2], 9:[3,3], 10:[4,3], 12:[4,3],
-  15:[5,3], 16:[4,4], 18:[5,4], 20:[5,4], 24:[6,4], 35:[7,5]
-};
 const CAPACITY = 7;
 const ALL_TOOLS = ['undo', 'move', 'mix'];
 
@@ -464,7 +463,7 @@ function shuffle(array, rng) {
 }
 
 function offset(z) {
-  return [4*z + (z%2 ? 26 : 0), 5*z + (z%2 ? 28 : 0)];
+  return [4*z,5*z];
 }
 
 function cardOverlap(a,b) {
@@ -474,17 +473,31 @@ function cardOverlap(a,b) {
 function positions(config, counts) {
   const [, , , , cols, rows] = config;
   const cards = [];
+  let maxCols = cols, maxRows = rows;
   const layers = counts.map((count,z) => {
-    const [width,height] = WINDOWS[count];
+    // The tutorial's 13-card layer fits a four-column window without extending the base.
+    if (z === 1 && count === 13) maxCols = 4;
+    let width = maxCols, height = maxRows;
+    let best = Infinity;
+    for (let c = 1; c <= maxCols; c++) {
+      for (let r = 1; r <= maxRows; r++) {
+        if (c*r < count) continue;
+        const score = c*r-count + Math.abs(c/cols-r/rows)*count*.5;
+        if (score < best) { best = score; width = c; height = r; }
+      }
+    }
+    maxCols = width;
+    maxRows = height;
     const [ox,oy] = offset(z);
     const x0 = Math.max(0,Math.min(cols-width,Math.round((cols-width)/2-ox/DX)));
     const y0 = Math.max(0,Math.min(rows-height,Math.round((rows-height)/2-oy/DY)));
-    const cells = Array.from({length:width*height},(_,i) => ({c:i%width,r:Math.floor(i/width)}));
-    if (cells.length > count) {
-      // Trim opposite window corners, leaving the inner grid fully packed.
-      cells.pop();
-      cells.shift();
-    }
+    const cells = Array.from({length:width*height},(_,i) => ({
+      i, c:i%width, r:Math.floor(i/width)
+    }));
+    const distance = ({c,r}) => (2*c-width+1)**2 + (2*r-height+1)**2;
+    cells.sort((a,b) => distance(a)-distance(b) || (z%2 ? b.i-a.i : a.i-b.i));
+    cells.length = count;
+    cells.sort((a,b) => a.i-b.i);
     return cells.map(({c,r}) => {
       const col = x0+c, row = y0+r;
       const card = {id:cards.length,z,col,row,x:col*DX+ox,y:row*DY+oy,above:[],below:[]};
@@ -511,13 +524,16 @@ function positions(config, counts) {
       lower.above.push(card.id);
     }
   }
-  return {cards,layers,w:TILE_W,h:TILE_H,dx:DX,dy:DY,cols,rows,left,top};
+  const bounds = {minX:minX+left,minY:minY+top,width:maxX-minX,height:maxY-minY};
+  return {cards,layers,w:TILE_W,h:TILE_H,dx:DX,dy:DY,cols,rows,left,top,bounds};
 }
 
 function validLayout(layout, count) {
   if (!layout || layout.cards.length !== count) return false;
   const {cards,w,h,dx,dy,layers} = layout;
-  if (dx-w !== 2 || dy-h !== 2 || layers.some((layer,z)=>z && layer.length > layers[z-1].length)) return false;
+  const base = layers[0].length;
+  if (dx-w !== 2 || dy-h !== 2 || layers.length > 7 || layers.at(-1).length*5 < base*3 ||
+      layers.some((layer,z)=>layer.length*100 < base*55 || z && layer.length > layers[z-1].length)) return false;
   for (const card of cards) {
     if (card.x < 0 || card.y < 0 || card.x+w > BOARD_W || card.y+h > BOARD_H) return false;
     if (card.above.some(id => cards[id].z <= card.z || !cardOverlap(card,cards[id]))) return false;
@@ -665,9 +681,11 @@ function trials(layout, seed, total = 96) {
   }
   return {wins, total, rate:wins/total};
 }
-function generate(seed, level, resumeOldTutorial = false) {
-  const config = resumeOldTutorial ? [LEVELS[0][0],36,2,5,5,4] : LEVELS[level-1];
-  const counts = resumeOldTutorial ? [20,16] : LAYER_COUNTS[level-1];
+function generate(seed, level, savedTutorialSize) {
+  const config = savedTutorialSize === 36 ? [LEVELS[0][0],36,2,5,5,4] :
+    savedTutorialSize === 18 ? [LEVELS[0][0],18,2,3,4,3] : LEVELS[level-1];
+  const counts = savedTutorialSize === 36 ? [20,16] :
+    savedTutorialSize === 18 ? [11,7] : LAYER_COUNTS[level-1];
   const limit = level === 2 ? 200 : level === 1 ? 1 : 12;
   const target = level === 2 ? .2 : [.31,.23,.35,.19,.25,.32,.21,.17][level-3];
   let hardest;
@@ -1047,8 +1065,9 @@ function setGame(level, seed, resume=false) {
   const saved = resume && session?.level === level && session.seed === seed ? session.state : null;
   const untouched = saved && !saved.result && !saved.undo && !saved.tray.length && !saved.park.length &&
     saved.alive.every(Boolean) && ALL_TOOLS.every(tool => saved.uses[tool] === 1);
-  // A started 36-card tutorial keeps its tiles and tray while using two new layers.
-  const oldTutorial = level === 1 && saved?.alive.length === 36 && !untouched;
+  // Retain the tile count of an in-progress tutorial from either old layout.
+  const oldTutorial = level === 1 && !untouched && [18,36].includes(saved?.alive.length) ?
+    saved.alive.length : undefined;
   const layout = generate(seed,level,oldTutorial);
   const canResume = saved?.alive.length === layout.cards.length;
   let refill = '';
@@ -1077,11 +1096,13 @@ function setGame(level, seed, resume=false) {
   $('level-number').textContent = '第 '+String(level).padStart(2,'0')+' 关 / '+LEVELS.length;
   $('level-name').textContent = LEVELS[level-1][0];
   const fragment = document.createDocumentFragment();
+  const {bounds} = layout;
+  board.style.aspectRatio = bounds.width+' / '+bounds.height;
   cards = layout.cards.map(card => {
     const button = tile(session.state.types[card.id],true,card.id);
     button.classList.add('board-tile');
-    button.style.cssText = 'left:'+card.x/BOARD_W*100+'%;top:'+card.y/BOARD_H*100+
-      '%;width:'+layout.w/BOARD_W*100+'%;height:'+layout.h/BOARD_H*100+
+    button.style.cssText = 'left:'+(2+(card.x-bounds.minX)/bounds.width*96)+'%;top:'+
+      (2+(card.y-bounds.minY)/bounds.height*96)+'%;width:'+layout.w/bounds.width*96+'%;height:'+layout.h/bounds.height*96+
       '%;z-index:'+(card.z+1)+';--shadow:'+Math.min(6,2+card.z*.5)+'px;--glow-delay:'+(-card.id%6*.38)+
       's;--tile-edge:hsl(35 31% '+(51+card.z%4*3)+'%)';
     fragment.append(button);
@@ -1138,12 +1159,7 @@ function syncBoard(removed = null) {
     }
   }
   if (revealed) revealTile(revealed);
-  const first = layout.cards[layout.solution[0]];
-  guide.hidden = !(level === 1 && !profile.lesson && Rules.available(layout,state,first.id));
-  if (!guide.hidden) {
-    guide.style.left = (first.x+layout.w/2)/BOARD_W*100+'%';
-    guide.style.top = first.y/BOARD_H*100+'%';
-  }
+  if (level !== 1 || profile.lesson || state.result) guide.hidden = true;
 }
 function syncHud() {
   const {state} = gameSession;
@@ -1205,11 +1221,46 @@ function measure() {
   slotAnchors = slots.map(box);
   if (!$('park-wrap').hidden) parkAnchors = parkCells.map(box);
 }
+function positionGuide() {
+  const {layout,state,level} = gameSession;
+  guide.hidden = true;
+  if (level !== 1 || profile.lesson || state.result) return;
+  guide.hidden = false;
+  const gameArea = board.parentElement.getBoundingClientRect();
+  const w = guide.offsetWidth, h = guide.offsetHeight;
+  const visible = new Map(layout.cards.filter(card => state.alive[card.id]).map(card =>
+    [card.id,cards[card.id].getBoundingClientRect()]));
+  const occupied = [...visible.values(),$('level-name').getBoundingClientRect(),
+    $('level-number').getBoundingClientRect()];
+  const candidates = [layout.solution[0],...visible.keys()];
+  const clears = (x,y,width,height) => x >= 3 && y >= 3 &&
+    x+width <= document.documentElement.clientWidth-3 && y+height <= window.innerHeight &&
+    !occupied.some(rect => x < rect.right && x+width > rect.left && y < rect.bottom && y+height > rect.top);
+  for (const id of candidates) {
+    if (!Rules.available(layout,state,id)) continue;
+    const rect = visible.get(id);
+    const centerX = rect.left+rect.width/2, centerY = rect.top+rect.height/2;
+    const aboveX = Math.max(3,Math.min(document.documentElement.clientWidth-w-3,centerX-w/2));
+    const aboveY = rect.top-10-h;
+    const sideX = rect.left-10-w, sideY = centerY-h/2;
+    const above = clears(aboveX,aboveY,w,h+8);
+    if (!above && !clears(sideX,sideY,w+8,h)) continue;
+    guide.classList.toggle('guide-left',!above);
+    guide.style.left = (above ? aboveX : sideX)-gameArea.left+'px';
+    guide.style.top = (above ? aboveY : sideY)-gameArea.top+'px';
+    guide.style.setProperty('--guide-point',(centerX-aboveX)+'px');
+    guide.dataset.target = id;
+    return;
+  }
+  guide.hidden = true;
+}
 function updateSize() {
   if (scene !== 'game') return;
   const area = board.parentElement;
-  const width = Math.min(area.clientWidth,Math.floor(area.clientHeight*BOARD_W/BOARD_H));
+  const {width:packWidth,height:packHeight} = gameSession.layout.bounds;
+  const width = Math.min(area.clientWidth,area.clientHeight*packWidth/packHeight);
   if (width) board.style.width = width+'px';
+  positionGuide();
   measure();
 }
 window.addEventListener('resize',updateSize);
