@@ -175,6 +175,13 @@ p,h1,h2{margin:0}
 @media (max-height:650px){.app{padding-top:max(8px,env(safe-area-inset-top));padding-bottom:max(10px,env(safe-area-inset-bottom))}.topbar{margin-bottom:10px}.game{gap:8px}.hero{min-height:300px}.home{gap:15px}.hero-copy{padding-top:20px}.home-actions button{min-height:48px}.dock{padding-top:5px;padding-bottom:3px}.tool{min-height:40px}}
 @media (max-height:650px) and (max-width:340px){.in-game .topbar{margin-bottom:7px}.game{gap:5px}}
 @media (prefers-reduced-motion:reduce){.dock.warn,.board-tile:not(.covered)::after{animation:none}.board.fall{transition:none}}
+
+.tile[data-type="14"]{--face:#def2ed;--face-base:#c0e1dc}
+.tile[data-type="22"]{--face:#ece7fa;--face-base:#d8cdef}
+#level-feature{align-self:flex-start;max-width:51%;text-align:right;color:#536647;font-size:12px;font-weight:650;line-height:1.45}
+.tools.limited{grid-template-columns:repeat(3,minmax(0,1fr))}
+.dealing{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:#edf3d8e6;color:#35563d;font-weight:800}
+.dealing span{padding:14px 22px;border-radius:14px;background:#fffbed;box-shadow:0 4px 18px #48603d26}
 </style>
 </head>
 <body>
@@ -322,6 +329,13 @@ p,h1,h2{margin:0}
     <path d="M16 23q6-1 9 7m21-7q-5 1-7 7" fill="none" stroke="#f2cfdd" stroke-width="4" stroke-linecap="round"/>
     <path d="M32 44V29m0 1-6-9m6 9 6-10" fill="none" stroke="#68566a" stroke-width="2.5" stroke-linecap="round"/>
   </symbol>
+  <symbol id="tile-22" viewBox="0 0 64 64">
+    <path d="M11 52 47 12M24 55l29-34" fill="none" stroke="#584879" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="m11 52 4-8 3 3Zm13 3 3-8 4 2Z" fill="#cbd8db"/>
+    <circle cx="48" cy="11" r="5" fill="#8a77bb" stroke="#584879" stroke-width="2"/>
+    <circle cx="54" cy="20" r="4.5" fill="#b39cce" stroke="#584879" stroke-width="2"/>
+    <path d="M14 34q3-8 8-2t8 1q4-7 9-1t10-1" fill="none" stroke="#df876e" stroke-width="3.5" stroke-linecap="round"/>
+  </symbol>
   <symbol id="i-sound" viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3zM16 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/></symbol>
   <symbol id="i-mute" viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3zM16 10l5 5m0-5-5 5"/></symbol>
   <symbol id="i-undo" viewBox="0 0 24 24"><path d="M8 6 4 10l4 4m-4-4h10a6 6 0 0 1 .5 12" transform="translate(0 -2)"/></symbol>
@@ -421,7 +435,7 @@ p,h1,h2{margin:0}
   </section>
   <section id="game" class="game" hidden>
     <div class="level-head">
-      <div><div id="level-number" class="level-number"></div><h1 id="level-name"></h1></div>
+      <div><div id="level-number" class="level-number"></div><h1 id="level-name"></h1></div><p id="level-feature"></p>
     </div>
     <div class="game-area">
       <div class="board" id="board">
@@ -462,6 +476,7 @@ p,h1,h2{margin:0}
     </div>
   </section>
 </main>
+<div id="dealing" class="dealing" role="status" hidden><span>正在布置牌局…</span></div>
 <div class="fx" id="fx" aria-hidden="true"></div>
 <div class="veil" id="veil" hidden>
   <section class="dialog" id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title" tabindex="-1">
@@ -470,35 +485,30 @@ p,h1,h2{margin:0}
   </section>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
-<script>
-const LEVELS = [
-  ['初到牧场',33,2,3,5,4], ['雾藏羊群',108,6,14,6,4],
-  ['苜蓿坡',120,6,15,6,4], ['林间小径',132,6,16,6,4],
-  ['风铃谷',144,7,17,6,4], ['羊毛集市',156,7,18,5,5],
-  ['落日围栏',168,7,19,5,5], ['月光草甸',180,7,20,6,5],
-  ['山顶哨站',192,7,21,6,5], ['云端牧场',204,7,22,6,5]
-];
-const BOARD_W = 400;
-const BOARD_H = 364;
-const TILE_W = 52;
-const TILE_H = 57;
-const DX = TILE_W + 2;
-const DY = TILE_H + 2;
-const LAYOUT_VERSION = 5;
-const LAYER_COUNTS = [
-  [20,13],
-  [24,20,18,16,15,15],
-  [24,22,20,19,18,17],
-  [24,24,23,22,20,19],
-  [24,23,22,21,20,18,16],
-  [25,24,23,23,22,20,19],
-  [25,25,25,24,24,23,22],
-  [30,28,27,26,25,23,21],
-  [30,30,29,28,27,25,23],
-  [30,30,30,30,29,28,27]
-];
+<script id="rules-code">
 const CAPACITY = 7;
-const ALL_TOOLS = ['undo', 'move', 'mix'];
+const ALL_TOOLS = ['undo','move','mix'];
+const TWO_TOOLS = ['undo','move'];
+const ART_IDS = [...Array(15).keys(),22];
+function stage(name, counts, cols, rows, kinds, stagger, pressure, openGroups, cluster, target, attempts, tools, revive, feature) {
+  return {name,counts,cols,rows,kinds,stagger,pressure,openGroups,cluster,target,attempts,tools,revive,feature,
+    count:counts.reduce((a,b)=>a+b,0)};
+}
+const LEVELS = [
+  stage('初到牧场',[20,13],5,4,3,false,2,1,1,1,1,ALL_TOOLS,true,'正对叠放'),
+  stage('雾藏羊群',[24,20,18,16,15,15],6,4,14,false,5,4,.25,.15,200,ALL_TOOLS,true,'六层正对叠放，辨认十四种图案'),
+  stage('苜蓿坡',[24,22,20,19,18,17],6,4,14,true,5,4,.52,.10,60,ALL_TOOLS,true,'遮挡交错，一张牌最多压住四张'),
+  stage('林间小径',[24,21,20,18,17,16,16],6,4,14,true,5,4,.50,.07,60,ALL_TOOLS,true,'牌堆增至七层'),
+  stage('风铃谷',[24,23,22,21,20,18,16],6,4,15,true,5,4,.48,.05,60,ALL_TOOLS,true,'新增图案：水壶'),
+  stage('羊毛集市',[24,22,21,20,19,18,16,16],6,4,15,true,6,5,.44,.035,120,ALL_TOOLS,true,'八层牌堆，中段托盘压力提高'),
+  stage('落日围栏',[25,24,23,22,21,19,17,17],5,5,15,true,6,5,.42,.025,120,TWO_TOOLS,true,'道具减少，仅可撤销和移出三张'),
+  stage('月光草甸',[25,23,22,21,20,19,18,16,16],5,5,16,true,6,5,.40,.018,120,TWO_TOOLS,true,'新增图案：毛线针，牌堆增至九层'),
+  stage('山顶哨站',[25,24,23,22,22,21,20,18,17],5,5,16,true,6,5,.38,.012,200,TWO_TOOLS,false,'没有复活，托盘满格即结束'),
+  stage('云端牧场',[25,24,23,22,21,20,19,18,16,16],5,5,16,true,6,6,.36,.008,200,TWO_TOOLS,false,'十层终局，所有挑战同时生效')
+];
+const BOARD_W=400, BOARD_H=364, TILE_W=52, TILE_H=57;
+const DX=TILE_W+2, DY=TILE_H+2;
+const LAYOUT_VERSION=6;
 
 function randomFrom(key) {
   let state = 2166136261;
@@ -527,8 +537,8 @@ function cardOverlap(a,b) {
   return Math.max(0,TILE_W-Math.abs(a.x-b.x))*Math.max(0,TILE_H-Math.abs(a.y-b.y));
 }
 
-function positions(config, counts) {
-  const [, , , , cols, rows] = config;
+function positions(config, counts=config.counts) {
+  const {cols,rows} = config;
   const cards = [];
   let maxCols = cols, maxRows = rows;
   const layers = counts.map((count,z) => {
@@ -545,7 +555,7 @@ function positions(config, counts) {
     }
     maxCols = width;
     maxRows = height;
-    const [ox,oy] = offset(z,counts.length===2);
+    const [ox,oy] = config.stagger ? offset(z,config.legacyTutorial) : [0,0];
     const x0 = Math.max(0,Math.min(cols-width,Math.round((cols-width)/2-ox/DX)));
     const y0 = Math.max(0,Math.min(rows-height,Math.round((rows-height)/2-oy/DY)));
     const cells = Array.from({length:width*height},(_,i) => ({
@@ -589,7 +599,7 @@ function validLayout(layout, count) {
   if (!layout || layout.cards.length !== count) return false;
   const {cards,w,h,dx,dy,layers} = layout;
   const base = layers[0].length;
-  if (dx-w !== 2 || dy-h !== 2 || layers.length > 7 || layers.at(-1).length*5 < base*3 ||
+  if (dx-w !== 2 || dy-h !== 2 || layers.length > 10 || layers.at(-1).length*5 < base*3 ||
       layers.some((layer,z)=>layer.length*100 < base*55 || z && layer.length > layers[z-1].length)) return false;
   for (const card of cards) {
     if (card.x < 0 || card.y < 0 || card.x+w > BOARD_W || card.y+h > BOARD_H) return false;
@@ -602,19 +612,19 @@ function validLayout(layout, count) {
 // Choose the three-copy groups first. The harder routes keep several incomplete
 // groups in the tray while reserving just enough room to finish one of them.
 function groupRoute(config, level, rng) {
-  const [, count, , kinds] = config;
+  const {count,kinds,pressure,openGroups} = config;
   const groups = shuffle(Array.from({length:count/3}, (_,i) => ({
-    id:i, type:i%kinds, progress:0
+    id:i, type:ART_IDS[i%kinds], progress:0
   })), rng);
   if (level === 1) return groups.flatMap(group => [1,2,3].map(step => ({...group,step})));
   const open = [];
   // Deal an accessible run of triples before the nested, split groups.
-  const route = groups.splice(0,Math.floor(groups.length*.55))
+  const clusters = groups.splice(0,Math.floor(groups.length*config.cluster))
     .flatMap(group=>[1,2,3].map(step=>({...group,step,cluster:true})));
-  const pressure = [0,0,6,5,6,5,6,6,5,6,6][level];
+  const route = clusters.splice(0,3*Math.floor(clusters.length/9));
   let load = 0;
   while (groups.length || open.length) {
-    const fresh = groups.filter(group => !open.some(active => active.type === group.type));
+    const fresh = open.length >= openGroups ? [] : groups.filter(group => !open.some(active => active.type === group.type));
     const firsts = open.filter(group => group.progress === 1);
     const pairs = open.filter(group => group.progress === 2);
     let group;
@@ -636,7 +646,7 @@ function groupRoute(config, level, rng) {
     load += group.progress === 3 ? -2 : 1;
     if (group.progress === 3) open.splice(open.indexOf(group), 1);
   }
-  return route;
+  return route.concat(clusters);
 }
 function exposedPool(cards) {
   const counters = cards.map(card => card.above.length);
@@ -655,7 +665,7 @@ function labelPositions(layout, route, level, rng) {
   const {cards} = layout;
   const pool = exposedPool(cards);
   const startLayer = new Set(pool.exposed);
-  const topTypes = new Uint8Array(LEVELS.at(-1)[3]);
+  const topTypes = new Uint8Array(Math.max(...ART_IDS)+1);
   const revealedAt = new Int16Array(cards.length);
   const layers = new Map();
   const groupCells = new Map();
@@ -703,13 +713,14 @@ function verifyOptimal(layout) {
   }
   return state.result === 'won';
 }
-function trials(layout, seed, total = 96) {
+function* simulate(layout, seed, total) {
   const rng = randomFrom(seed + '|visible-policies');
   let wins = 0;
   for (let run = 0; run < total; run++) {
+    if (run%8===0) yield;
     const {cards} = layout;
     const pool = exposedPool(cards);
-    const holding = new Uint8Array(LEVELS.at(-1)[3]);
+    const holding = new Uint8Array(Math.max(...ART_IDS)+1);
     const faceUp = new Uint8Array(holding.length);
     const noise = [.12, .55, 1.1, 2.1][run%4];
     let load = 0;
@@ -742,53 +753,114 @@ function trials(layout, seed, total = 96) {
   }
   return {wins, total, rate:wins/total};
 }
-// Reference deals were measured with the same four visible-card strategies.
-// They bound generation time on phones when random deals miss a narrow band.
-const REFERENCE_ATTEMPTS = [
-  [], [11,16,164,181], [171,353,434,1383], [126,247,393,409], [22,35,113,186],
-  [17,94,125,138], [30,44,86,104], [23,32,94,110], [45,106,136,143], [1,4,13,16]
-];
-function generate(seed, level, savedTutorialSize) {
-  const config = savedTutorialSize === 36 ? [LEVELS[0][0],36,2,5,5,4] :
-    savedTutorialSize === 18 ? [LEVELS[0][0],18,2,3,4,3] : LEVELS[level-1];
-  const counts = savedTutorialSize === 36 ? [20,16] :
-    savedTutorialSize === 18 ? [11,7] : LAYER_COUNTS[level-1];
-  const limit = level === 1 ? 1 : 16;
-  const layout = positions(config,counts);
-  if (!validLayout(layout,config[1])) throw new Error('牌局布局无效');
-  for (let attempt = 0; attempt <= limit; attempt++) {
-    const fallback = attempt === limit;
-    const variants = REFERENCE_ATTEMPTS[level-1];
-    const variantRng = randomFrom(JSON.stringify([seed,level,'reference']));
-    const key = fallback ? JSON.stringify(['pasture-reference',level,variants[integer(variantRng,variants.length)]]) :
-      JSON.stringify([seed,level,attempt]);
-    const rng = randomFrom(key);
-    const route = groupRoute(config, level, rng);
-    layout.solution = labelPositions(layout, route, level, rng);
-    if (fallback) {
-      // A bijection changes the artwork while preserving all matching decisions.
-      const types = shuffle(Array.from({length:config[3]},(_,i)=>i),variantRng);
-      for (const card of layout.cards) card.type = types[card.type];
+function finish(iterator) {
+  let step;
+  do {step=iterator.next();} while (!step.done);
+  return step.value;
+}
+function trials(layout,seed,total=96) {return finish(simulate(layout,seed,total));}
+
+// A 96-run sample cannot separate 0.8% from 1.2%. Refine plausible
+// candidates with a fresh stream before accepting or ranking a deal.
+function* candidate(layout,config,level,key) {
+  const rng=randomFrom(key);
+  layout.solution=labelPositions(layout,groupRoute(config,level,rng),level,rng);
+  if (!verifyOptimal(layout)) throw new Error('构造解回放失败');
+  const coarse=yield* simulate(layout,key+'|coarse',32);
+  if (level===1) return {coarse,measured:yield* simulate(layout,key+'|fine',96),hit:coarse.rate===1};
+  const margin=Math.max(1.1/32,2*Math.sqrt(config.target*(1-config.target)/32));
+  if (Math.abs(coarse.rate-config.target)>margin) return {coarse};
+  const fine=yield* simulate(layout,key+'|fine',96);
+  if (fine.wins===0 || Math.abs(fine.rate-config.target)>Math.max(1/96,config.target*.36)) return {coarse,fine};
+  const measured=yield* simulate(layout,key+'|refine',1536);
+  const hit=Math.abs(measured.rate-config.target)<=Math.min(.022,config.target*.19);
+  return {coarse,fine,measured,hit};
+}
+const REFERENCE_KEYS = [[],[19,22,646,1201],[79,99,133,144],[15,21,26,53],[46,81,96,110],[80,277,479,521],[45,170,194,344],[15,93,146,265],[115,245,539,628],[371,419,1130,1734]];
+function* deals(seed,level) {
+  const config=LEVELS[level-1];
+  const layout=positions(config);
+  layout.level=level;
+  if (!validLayout(layout,config.count)) throw new Error('牌局布局无效');
+  let hardest, nearest, rough;
+  for (let attempt=1;attempt<=config.attempts;attempt++) {
+    const refs=REFERENCE_KEYS[level-1];
+    const reference=attempt===config.attempts && refs.length>0;
+    const variant=randomFrom(JSON.stringify([seed,level,'variant']));
+    const key=reference ? 'ref/'+level+'/'+refs[integer(variant,refs.length)] : JSON.stringify([seed,level,attempt]);
+    const result=yield* candidate(layout,config,level,key);
+    const evidence=result.measured || result.fine || result.coarse;
+    const snapshot=()=>({types:layout.cards.map(c=>c.type),solution:layout.solution,evidence});
+    if (result.hit) {
+      if (reference) {
+        const ids=ART_IDS.slice(0,config.kinds);
+        const swap=new Map(ids.map((id,i)=>[id,i]));
+        shuffle(ids,variant);
+        for (const c of layout.cards) c.type=ids[swap.get(c.type)];
+      }
+      if (!verifyOptimal(layout)) throw new Error('成局验证失败');
+      return Object.assign(layout,{attempts:attempt,difficulty:evidence,selection:reference?'reference':'generated'});
     }
-    if (!verifyOptimal(layout)) continue;
-    layout.attempts = attempt+1;
-    layout.difficulty = trials(layout, key, level === 1 ? 24 : 96);
-    if (level === 1) return layout;
-    const wins = layout.difficulty.wins;
-    if (level === 2 ? wins < 8 || wins > 14 : wins !== 10-level) continue;
-    // Check with a fresh random stream to reduce selection on sampling noise.
-    const confirm = trials(layout,key+'|confirmation',384);
-    if (level === 2 ? confirm.rate >= .08 && confirm.rate <= .15 :
-        Math.abs(confirm.rate*96-(10-level)) <= 1) return layout;
+    if (result.measured && (!nearest || Math.abs(evidence.rate-config.target)<Math.abs(nearest.evidence.rate-config.target))) nearest=snapshot();
+    if (result.fine && (!hardest || result.fine.rate<hardest.evidence.rate)) hardest={...snapshot(),evidence:result.fine};
+    if (!rough || result.coarse.rate<rough.evidence.rate) rough={...snapshot(),evidence:result.coarse};
+    yield;
   }
-  throw new Error('未能生成可通关的牌局');
+  const best=nearest || hardest || rough;
+  layout.solution=best.solution;
+  layout.cards.forEach((c,i)=>{c.type=best.types[i];});
+  if (!verifyOptimal(layout)) throw new Error('备用局验证失败');
+  return Object.assign(layout,{attempts:config.attempts,difficulty:best.evidence,selection:'fallback'});
+}
+function generate(seed,level) {
+  return finish(deals(seed,level));
+}
+
+// Build a completion from the actual tray and both off-board buffers. Assign
+// only live tile faces in removal order, then replay the proposed moves.
+function certifiedMix(layout,state,seed) {
+  const alive=layout.cards.filter(c=>state.alive[c.id]).map(c=>c.id);
+  if (new Set(alive.map(id=>state.types[id])).size<2) return null;
+  const rng=randomFrom(JSON.stringify([seed,alive,state.types,'certified mix']));
+  for (let attempt=0;attempt<4;attempt++) {
+    const board=shuffle([...alive],rng).sort((a,b)=>layout.cards[b].z-layout.cards[a].z);
+    const test={...state,alive:[...state.alive],types:[...state.types],tray:[...state.tray],
+      park:[...state.park],reserve:[...(state.reserve || [])]};
+    const counts=new Map();
+    for (const id of [...board,...test.park,...test.reserve,...test.tray]) {
+      const type=test.types[id];
+      counts.set(type,(counts.get(type)||0)+1);
+    }
+    const order=shuffle([...counts.keys()],rng);
+    let next=0;
+    while (counts.size && !test.result) {
+      const held=type=>test.tray.filter(id=>test.types[id]===type).length;
+      const type=order.filter(t=>counts.has(t)).sort((a,b)=>held(b)-held(a))[0];
+      const needed=3-held(type);
+      if (test.tray.length+needed>CAPACITY || counts.get(type)%3) break;
+      for (let i=0;i<needed;i++) {
+        let id=test.park.find(id=>test.types[id]===type), source='park';
+        if (id===undefined) {source='reserve'; id=test.reserve.find(id=>test.types[id]===type);}
+        if (id===undefined) {source='board'; id=board[next++]; test.types[id]=type;}
+        if (!Rules.place(layout,test,id,source)) throw new Error('洗牌路径校验失败');
+      }
+      const left=counts.get(type)-3;
+      if (left) counts.set(type,left); else counts.delete(type);
+    }
+    if (test.result==='won' && alive.some(id=>test.types[id]!==state.types[id])) {
+      state.types=test.types;
+      return alive;
+    }
+  }
+  return null;
 }
 
 const Rules = {
-  fresh({cards}) {
+  fresh({cards,level=1}) {
+    const config=LEVELS[level-1];
     return {
       alive:cards.map(() => true), types:cards.map(card => card.type),
-      tray:[], park:[], reserve:[], revived:false, uses:{undo:1, move:1, mix:1}, undo:null, result:null
+      tray:[], park:[], reserve:[], revived:false, canRevive:config.revive, uses:{undo:1, move:1, mix:Number(config.tools.includes('mix'))}, undo:null, result:null
     };
   },
   available(layout, state, id) {
@@ -798,7 +870,7 @@ const Rules = {
     return state.alive.reduce((n,alive) => n+Number(alive), 0) + state.tray.length + state.park.length + (state.reserve?.length || 0);
   },
   revive(state) {
-    if (state.result !== 'lost' || state.revived || state.tray.length !== CAPACITY) return false;
+    if (state.result !== 'lost' || state.canRevive===false || state.revived || state.tray.length !== CAPACITY) return false;
     state.reserve = state.tray.splice(0);
     state.revived = true;
     state.result = null;
@@ -849,17 +921,8 @@ const Rules = {
       affected = state.tray.splice(0,3);
       state.park = [...affected];
     } else if (tool === 'mix') {
-      const ids = state.alive.flatMap((alive,id) => alive ? [id] : []);
-      if (ids.length < 2) return null;
-      const types = ids.map(id => state.types[id]);
-      const mixed = shuffle([...types],randomFrom(JSON.stringify([seed,ids,types,'shuffle'])));
-      if (mixed.every((type,i) => type === types[i])) {
-        const other = types.findIndex(type => type !== types[0]);
-        if (other < 0) return null;
-        [mixed[0],mixed[other]] = [mixed[other],mixed[0]];
-      }
-      ids.forEach((id,i) => { state.types[id] = mixed[i]; });
-      affected = ids;
+      affected=certifiedMix(layout,state,seed);
+      if (!affected) return null;
     } else {
       return null;
     }
@@ -868,6 +931,8 @@ const Rules = {
   }
 };
 
+</script>
+<script>
 class PastureAudio {
   constructor(settings) {
     this.settings = settings;
@@ -1013,7 +1078,7 @@ class PastureAudio {
 }
 
 const $ = (id) => document.getElementById(id);
-const TILE_NAMES = ['绵羊','胡萝卜','铃铛','羊毛球','木桶','花朵','蜜罐','薰衣草','苹果','蜗牛','蘑菇','藤篮','风车','蜜蜂','水壶','草莓','雨靴','麦穗','蓝莓','铲子','南瓜','蝴蝶'];
+const TILE_NAMES = ['绵羊','胡萝卜','铃铛','羊毛球','木桶','花朵','蜜罐','薰衣草','苹果','蜗牛','蘑菇','藤篮','风车','蜜蜂','水壶','草莓','雨靴','麦穗','蓝莓','铲子','南瓜','蝴蝶','毛线针'];
 const TOOLS = {undo:'撤销', move:'移出三张', mix:'洗牌'};
 const byTool = Array.from(document.querySelectorAll('[data-tool]'));
 const board = $('board');
@@ -1143,7 +1208,50 @@ function showHome() {
   updateHome();
   queueSave();
 }
-function setGame(level, seed, resume=false) {
+// The embedded worker also runs from file:// without fetching a script.
+async function dealAsync(seed,level) {
+  if (level===1) return generate(seed,level);
+  let worker,url;
+  try {
+    const handler='onmessage=({data})=>postMessage(generate(data.seed,data.level))';
+    url=URL.createObjectURL(new Blob([$('rules-code').textContent,'\n',handler],{type:'text/javascript'}));
+    worker=new Worker(url);
+    return await new Promise((resolve,reject)=>{
+      worker.onmessage=e=>resolve(e.data);
+      worker.onerror=e=>{e.preventDefault();reject(new Error(e.message));};
+      worker.postMessage({seed,level});
+    });
+  } catch {
+    // Some embedded browsers disallow blob workers. Split the same seeded
+    // search into short slices, including the simulations within each attempt.
+    const iterator=deals(seed,level);
+    for (;;) {
+      await new Promise(requestAnimationFrame);
+      const end=performance.now()+8;
+      do {const step=iterator.next(); if (step.done) return step.value;} while (performance.now()<end);
+    }
+  } finally {
+    worker?.terminate();
+    if (url) URL.revokeObjectURL(url);
+  }
+}
+// Keep the physical board of a previously played game until the player restarts.
+function restorePreviousLayout(level,state) {
+  const countsByLevel=[[20,13],[24,20,18,16,15,15],[24,22,20,19,18,17],[24,24,23,22,20,19],
+    [24,23,22,21,20,18,16],[25,24,23,23,22,20,19],[25,25,25,24,24,23,22],
+    [30,28,27,26,25,23,21],[30,30,29,28,27,25,23],[30,30,30,30,29,28,27]];
+  const short=level===1 && state.alive.length===18;
+  const counts=short?[11,7]:level===1 && state.alive.length===36?[20,16]:countsByLevel[level-1];
+  const cols=short?4:level===1||level===6||level===7?5:6;
+  const rows=short?3:level<=5?4:5;
+  const layout=positions({counts,cols,rows,stagger:true,legacyTutorial:level===1});
+  layout.level=level;
+  layout.cards.forEach(c=>{c.type=state.types[c.id];});
+  layout.solution=layout.cards.map(c=>c.id).reverse();
+  return layout;
+}
+async function setGame(level, seed, resume=false) {
+  if (!$('dealing').hidden) return;
   level = Math.min(LEVELS.length,Math.max(1,Number(level) || 1));
   seed = cleanSeed(seed);
   closeModal(false);
@@ -1151,10 +1259,19 @@ function setGame(level, seed, resume=false) {
   const saved = resume && session?.level === level && session.seed === seed ? session.state : null;
   const untouched = saved && !saved.result && !saved.undo && !saved.tray.length && !saved.park.length &&
     saved.alive.every(Boolean) && ALL_TOOLS.every(tool => saved.uses[tool] === 1);
-  // Retain the tile count of an in-progress tutorial from either old layout.
-  const oldTutorial = level === 1 && !untouched && [18,36].includes(saved?.alive.length) ?
-    saved.alive.length : undefined;
-  const layout = generate(seed,level,oldTutorial);
+  const legacy=saved && !untouched && (session.legacyLayout || session.layoutVersion!==LAYOUT_VERSION);
+  $('dealing').hidden=false;
+  $('app').inert=true;
+  let layout;
+  try {
+    layout=legacy ? restorePreviousLayout(level,saved) : await dealAsync(seed,level);
+  } catch {
+    note('布置牌局失败，请重试');
+    return;
+  } finally {
+    $('dealing').hidden=true;
+    $('app').inert=false;
+  }
   const canResume = saved?.alive.length === layout.cards.length;
   let refill = '';
   if (!canResume) {
@@ -1169,8 +1286,11 @@ function setGame(level, seed, resume=false) {
     }
   } else if (session.layoutVersion !== LAYOUT_VERSION) {
     if (untouched) session.state = Rules.fresh(layout);
+    if (legacy) session.legacyLayout=true;
     session.layoutVersion = LAYOUT_VERSION;
   }
+  session.state.canRevive=LEVELS[level-1].revive;
+  if (!LEVELS[level-1].tools.includes('mix')) session.state.uses.mix=0;
   gameSession = {layout,...session};
   profile.current = session.state.result === 'won' ? Math.min(level+1,LEVELS.length) : level;
   syncLink(level,seed);
@@ -1180,7 +1300,8 @@ function setGame(level, seed, resume=false) {
   $('game').hidden = false;
   board.classList.toggle('fall',session.state.result === 'lost');
   $('level-number').textContent = '第 '+String(level).padStart(2,'0')+' 关 / '+LEVELS.length;
-  $('level-name').textContent = LEVELS[level-1][0];
+  $('level-name').textContent = LEVELS[level-1].name;
+  $('level-feature').textContent='本关新增 · '+LEVELS[level-1].feature;
   const fragment = document.createDocumentFragment();
   const {bounds} = layout;
   board.style.aspectRatio = bounds.width+' / '+bounds.height;
@@ -1255,8 +1376,10 @@ function syncHud() {
   $('reserve-btn').hidden = !stored;
   $('reserve-btn').textContent = '取回复活牌（'+stored+'）';
   $('dock-hint').hidden = !!stored;
+  byTool[0].parentElement.classList.toggle('limited',LEVELS[gameSession.level-1].tools.length===2);
   for (const btn of byTool) {
     const tool = btn.dataset.tool;
+    btn.hidden=!LEVELS[gameSession.level-1].tools.includes(tool);
     btn.querySelector('b').textContent = state.uses[tool];
     btn.disabled = !state.uses[tool] || !!state.result;
     const waiting = tool === 'undo' && !state.undo || tool === 'move' && (state.park.length || state.tray.length < 3);
@@ -1323,7 +1446,7 @@ function positionGuide() {
   const visible = new Map(layout.cards.filter(card => state.alive[card.id]).map(card =>
     [card.id,cards[card.id].getBoundingClientRect()]));
   const occupied = [...visible.values(),$('level-name').getBoundingClientRect(),
-    $('level-number').getBoundingClientRect()];
+    $('level-number').getBoundingClientRect(),$('level-feature').getBoundingClientRect()];
   const candidates = [layout.solution[0],...visible.keys()];
   const clears = (x,y,width,height) => x >= 3 && y >= 3 &&
     x+width <= document.documentElement.clientWidth-3 && y+height <= window.innerHeight &&
@@ -1427,7 +1550,7 @@ function useTool(tool) {
   if (!affected) {
     audio.play('blocked');
     note(tool === 'undo' ? '先选一张牌，再使用撤销' :
-      tool === 'move' ? '托盘至少有 3 张牌，且暂存区为空时可用' : '棋盘需要至少两种图案');
+      tool === 'move' ? '托盘至少有 3 张牌，且暂存区为空时可用' : '当前余牌无法安全洗牌，次数已保留');
     return;
   }
   const now = performance.now();
@@ -1671,7 +1794,7 @@ function toolbarAction(id,text,primary=false) {
   return '<button type="button" id="'+id+'" class="'+(primary ? 'primary' : 'secondary')+'">'+text+'</button>';
 }
 function openLevels() {
-  const html = LEVELS.map(([name],i) => '<button class="level-option" data-level="'+(i+1)+'" type="button"><b>'+
+  const html = LEVELS.map(({name},i) => '<button class="level-option" data-level="'+(i+1)+'" type="button"><b>'+
     String(i+1).padStart(2,'0')+'</b><span>'+name+'</span>'+(profile.cleared.includes(i+1) ? svg('check') : '')+'</button>').join('');
   openModal('levels','<h2 id="dialog-title">关卡选择</h2><div class="level-grid">'+html+
     '</div><label class="seed-field">牌局种子<input id="seed-input" type="text" maxlength="96" autocomplete="off" autocapitalize="off" spellcheck="false"></label>');
@@ -1723,7 +1846,7 @@ function openOutcome(result) {
   const won = result === 'won';
   const last = level === LEVELS.length;
   const title = won ? (last ? '牧场全通关！' : '通关啦！') : '托盘满了';
-  const detail = won ? '第 '+level+' 关 · '+LEVELS[level-1][0]+'<br><span class="reward">下一局道具各补给 1 次</span>' :
+  const detail = won ? '第 '+level+' 关 · '+LEVELS[level-1].name+'<br><span class="reward">下一局道具各补给 1 次</span>' :
     '差 <strong>'+Rules.remaining(state)+'</strong> 张就清空了';
   openModal('outcome','<div class="outcome"><div class="outcome-mark">'+art(won ? 2 : 0)+'</div>'+
     '<h2 id="dialog-title">'+title+'</h2><p>'+detail+'</p></div><div class="dialog-actions">'+
@@ -1734,7 +1857,7 @@ function openOutcome(result) {
     else setGame(won ? level+1 : level,seed);
   });
   $('outcome-other').addEventListener('click',() => won ? openShare(true) : showHome());
-  if (!won && !state.revived) {
+  if (!won && state.canRevive && !state.revived) {
     const revive = document.createElement('button');
     revive.id = 'revive-btn';
     revive.className = 'primary revive-action';
