@@ -1,0 +1,734 @@
+{
+  "id": "jp",
+  "name": "日本城市之旅",
+  "description": "沿海岸与山麓换乘地方线，在温泉街、庭园和灯火港口之间经营。",
+  "color": "#845563",
+  "landmarks": [
+    "仓敷",
+    "新潟",
+    "东京"
+  ],
+  "difficulty": "普通",
+  "art": "/packages/maps/art/jp-board.webp",
+  "icon": "/packages/maps/art/jp-icon.svg",
+  "duration": "约 25–60 分钟",
+  "players": "2–4 人",
+  "theme": "海峡与山影",
+  "music": [
+    64,
+    65,
+    69,
+    71,
+    72,
+    71,
+    65,
+    64
+  ],
+  "groups": {
+    "g1": {
+      "name": "第1色组",
+      "color": "#5c9d91",
+      "pattern": "circle"
+    },
+    "g2": {
+      "name": "第2色组",
+      "color": "#bd8466",
+      "pattern": "stripe"
+    },
+    "g3": {
+      "name": "第3色组",
+      "color": "#9581ac",
+      "pattern": "triangle"
+    },
+    "g4": {
+      "name": "第4色组",
+      "color": "#5885a4",
+      "pattern": "wave"
+    },
+    "g5": {
+      "name": "第5色组",
+      "color": "#d7b35b",
+      "pattern": "diamond"
+    },
+    "g6": {
+      "name": "第6色组",
+      "color": "#bd7075",
+      "pattern": "cross"
+    },
+    "g7": {
+      "name": "第7色组",
+      "color": "#679462",
+      "pattern": "leaf"
+    },
+    "g8": {
+      "name": "第8色组",
+      "color": "#84715e",
+      "pattern": "grid"
+    }
+  },
+  "tiles": [
+    {
+      "id": "jp-00",
+      "index": 0,
+      "type": "start",
+      "name": "启程广场"
+    },
+    {
+      "id": "jp-01",
+      "index": 1,
+      "type": "land",
+      "name": "松江",
+      "group": "g1",
+      "price": 70,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 8,
+      "oneHouseRent": 24,
+      "twoHouseRent": 48,
+      "hotelRent": 80
+    },
+    {
+      "id": "jp-02",
+      "index": 2,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "jp-03",
+      "index": 3,
+      "type": "land",
+      "name": "仓敷",
+      "group": "g1",
+      "price": 80,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 10,
+      "oneHouseRent": 30,
+      "twoHouseRent": 60,
+      "hotelRent": 100
+    },
+    {
+      "id": "jp-04",
+      "index": 4,
+      "type": "tax",
+      "name": "所得税",
+      "amount": 200
+    },
+    {
+      "id": "jp-05",
+      "index": 5,
+      "type": "rail",
+      "name": "海峡渡口",
+      "price": 200
+    },
+    {
+      "id": "jp-06",
+      "index": 6,
+      "type": "land",
+      "name": "高松",
+      "group": "g2",
+      "price": 110,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 13,
+      "oneHouseRent": 39,
+      "twoHouseRent": 78,
+      "hotelRent": 130
+    },
+    {
+      "id": "jp-07",
+      "index": 7,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "jp-08",
+      "index": 8,
+      "type": "land",
+      "name": "函馆",
+      "group": "g2",
+      "price": 120,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 15,
+      "oneHouseRent": 45,
+      "twoHouseRent": 90,
+      "hotelRent": 150
+    },
+    {
+      "id": "jp-09",
+      "index": 9,
+      "type": "land",
+      "name": "盛冈",
+      "group": "g3",
+      "price": 150,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "jp-10",
+      "index": 10,
+      "type": "jail",
+      "name": "监狱探访"
+    },
+    {
+      "id": "jp-11",
+      "index": 11,
+      "type": "land",
+      "name": "长崎",
+      "group": "g3",
+      "price": 160,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 20,
+      "oneHouseRent": 60,
+      "twoHouseRent": 120,
+      "hotelRent": 200
+    },
+    {
+      "id": "jp-12",
+      "index": 12,
+      "type": "utility",
+      "name": "山泉水务",
+      "price": 150
+    },
+    {
+      "id": "jp-13",
+      "index": 13,
+      "type": "land",
+      "name": "松本",
+      "group": "g3",
+      "price": 150,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "jp-14",
+      "index": 14,
+      "type": "land",
+      "name": "金泽",
+      "group": "g4",
+      "price": 200,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "jp-15",
+      "index": 15,
+      "type": "rail",
+      "name": "雪国车站",
+      "price": 200
+    },
+    {
+      "id": "jp-16",
+      "index": 16,
+      "type": "land",
+      "name": "熊本",
+      "group": "g4",
+      "price": 190,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 23,
+      "oneHouseRent": 69,
+      "twoHouseRent": 138,
+      "hotelRent": 230
+    },
+    {
+      "id": "jp-17",
+      "index": 17,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "jp-18",
+      "index": 18,
+      "type": "land",
+      "name": "奈良",
+      "group": "g4",
+      "price": 200,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "jp-19",
+      "index": 19,
+      "type": "land",
+      "name": "冈山",
+      "group": "g5",
+      "price": 230,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "jp-20",
+      "index": 20,
+      "type": "park",
+      "name": "免费停车场"
+    },
+    {
+      "id": "jp-21",
+      "index": 21,
+      "type": "land",
+      "name": "长野",
+      "group": "g5",
+      "price": 240,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 30,
+      "oneHouseRent": 90,
+      "twoHouseRent": 180,
+      "hotelRent": 300
+    },
+    {
+      "id": "jp-22",
+      "index": 22,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "jp-23",
+      "index": 23,
+      "type": "land",
+      "name": "广岛",
+      "group": "g5",
+      "price": 230,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "jp-24",
+      "index": 24,
+      "type": "land",
+      "name": "新潟",
+      "group": "g6",
+      "price": 280,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "jp-25",
+      "index": 25,
+      "type": "rail",
+      "name": "山腰缆车",
+      "price": 200
+    },
+    {
+      "id": "jp-26",
+      "index": 26,
+      "type": "land",
+      "name": "仙台",
+      "group": "g6",
+      "price": 270,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 33,
+      "oneHouseRent": 99,
+      "twoHouseRent": 198,
+      "hotelRent": 330
+    },
+    {
+      "id": "jp-27",
+      "index": 27,
+      "type": "land",
+      "name": "神户",
+      "group": "g6",
+      "price": 280,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "jp-28",
+      "index": 28,
+      "type": "utility",
+      "name": "岬角风场",
+      "price": 150
+    },
+    {
+      "id": "jp-29",
+      "index": 29,
+      "type": "land",
+      "name": "札幌",
+      "group": "g7",
+      "price": 310,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "jp-30",
+      "index": 30,
+      "type": "goJail",
+      "name": "前往监狱"
+    },
+    {
+      "id": "jp-31",
+      "index": 31,
+      "type": "land",
+      "name": "福冈",
+      "group": "g7",
+      "price": 320,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 40,
+      "oneHouseRent": 120,
+      "twoHouseRent": 240,
+      "hotelRent": 400
+    },
+    {
+      "id": "jp-32",
+      "index": 32,
+      "type": "land",
+      "name": "名古屋",
+      "group": "g7",
+      "price": 310,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "jp-33",
+      "index": 33,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "jp-34",
+      "index": 34,
+      "type": "land",
+      "name": "京都",
+      "group": "g8",
+      "price": 360,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    },
+    {
+      "id": "jp-35",
+      "index": 35,
+      "type": "rail",
+      "name": "内海港口",
+      "price": 200
+    },
+    {
+      "id": "jp-36",
+      "index": 36,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "jp-37",
+      "index": 37,
+      "type": "land",
+      "name": "大阪",
+      "group": "g8",
+      "price": 350,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 43,
+      "oneHouseRent": 129,
+      "twoHouseRent": 258,
+      "hotelRent": 430
+    },
+    {
+      "id": "jp-38",
+      "index": 38,
+      "type": "tax",
+      "name": "奢侈税",
+      "amount": 100
+    },
+    {
+      "id": "jp-39",
+      "index": 39,
+      "type": "land",
+      "name": "东京",
+      "group": "g8",
+      "price": 360,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    }
+  ],
+  "cards": {
+    "chance": [
+      {
+        "id": "jp-card-00",
+        "name": "风铃新釉",
+        "effect": "cash",
+        "amount": 85,
+        "text": "港町的陶器小店结清寄售款。活动结余，收到 85。"
+      },
+      {
+        "id": "jp-card-01",
+        "name": "和纸印本",
+        "effect": "pay",
+        "amount": 50,
+        "text": "雨后的石阶需要增设扶手。支付本期费用 50。"
+      },
+      {
+        "id": "jp-card-02",
+        "name": "樱堤漫步",
+        "effect": "steps",
+        "amount": 3,
+        "salary": true,
+        "text": "搭上沿海慢车，正好赶上接驳。沿路线前进 3 格。"
+      },
+      {
+        "id": "jp-card-03",
+        "name": "漆器寄展",
+        "effect": "goto",
+        "target": 0,
+        "salary": true,
+        "text": "一封纸札交代了下一站行程。沿路线前往启程广场。"
+      },
+      {
+        "id": "jp-card-04",
+        "name": "港町灯祭",
+        "effect": "rail",
+        "salary": true,
+        "text": "潮汐表上标出了下一班渡船。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "jp-card-05",
+        "name": "山巅茶席",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 54,
+        "text": "海风侵蚀了木屋外立面。建筑检修，每栋房支付 18，每间旅馆支付 54。"
+      },
+      {
+        "id": "jp-card-06",
+        "name": "内海渡船",
+        "effect": "steps",
+        "amount": -3,
+        "salary": false,
+        "text": "「内海渡船」沿来路后退 3 格，不领取途经起点奖励。"
+      },
+      {
+        "id": "jp-card-07",
+        "name": "灯笼检修",
+        "effect": "pass",
+        "text": "「灯笼检修」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "jp-card-08",
+        "name": "雪道清理",
+        "effect": "collectEach",
+        "amount": 18,
+        "text": "「雪道清理」同行预订你的服务，向其他每名在局玩家收取 18。"
+      },
+      {
+        "id": "jp-card-09",
+        "name": "竹林工事",
+        "effect": "payEach",
+        "amount": 20,
+        "text": "「竹林工事」与同行分摊费用，向其他每名在局玩家支付 20。"
+      },
+      {
+        "id": "jp-card-10",
+        "name": "山泉品鉴",
+        "effect": "utility",
+        "salary": true,
+        "text": "「山泉品鉴」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "jp-card-11",
+        "name": "织物花样",
+        "effect": "jail",
+        "text": "「织物花样」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "jp-district-0",
+        "name": "小巷袖珍书屋",
+        "text": "社团要把一间小铺改成交换袖珍画册的书屋。 原地交稿领 26；或付 18 前往金泽现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 14,
+        "fee": 18,
+        "reward": 26
+      },
+      {
+        "id": "jp-district-1",
+        "name": "纸胶带市集",
+        "text": "你设计的街景纸胶带在周末集市售罄。 收入 35。",
+        "effect": "cash",
+        "amount": 35
+      },
+      {
+        "id": "jp-district-2",
+        "name": "站台找谱架",
+        "text": "活动用谱架已送到前方站点。 前往最近的交通地产，经过起点可领 200。",
+        "effect": "rail",
+        "salary": true
+      },
+      {
+        "id": "jp-district-3",
+        "name": "木格栅养护",
+        "text": "木匠正为街屋门面的格栅重新上油。 每栋房缴 18，每间旅馆缴 65。",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 65
+      }
+    ],
+    "fate": [
+      {
+        "id": "jp-card-12",
+        "name": "玻璃浮球",
+        "effect": "cash",
+        "amount": 100,
+        "text": "港町的陶器小店结清寄售款。活动结余，收到 100。"
+      },
+      {
+        "id": "jp-card-13",
+        "name": "和伞彩绘",
+        "effect": "pay",
+        "amount": 65,
+        "text": "雨后的石阶需要增设扶手。支付本期费用 65。"
+      },
+      {
+        "id": "jp-card-14",
+        "name": "海苔采收",
+        "effect": "goto",
+        "target": 24,
+        "salary": true,
+        "text": "一封纸札交代了下一站行程。沿路线前往新潟。"
+      },
+      {
+        "id": "jp-card-15",
+        "name": "风向观测",
+        "effect": "rail",
+        "salary": true,
+        "text": "潮汐表上标出了下一班渡船。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "jp-card-16",
+        "name": "坂道导览",
+        "effect": "repair",
+        "amount": 20,
+        "hotelAmount": 60,
+        "text": "海风侵蚀了木屋外立面。建筑检修，每栋房支付 20，每间旅馆支付 60。"
+      },
+      {
+        "id": "jp-card-17",
+        "name": "小巷摄影",
+        "effect": "cash",
+        "amount": 45,
+        "text": "港町的陶器小店结清寄售款。活动结余，收到 45。"
+      },
+      {
+        "id": "jp-card-18",
+        "name": "山屋邮册",
+        "effect": "steps",
+        "amount": 2,
+        "salary": true,
+        "text": "搭上沿海慢车，正好赶上接驳。沿路线前进 2 格。"
+      },
+      {
+        "id": "jp-card-19",
+        "name": "陶轮修整",
+        "effect": "collectEach",
+        "amount": 15,
+        "text": "「陶轮修整」同行预订你的服务，向其他每名在局玩家收取 15。"
+      },
+      {
+        "id": "jp-card-20",
+        "name": "花园听雨",
+        "effect": "payEach",
+        "amount": 15,
+        "text": "「花园听雨」与同行分摊费用，向其他每名在局玩家支付 15。"
+      },
+      {
+        "id": "jp-card-21",
+        "name": "车站便当",
+        "effect": "pass",
+        "text": "「车站便当」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "jp-card-22",
+        "name": "露天棋会",
+        "effect": "utility",
+        "salary": true,
+        "text": "「露天棋会」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "jp-card-23",
+        "name": "渔港晨市",
+        "effect": "jail",
+        "text": "「渔港晨市」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "jp-district-4",
+        "name": "屋顶放学音乐会",
+        "text": "学生乐团想来勘察可以布置小舞台的街屋。 原地交稿领 26；或付 18 前往神户现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 27,
+        "fee": 18,
+        "reward": 26
+      },
+      {
+        "id": "jp-district-5",
+        "name": "巷口灯笼",
+        "text": "旧灯笼已经褪色，需要换一套灯面。 支付 40。",
+        "effect": "pay",
+        "amount": 40
+      },
+      {
+        "id": "jp-district-6",
+        "name": "瓦檐巡修",
+        "text": "你为名下物业预约了逐栋瓦檐巡修。 每栋房缴 30，每间旅馆缴 105。",
+        "effect": "repair",
+        "amount": 30,
+        "hotelAmount": 105
+      },
+      {
+        "id": "jp-district-7",
+        "name": "合制游逛手册",
+        "text": "附近商家一起制作了市集手册。 向其他每位在局玩家支付 12。",
+        "effect": "payEach",
+        "amount": 12
+      }
+    ]
+  }
+}

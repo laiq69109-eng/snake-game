@@ -1,0 +1,734 @@
+{
+  "id": "world",
+  "name": "世界环游",
+  "description": "带着一册空白护照，串起六大洲的市集、山脊与海湾。",
+  "color": "#254d76",
+  "landmarks": [
+    "基多",
+    "温哥华",
+    "纽约"
+  ],
+  "difficulty": "进阶",
+  "art": "/packages/maps/art/world-board.webp",
+  "icon": "/packages/maps/art/world-icon.svg",
+  "duration": "约 25–60 分钟",
+  "players": "2–4 人",
+  "theme": "经纬航线",
+  "music": [
+    60,
+    67,
+    72,
+    71,
+    67,
+    64,
+    62,
+    67
+  ],
+  "groups": {
+    "g1": {
+      "name": "第1色组",
+      "color": "#5c9d91",
+      "pattern": "circle"
+    },
+    "g2": {
+      "name": "第2色组",
+      "color": "#bd8466",
+      "pattern": "stripe"
+    },
+    "g3": {
+      "name": "第3色组",
+      "color": "#9581ac",
+      "pattern": "triangle"
+    },
+    "g4": {
+      "name": "第4色组",
+      "color": "#5885a4",
+      "pattern": "wave"
+    },
+    "g5": {
+      "name": "第5色组",
+      "color": "#d7b35b",
+      "pattern": "diamond"
+    },
+    "g6": {
+      "name": "第6色组",
+      "color": "#bd7075",
+      "pattern": "cross"
+    },
+    "g7": {
+      "name": "第7色组",
+      "color": "#679462",
+      "pattern": "leaf"
+    },
+    "g8": {
+      "name": "第8色组",
+      "color": "#84715e",
+      "pattern": "grid"
+    }
+  },
+  "tiles": [
+    {
+      "id": "world-00",
+      "index": 0,
+      "type": "start",
+      "name": "启程广场"
+    },
+    {
+      "id": "world-01",
+      "index": 1,
+      "type": "land",
+      "name": "达喀尔",
+      "group": "g1",
+      "price": 75,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 8,
+      "oneHouseRent": 24,
+      "twoHouseRent": 48,
+      "hotelRent": 80
+    },
+    {
+      "id": "world-02",
+      "index": 2,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "world-03",
+      "index": 3,
+      "type": "land",
+      "name": "基多",
+      "group": "g1",
+      "price": 85,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 10,
+      "oneHouseRent": 30,
+      "twoHouseRent": 60,
+      "hotelRent": 100
+    },
+    {
+      "id": "world-04",
+      "index": 4,
+      "type": "tax",
+      "name": "所得税",
+      "amount": 200
+    },
+    {
+      "id": "world-05",
+      "index": 5,
+      "type": "rail",
+      "name": "赤道渡站",
+      "price": 200
+    },
+    {
+      "id": "world-06",
+      "index": 6,
+      "type": "land",
+      "name": "内罗毕",
+      "group": "g2",
+      "price": 115,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 13,
+      "oneHouseRent": 39,
+      "twoHouseRent": 78,
+      "hotelRent": 130
+    },
+    {
+      "id": "world-07",
+      "index": 7,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "world-08",
+      "index": 8,
+      "type": "land",
+      "name": "波哥大",
+      "group": "g2",
+      "price": 125,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 15,
+      "oneHouseRent": 45,
+      "twoHouseRent": 90,
+      "hotelRent": 150
+    },
+    {
+      "id": "world-09",
+      "index": 9,
+      "type": "land",
+      "name": "开普敦",
+      "group": "g3",
+      "price": 155,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "world-10",
+      "index": 10,
+      "type": "jail",
+      "name": "监狱探访"
+    },
+    {
+      "id": "world-11",
+      "index": 11,
+      "type": "land",
+      "name": "利马",
+      "group": "g3",
+      "price": 165,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 20,
+      "oneHouseRent": 60,
+      "twoHouseRent": 120,
+      "hotelRent": 200
+    },
+    {
+      "id": "world-12",
+      "index": 12,
+      "type": "utility",
+      "name": "海湾水务",
+      "price": 150
+    },
+    {
+      "id": "world-13",
+      "index": 13,
+      "type": "land",
+      "name": "开罗",
+      "group": "g3",
+      "price": 155,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "world-14",
+      "index": 14,
+      "type": "land",
+      "name": "雅典",
+      "group": "g4",
+      "price": 205,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "world-15",
+      "index": 15,
+      "type": "rail",
+      "name": "大西洋港",
+      "price": 200
+    },
+    {
+      "id": "world-16",
+      "index": 16,
+      "type": "land",
+      "name": "布拉格",
+      "group": "g4",
+      "price": 195,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 23,
+      "oneHouseRent": 69,
+      "twoHouseRent": 138,
+      "hotelRent": 230
+    },
+    {
+      "id": "world-17",
+      "index": 17,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "world-18",
+      "index": 18,
+      "type": "land",
+      "name": "里斯本",
+      "group": "g4",
+      "price": 205,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "world-19",
+      "index": 19,
+      "type": "land",
+      "name": "墨西哥城",
+      "group": "g5",
+      "price": 235,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "world-20",
+      "index": 20,
+      "type": "park",
+      "name": "免费停车场"
+    },
+    {
+      "id": "world-21",
+      "index": 21,
+      "type": "land",
+      "name": "旧金山",
+      "group": "g5",
+      "price": 245,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 30,
+      "oneHouseRent": 90,
+      "twoHouseRent": 180,
+      "hotelRent": 300
+    },
+    {
+      "id": "world-22",
+      "index": 22,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "world-23",
+      "index": 23,
+      "type": "land",
+      "name": "布宜诺斯艾利斯",
+      "group": "g5",
+      "price": 235,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "world-24",
+      "index": 24,
+      "type": "land",
+      "name": "温哥华",
+      "group": "g6",
+      "price": 285,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "world-25",
+      "index": 25,
+      "type": "rail",
+      "name": "南纬空港",
+      "price": 200
+    },
+    {
+      "id": "world-26",
+      "index": 26,
+      "type": "land",
+      "name": "东京",
+      "group": "g6",
+      "price": 275,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 33,
+      "oneHouseRent": 99,
+      "twoHouseRent": 198,
+      "hotelRent": 330
+    },
+    {
+      "id": "world-27",
+      "index": 27,
+      "type": "land",
+      "name": "悉尼",
+      "group": "g6",
+      "price": 285,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "world-28",
+      "index": 28,
+      "type": "utility",
+      "name": "高原风场",
+      "price": 150
+    },
+    {
+      "id": "world-29",
+      "index": 29,
+      "type": "land",
+      "name": "首尔",
+      "group": "g7",
+      "price": 315,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "world-30",
+      "index": 30,
+      "type": "goJail",
+      "name": "前往监狱"
+    },
+    {
+      "id": "world-31",
+      "index": 31,
+      "type": "land",
+      "name": "墨尔本",
+      "group": "g7",
+      "price": 325,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 40,
+      "oneHouseRent": 120,
+      "twoHouseRent": 240,
+      "hotelRent": 400
+    },
+    {
+      "id": "world-32",
+      "index": 32,
+      "type": "land",
+      "name": "新加坡",
+      "group": "g7",
+      "price": 315,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "world-33",
+      "index": 33,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "world-34",
+      "index": 34,
+      "type": "land",
+      "name": "巴黎",
+      "group": "g8",
+      "price": 365,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    },
+    {
+      "id": "world-35",
+      "index": 35,
+      "type": "rail",
+      "name": "环球总站",
+      "price": 200
+    },
+    {
+      "id": "world-36",
+      "index": 36,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "world-37",
+      "index": 37,
+      "type": "land",
+      "name": "伦敦",
+      "group": "g8",
+      "price": 355,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 43,
+      "oneHouseRent": 129,
+      "twoHouseRent": 258,
+      "hotelRent": 430
+    },
+    {
+      "id": "world-38",
+      "index": 38,
+      "type": "tax",
+      "name": "奢侈税",
+      "amount": 100
+    },
+    {
+      "id": "world-39",
+      "index": 39,
+      "type": "land",
+      "name": "纽约",
+      "group": "g8",
+      "price": 365,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    }
+  ],
+  "cards": {
+    "chance": [
+      {
+        "id": "world-card-00",
+        "name": "海图首印",
+        "effect": "cash",
+        "amount": 85,
+        "text": "旅行手记的海外版支付了版税。活动结余，收到 85。"
+      },
+      {
+        "id": "world-card-01",
+        "name": "雨林邮袋",
+        "effect": "pay",
+        "amount": 50,
+        "text": "远洋货柜产生额外装卸费。支付本期费用 50。"
+      },
+      {
+        "id": "world-card-02",
+        "name": "跨洋展览",
+        "effect": "steps",
+        "amount": 3,
+        "salary": true,
+        "text": "一张联程票接上了下一段旅途。沿路线前进 3 格。"
+      },
+      {
+        "id": "world-card-03",
+        "name": "山城集市",
+        "effect": "goto",
+        "target": 0,
+        "salary": true,
+        "text": "领队寄来了新一程的集合地点。沿路线前往启程广场。"
+      },
+      {
+        "id": "world-card-04",
+        "name": "珊瑚调查",
+        "effect": "rail",
+        "salary": true,
+        "text": "环线客船为你预留了席位。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "world-card-05",
+        "name": "群岛补给",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 54,
+        "text": "雨季前的例行检修已经开始。建筑检修，每栋房支付 18，每间旅馆支付 54。"
+      },
+      {
+        "id": "world-card-06",
+        "name": "海岸测绘",
+        "effect": "steps",
+        "amount": -3,
+        "salary": false,
+        "text": "「海岸测绘」沿来路后退 3 格，不领取途经起点奖励。"
+      },
+      {
+        "id": "world-card-07",
+        "name": "高原访问",
+        "effect": "pass",
+        "text": "「高原访问」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "world-card-08",
+        "name": "极光观测",
+        "effect": "collectEach",
+        "amount": 18,
+        "text": "「极光观测」同行预订你的服务，向其他每名在局玩家收取 18。"
+      },
+      {
+        "id": "world-card-09",
+        "name": "岛屿船期",
+        "effect": "payEach",
+        "amount": 20,
+        "text": "「岛屿船期」与同行分摊费用，向其他每名在局玩家支付 20。"
+      },
+      {
+        "id": "world-card-10",
+        "name": "沙漠影集",
+        "effect": "utility",
+        "salary": true,
+        "text": "「沙漠影集」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "world-card-11",
+        "name": "镜头租借",
+        "effect": "jail",
+        "text": "「镜头租借」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "world-district-0",
+        "name": "漂流书交换架",
+        "text": "码头书店想把不同语言的旧书放进同一面交换墙。 原地交稿领 21；或付 13 前往开罗现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 13,
+        "fee": 13,
+        "reward": 21
+      },
+      {
+        "id": "world-district-1",
+        "name": "航线邮戳册",
+        "text": "旅人买走了你设计的港口邮戳册。 收入 35。",
+        "effect": "cash",
+        "amount": 35
+      },
+      {
+        "id": "world-district-2",
+        "name": "转运行李车",
+        "text": "几箱展品正停在前方枢纽。 前往最近的交通地产，经过起点可领 200。",
+        "effect": "rail",
+        "salary": true
+      },
+      {
+        "id": "world-district-3",
+        "name": "海风补漆",
+        "text": "海风吹旧了外墙，物业要补一层防护漆。 每栋房缴 18，每间旅馆缴 65。",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 65
+      }
+    ],
+    "fate": [
+      {
+        "id": "world-card-12",
+        "name": "雨季护航",
+        "effect": "cash",
+        "amount": 100,
+        "text": "旅行手记的海外版支付了版税。活动结余，收到 100。"
+      },
+      {
+        "id": "world-card-13",
+        "name": "陶艺互访",
+        "effect": "pay",
+        "amount": 65,
+        "text": "远洋货柜产生额外装卸费。支付本期费用 65。"
+      },
+      {
+        "id": "world-card-14",
+        "name": "球幕放映",
+        "effect": "goto",
+        "target": 24,
+        "salary": true,
+        "text": "领队寄来了新一程的集合地点。沿路线前往温哥华。"
+      },
+      {
+        "id": "world-card-15",
+        "name": "港湾潮讯",
+        "effect": "rail",
+        "salary": true,
+        "text": "环线客船为你预留了席位。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "world-card-16",
+        "name": "星图校对",
+        "effect": "repair",
+        "amount": 20,
+        "hotelAmount": 60,
+        "text": "雨季前的例行检修已经开始。建筑检修，每栋房支付 20，每间旅馆支付 60。"
+      },
+      {
+        "id": "world-card-17",
+        "name": "飞行里程",
+        "effect": "cash",
+        "amount": 45,
+        "text": "旅行手记的海外版支付了版税。活动结余，收到 45。"
+      },
+      {
+        "id": "world-card-18",
+        "name": "沙洲露营",
+        "effect": "steps",
+        "amount": 2,
+        "salary": true,
+        "text": "一张联程票接上了下一段旅途。沿路线前进 2 格。"
+      },
+      {
+        "id": "world-card-19",
+        "name": "行李寄存",
+        "effect": "collectEach",
+        "amount": 15,
+        "text": "「行李寄存」同行预订你的服务，向其他每名在局玩家收取 15。"
+      },
+      {
+        "id": "world-card-20",
+        "name": "山口驿站",
+        "effect": "payEach",
+        "amount": 15,
+        "text": "「山口驿站」与同行分摊费用，向其他每名在局玩家支付 15。"
+      },
+      {
+        "id": "world-card-21",
+        "name": "南纬邮展",
+        "effect": "pass",
+        "text": "「南纬邮展」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "world-card-22",
+        "name": "城市交换",
+        "effect": "utility",
+        "salary": true,
+        "text": "「城市交换」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "world-card-23",
+        "name": "灯塔协定",
+        "effect": "jail",
+        "text": "「灯塔协定」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "world-district-4",
+        "name": "海港合奏台",
+        "text": "巡游乐手想在海港街区办一场落日演出。 原地交稿领 21；或付 13 前往悉尼现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 27,
+        "fee": 13,
+        "reward": 21
+      },
+      {
+        "id": "world-district-5",
+        "name": "翻译导览牌",
+        "text": "展板需要重新排印多语种路线。 支付 40。",
+        "effect": "pay",
+        "amount": 40
+      },
+      {
+        "id": "world-district-6",
+        "name": "雨水槽维修",
+        "text": "雨季到来前，请师傅逐栋检查排水槽。 每栋房缴 30，每间旅馆缴 105。",
+        "effect": "repair",
+        "amount": 30,
+        "hotelAmount": 105
+      },
+      {
+        "id": "world-district-7",
+        "name": "合订展品货舱",
+        "text": "几位经营者拼了一个货舱。 向其他每位在局玩家支付 12。",
+        "effect": "payEach",
+        "amount": 12
+      }
+    ]
+  }
+}

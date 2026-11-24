@@ -1,0 +1,7 @@
+.env
+node_modules/
+!apps/server/vendor/node_modules/
+!apps/server/vendor/node_modules/**
+var/
+dist/
+test-results/

@@ -1,0 +1,734 @@
+{
+  "id": "it",
+  "name": "意大利城市之旅",
+  "description": "跟随丘陵间的石板路，从海岛广场走向文艺复兴之城。",
+  "color": "#885345",
+  "landmarks": [
+    "锡耶纳",
+    "比萨",
+    "罗马"
+  ],
+  "difficulty": "普通",
+  "art": "/packages/maps/art/it-board.webp",
+  "icon": "/packages/maps/art/it-icon.svg",
+  "duration": "约 25–60 分钟",
+  "players": "2–4 人",
+  "theme": "拱廊与海港",
+  "music": [
+    60,
+    64,
+    67,
+    71,
+    72,
+    67,
+    65,
+    64
+  ],
+  "groups": {
+    "g1": {
+      "name": "第1色组",
+      "color": "#5c9d91",
+      "pattern": "circle"
+    },
+    "g2": {
+      "name": "第2色组",
+      "color": "#bd8466",
+      "pattern": "stripe"
+    },
+    "g3": {
+      "name": "第3色组",
+      "color": "#9581ac",
+      "pattern": "triangle"
+    },
+    "g4": {
+      "name": "第4色组",
+      "color": "#5885a4",
+      "pattern": "wave"
+    },
+    "g5": {
+      "name": "第5色组",
+      "color": "#d7b35b",
+      "pattern": "diamond"
+    },
+    "g6": {
+      "name": "第6色组",
+      "color": "#bd7075",
+      "pattern": "cross"
+    },
+    "g7": {
+      "name": "第7色组",
+      "color": "#679462",
+      "pattern": "leaf"
+    },
+    "g8": {
+      "name": "第8色组",
+      "color": "#84715e",
+      "pattern": "grid"
+    }
+  },
+  "tiles": [
+    {
+      "id": "it-00",
+      "index": 0,
+      "type": "start",
+      "name": "启程广场"
+    },
+    {
+      "id": "it-01",
+      "index": 1,
+      "type": "land",
+      "name": "卢卡",
+      "group": "g1",
+      "price": 75,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 8,
+      "oneHouseRent": 24,
+      "twoHouseRent": 48,
+      "hotelRent": 80
+    },
+    {
+      "id": "it-02",
+      "index": 2,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "it-03",
+      "index": 3,
+      "type": "land",
+      "name": "锡耶纳",
+      "group": "g1",
+      "price": 85,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 10,
+      "oneHouseRent": 30,
+      "twoHouseRent": 60,
+      "hotelRent": 100
+    },
+    {
+      "id": "it-04",
+      "index": 4,
+      "type": "tax",
+      "name": "所得税",
+      "amount": 200
+    },
+    {
+      "id": "it-05",
+      "index": 5,
+      "type": "rail",
+      "name": "拱廊车站",
+      "price": 200
+    },
+    {
+      "id": "it-06",
+      "index": 6,
+      "type": "land",
+      "name": "拉文纳",
+      "group": "g2",
+      "price": 115,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 13,
+      "oneHouseRent": 39,
+      "twoHouseRent": 78,
+      "hotelRent": 130
+    },
+    {
+      "id": "it-07",
+      "index": 7,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "it-08",
+      "index": 8,
+      "type": "land",
+      "name": "莱切",
+      "group": "g2",
+      "price": 125,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 15,
+      "oneHouseRent": 45,
+      "twoHouseRent": 90,
+      "hotelRent": 150
+    },
+    {
+      "id": "it-09",
+      "index": 9,
+      "type": "land",
+      "name": "贝加莫",
+      "group": "g3",
+      "price": 155,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "it-10",
+      "index": 10,
+      "type": "jail",
+      "name": "监狱探访"
+    },
+    {
+      "id": "it-11",
+      "index": 11,
+      "type": "land",
+      "name": "帕尔马",
+      "group": "g3",
+      "price": 165,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 20,
+      "oneHouseRent": 60,
+      "twoHouseRent": 120,
+      "hotelRent": 200
+    },
+    {
+      "id": "it-12",
+      "index": 12,
+      "type": "utility",
+      "name": "山麓水务",
+      "price": 150
+    },
+    {
+      "id": "it-13",
+      "index": 13,
+      "type": "land",
+      "name": "摩德纳",
+      "group": "g3",
+      "price": 155,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "it-14",
+      "index": 14,
+      "type": "land",
+      "name": "特伦托",
+      "group": "g4",
+      "price": 205,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "it-15",
+      "index": 15,
+      "type": "rail",
+      "name": "潟湖渡口",
+      "price": 200
+    },
+    {
+      "id": "it-16",
+      "index": 16,
+      "type": "land",
+      "name": "佩鲁贾",
+      "group": "g4",
+      "price": 195,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 23,
+      "oneHouseRent": 69,
+      "twoHouseRent": 138,
+      "hotelRent": 230
+    },
+    {
+      "id": "it-17",
+      "index": 17,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "it-18",
+      "index": 18,
+      "type": "land",
+      "name": "卡利亚里",
+      "group": "g4",
+      "price": 205,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "it-19",
+      "index": 19,
+      "type": "land",
+      "name": "巴里",
+      "group": "g5",
+      "price": 235,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "it-20",
+      "index": 20,
+      "type": "park",
+      "name": "免费停车场"
+    },
+    {
+      "id": "it-21",
+      "index": 21,
+      "type": "land",
+      "name": "的里雅斯特",
+      "group": "g5",
+      "price": 245,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 30,
+      "oneHouseRent": 90,
+      "twoHouseRent": 180,
+      "hotelRent": 300
+    },
+    {
+      "id": "it-22",
+      "index": 22,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "it-23",
+      "index": 23,
+      "type": "land",
+      "name": "帕多瓦",
+      "group": "g5",
+      "price": 235,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "it-24",
+      "index": 24,
+      "type": "land",
+      "name": "比萨",
+      "group": "g6",
+      "price": 285,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "it-25",
+      "index": 25,
+      "type": "rail",
+      "name": "山城缆车",
+      "price": 200
+    },
+    {
+      "id": "it-26",
+      "index": 26,
+      "type": "land",
+      "name": "卡塔尼亚",
+      "group": "g6",
+      "price": 275,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 33,
+      "oneHouseRent": 99,
+      "twoHouseRent": 198,
+      "hotelRent": 330
+    },
+    {
+      "id": "it-27",
+      "index": 27,
+      "type": "land",
+      "name": "维罗纳",
+      "group": "g6",
+      "price": 285,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "it-28",
+      "index": 28,
+      "type": "utility",
+      "name": "海岛光场",
+      "price": 150
+    },
+    {
+      "id": "it-29",
+      "index": 29,
+      "type": "land",
+      "name": "热那亚",
+      "group": "g7",
+      "price": 315,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "it-30",
+      "index": 30,
+      "type": "goJail",
+      "name": "前往监狱"
+    },
+    {
+      "id": "it-31",
+      "index": 31,
+      "type": "land",
+      "name": "都灵",
+      "group": "g7",
+      "price": 325,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 40,
+      "oneHouseRent": 120,
+      "twoHouseRent": 240,
+      "hotelRent": 400
+    },
+    {
+      "id": "it-32",
+      "index": 32,
+      "type": "land",
+      "name": "博洛尼亚",
+      "group": "g7",
+      "price": 315,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "it-33",
+      "index": 33,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "it-34",
+      "index": 34,
+      "type": "land",
+      "name": "佛罗伦萨",
+      "group": "g8",
+      "price": 365,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    },
+    {
+      "id": "it-35",
+      "index": 35,
+      "type": "rail",
+      "name": "海湾码头",
+      "price": 200
+    },
+    {
+      "id": "it-36",
+      "index": 36,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "it-37",
+      "index": 37,
+      "type": "land",
+      "name": "米兰",
+      "group": "g8",
+      "price": 355,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 43,
+      "oneHouseRent": 129,
+      "twoHouseRent": 258,
+      "hotelRent": 430
+    },
+    {
+      "id": "it-38",
+      "index": 38,
+      "type": "tax",
+      "name": "奢侈税",
+      "amount": 100
+    },
+    {
+      "id": "it-39",
+      "index": 39,
+      "type": "land",
+      "name": "罗马",
+      "group": "g8",
+      "price": 365,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    }
+  ],
+  "cards": {
+    "chance": [
+      {
+        "id": "it-card-00",
+        "name": "广场琴声",
+        "effect": "cash",
+        "amount": 85,
+        "text": "广场画摊的版画收到预订金。活动结余，收到 85。"
+      },
+      {
+        "id": "it-card-01",
+        "name": "彩釉样片",
+        "effect": "pay",
+        "amount": 50,
+        "text": "海湾仓库的卷帘需要修理。支付本期费用 50。"
+      },
+      {
+        "id": "it-card-02",
+        "name": "石阶巡检",
+        "effect": "steps",
+        "amount": 3,
+        "salary": true,
+        "text": "石板巷通向一条鲜为人知的近道。沿路线前进 3 格。"
+      },
+      {
+        "id": "it-card-03",
+        "name": "山坡橄榄",
+        "effect": "goto",
+        "target": 0,
+        "salary": true,
+        "text": "拱廊里的邮差交来了行程函。沿路线前往启程广场。"
+      },
+      {
+        "id": "it-card-04",
+        "name": "玻璃吹制",
+        "effect": "rail",
+        "salary": true,
+        "text": "山城缆车为下一批旅客打开车门。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "it-card-05",
+        "name": "渔网修补",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 54,
+        "text": "早春细雨浸湿了屋顶的陶瓦。建筑检修，每栋房支付 18，每间旅馆支付 54。"
+      },
+      {
+        "id": "it-card-06",
+        "name": "新季壁画",
+        "effect": "steps",
+        "amount": -3,
+        "salary": false,
+        "text": "「新季壁画」沿来路后退 3 格，不领取途经起点奖励。"
+      },
+      {
+        "id": "it-card-07",
+        "name": "岛屿灯会",
+        "effect": "pass",
+        "text": "「岛屿灯会」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "it-card-08",
+        "name": "山城夜市",
+        "effect": "collectEach",
+        "amount": 18,
+        "text": "「山城夜市」同行预订你的服务，向其他每名在局玩家收取 18。"
+      },
+      {
+        "id": "it-card-09",
+        "name": "狂欢面具",
+        "effect": "payEach",
+        "amount": 20,
+        "text": "「狂欢面具」与同行分摊费用，向其他每名在局玩家支付 20。"
+      },
+      {
+        "id": "it-card-10",
+        "name": "屋顶花园",
+        "effect": "utility",
+        "salary": true,
+        "text": "「屋顶花园」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "it-card-11",
+        "name": "街头速写",
+        "effect": "jail",
+        "text": "「街头速写」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "it-district-0",
+        "name": "水城绘本窗",
+        "text": "装帧师想在运河边做一个讲水城故事的绘本橱窗。 原地交稿领 27；或付 19 前往佩鲁贾现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 16,
+        "fee": 19,
+        "reward": 27
+      },
+      {
+        "id": "it-district-1",
+        "name": "面具绘色课",
+        "text": "一堂街区面具绘色课结清了场地租费。 收入 35。",
+        "effect": "cash",
+        "amount": 35
+      },
+      {
+        "id": "it-district-2",
+        "name": "渡口取琴箱",
+        "text": "乐手把琴箱留在了下一个交通站。 前往最近的交通地产，经过起点可领 200。",
+        "effect": "rail",
+        "salary": true
+      },
+      {
+        "id": "it-district-3",
+        "name": "拱廊刷灰",
+        "text": "你给名下街屋的拱廊重新刷了灰浆。 每栋房缴 18，每间旅馆缴 65。",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 65
+      }
+    ],
+    "fate": [
+      {
+        "id": "it-card-12",
+        "name": "瓷砖订单",
+        "effect": "cash",
+        "amount": 100,
+        "text": "广场画摊的版画收到预订金。活动结余，收到 100。"
+      },
+      {
+        "id": "it-card-13",
+        "name": "手工装帧",
+        "effect": "pay",
+        "amount": 65,
+        "text": "海湾仓库的卷帘需要修理。支付本期费用 65。"
+      },
+      {
+        "id": "it-card-14",
+        "name": "海船试航",
+        "effect": "goto",
+        "target": 24,
+        "salary": true,
+        "text": "拱廊里的邮差交来了行程函。沿路线前往比萨。"
+      },
+      {
+        "id": "it-card-15",
+        "name": "钟楼整点",
+        "effect": "rail",
+        "salary": true,
+        "text": "山城缆车为下一批旅客打开车门。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "it-card-16",
+        "name": "修道院果园",
+        "effect": "repair",
+        "amount": 20,
+        "hotelAmount": 60,
+        "text": "早春细雨浸湿了屋顶的陶瓦。建筑检修，每栋房支付 20，每间旅馆支付 60。"
+      },
+      {
+        "id": "it-card-17",
+        "name": "歌台布幕",
+        "effect": "cash",
+        "amount": 45,
+        "text": "广场画摊的版画收到预订金。活动结余，收到 45。"
+      },
+      {
+        "id": "it-card-18",
+        "name": "柠檬花季",
+        "effect": "steps",
+        "amount": 2,
+        "salary": true,
+        "text": "石板巷通向一条鲜为人知的近道。沿路线前进 2 格。"
+      },
+      {
+        "id": "it-card-19",
+        "name": "石匠工坊",
+        "effect": "collectEach",
+        "amount": 15,
+        "text": "「石匠工坊」同行预订你的服务，向其他每名在局玩家收取 15。"
+      },
+      {
+        "id": "it-card-20",
+        "name": "小提琴展",
+        "effect": "payEach",
+        "amount": 15,
+        "text": "「小提琴展」与同行分摊费用，向其他每名在局玩家支付 15。"
+      },
+      {
+        "id": "it-card-21",
+        "name": "拱廊短剧",
+        "effect": "pass",
+        "text": "「拱廊短剧」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "it-card-22",
+        "name": "渡口邮差",
+        "effect": "utility",
+        "salary": true,
+        "text": "「渡口邮差」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "it-card-23",
+        "name": "丘陵素描",
+        "effect": "jail",
+        "text": "「丘陵素描」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "it-district-4",
+        "name": "小广场三重奏",
+        "text": "弦乐手正在挑选适合黄昏合奏的小广场。 原地交稿领 27；或付 19 前往热那亚现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 29,
+        "fee": 19,
+        "reward": 27
+      },
+      {
+        "id": "it-district-5",
+        "name": "更换系船绳",
+        "text": "送书小船的系船绳需要更换。 支付 40。",
+        "effect": "pay",
+        "amount": 40
+      },
+      {
+        "id": "it-district-6",
+        "name": "河岸防潮层",
+        "text": "你安排师傅给名下物业补做防潮层。 每栋房缴 30，每间旅馆缴 105。",
+        "effect": "repair",
+        "amount": 30,
+        "hotelAmount": 105
+      },
+      {
+        "id": "it-district-7",
+        "name": "共享装裱工具",
+        "text": "几家画铺为你借齐了装裱工具。 向其他每位在局玩家支付 12。",
+        "effect": "payEach",
+        "amount": 12
+      }
+    ]
+  }
+}
