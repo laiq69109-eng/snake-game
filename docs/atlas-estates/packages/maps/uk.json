@@ -1,0 +1,734 @@
+{
+  "id": "uk",
+  "name": "英国城市之旅",
+  "description": "乘雾港轮渡，沿石墙步道探访大学城、湖区和古老的钟楼。",
+  "color": "#405970",
+  "landmarks": [
+    "巴斯",
+    "诺丁汉",
+    "伦敦"
+  ],
+  "difficulty": "入门",
+  "art": "./packages/maps/art/uk-board.webp",
+  "icon": "./packages/maps/art/uk-icon.svg",
+  "duration": "约 25–60 分钟",
+  "players": "2–4 人",
+  "theme": "雾港钟声",
+  "music": [
+    65,
+    69,
+    72,
+    74,
+    72,
+    69,
+    67,
+    65
+  ],
+  "groups": {
+    "g1": {
+      "name": "第1色组",
+      "color": "#5c9d91",
+      "pattern": "circle"
+    },
+    "g2": {
+      "name": "第2色组",
+      "color": "#bd8466",
+      "pattern": "stripe"
+    },
+    "g3": {
+      "name": "第3色组",
+      "color": "#9581ac",
+      "pattern": "triangle"
+    },
+    "g4": {
+      "name": "第4色组",
+      "color": "#5885a4",
+      "pattern": "wave"
+    },
+    "g5": {
+      "name": "第5色组",
+      "color": "#d7b35b",
+      "pattern": "diamond"
+    },
+    "g6": {
+      "name": "第6色组",
+      "color": "#bd7075",
+      "pattern": "cross"
+    },
+    "g7": {
+      "name": "第7色组",
+      "color": "#679462",
+      "pattern": "leaf"
+    },
+    "g8": {
+      "name": "第8色组",
+      "color": "#84715e",
+      "pattern": "grid"
+    }
+  },
+  "tiles": [
+    {
+      "id": "uk-00",
+      "index": 0,
+      "type": "start",
+      "name": "启程广场"
+    },
+    {
+      "id": "uk-01",
+      "index": 1,
+      "type": "land",
+      "name": "约克",
+      "group": "g1",
+      "price": 70,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 8,
+      "oneHouseRent": 24,
+      "twoHouseRent": 48,
+      "hotelRent": 80
+    },
+    {
+      "id": "uk-02",
+      "index": 2,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "uk-03",
+      "index": 3,
+      "type": "land",
+      "name": "巴斯",
+      "group": "g1",
+      "price": 80,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 10,
+      "oneHouseRent": 30,
+      "twoHouseRent": 60,
+      "hotelRent": 100
+    },
+    {
+      "id": "uk-04",
+      "index": 4,
+      "type": "tax",
+      "name": "所得税",
+      "amount": 200
+    },
+    {
+      "id": "uk-05",
+      "index": 5,
+      "type": "rail",
+      "name": "石拱车站",
+      "price": 200
+    },
+    {
+      "id": "uk-06",
+      "index": 6,
+      "type": "land",
+      "name": "达勒姆",
+      "group": "g2",
+      "price": 110,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 13,
+      "oneHouseRent": 39,
+      "twoHouseRent": 78,
+      "hotelRent": 130
+    },
+    {
+      "id": "uk-07",
+      "index": 7,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "uk-08",
+      "index": 8,
+      "type": "land",
+      "name": "切斯特",
+      "group": "g2",
+      "price": 120,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 15,
+      "oneHouseRent": 45,
+      "twoHouseRent": 90,
+      "hotelRent": 150
+    },
+    {
+      "id": "uk-09",
+      "index": 9,
+      "type": "land",
+      "name": "斯特灵",
+      "group": "g3",
+      "price": 150,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "uk-10",
+      "index": 10,
+      "type": "jail",
+      "name": "监狱探访"
+    },
+    {
+      "id": "uk-11",
+      "index": 11,
+      "type": "land",
+      "name": "温彻斯特",
+      "group": "g3",
+      "price": 160,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 20,
+      "oneHouseRent": 60,
+      "twoHouseRent": 120,
+      "hotelRent": 200
+    },
+    {
+      "id": "uk-12",
+      "index": 12,
+      "type": "utility",
+      "name": "谷地水务",
+      "price": 150
+    },
+    {
+      "id": "uk-13",
+      "index": 13,
+      "type": "land",
+      "name": "林肯",
+      "group": "g3",
+      "price": 150,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "uk-14",
+      "index": 14,
+      "type": "land",
+      "name": "埃克塞特",
+      "group": "g4",
+      "price": 200,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "uk-15",
+      "index": 15,
+      "type": "rail",
+      "name": "河湾渡口",
+      "price": 200
+    },
+    {
+      "id": "uk-16",
+      "index": 16,
+      "type": "land",
+      "name": "坎特伯雷",
+      "group": "g4",
+      "price": 190,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 23,
+      "oneHouseRent": 69,
+      "twoHouseRent": 138,
+      "hotelRent": 230
+    },
+    {
+      "id": "uk-17",
+      "index": 17,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "uk-18",
+      "index": 18,
+      "type": "land",
+      "name": "斯旺西",
+      "group": "g4",
+      "price": 200,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "uk-19",
+      "index": 19,
+      "type": "land",
+      "name": "普利茅斯",
+      "group": "g5",
+      "price": 230,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "uk-20",
+      "index": 20,
+      "type": "park",
+      "name": "免费停车场"
+    },
+    {
+      "id": "uk-21",
+      "index": 21,
+      "type": "land",
+      "name": "纽卡斯尔",
+      "group": "g5",
+      "price": 240,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 30,
+      "oneHouseRent": 90,
+      "twoHouseRent": 180,
+      "hotelRent": 300
+    },
+    {
+      "id": "uk-22",
+      "index": 22,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "uk-23",
+      "index": 23,
+      "type": "land",
+      "name": "利兹",
+      "group": "g5",
+      "price": 230,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "uk-24",
+      "index": 24,
+      "type": "land",
+      "name": "诺丁汉",
+      "group": "g6",
+      "price": 280,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "uk-25",
+      "index": 25,
+      "type": "rail",
+      "name": "高地铁路",
+      "price": 200
+    },
+    {
+      "id": "uk-26",
+      "index": 26,
+      "type": "land",
+      "name": "布里斯托尔",
+      "group": "g6",
+      "price": 270,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 33,
+      "oneHouseRent": 99,
+      "twoHouseRent": 198,
+      "hotelRent": 330
+    },
+    {
+      "id": "uk-27",
+      "index": 27,
+      "type": "land",
+      "name": "加的夫",
+      "group": "g6",
+      "price": 280,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "uk-28",
+      "index": 28,
+      "type": "utility",
+      "name": "海崖风场",
+      "price": 150
+    },
+    {
+      "id": "uk-29",
+      "index": 29,
+      "type": "land",
+      "name": "格拉斯哥",
+      "group": "g7",
+      "price": 310,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "uk-30",
+      "index": 30,
+      "type": "goJail",
+      "name": "前往监狱"
+    },
+    {
+      "id": "uk-31",
+      "index": 31,
+      "type": "land",
+      "name": "利物浦",
+      "group": "g7",
+      "price": 320,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 40,
+      "oneHouseRent": 120,
+      "twoHouseRent": 240,
+      "hotelRent": 400
+    },
+    {
+      "id": "uk-32",
+      "index": 32,
+      "type": "land",
+      "name": "爱丁堡",
+      "group": "g7",
+      "price": 310,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "uk-33",
+      "index": 33,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "uk-34",
+      "index": 34,
+      "type": "land",
+      "name": "曼彻斯特",
+      "group": "g8",
+      "price": 360,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    },
+    {
+      "id": "uk-35",
+      "index": 35,
+      "type": "rail",
+      "name": "北海码头",
+      "price": 200
+    },
+    {
+      "id": "uk-36",
+      "index": 36,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "uk-37",
+      "index": 37,
+      "type": "land",
+      "name": "牛津",
+      "group": "g8",
+      "price": 350,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 43,
+      "oneHouseRent": 129,
+      "twoHouseRent": 258,
+      "hotelRent": 430
+    },
+    {
+      "id": "uk-38",
+      "index": 38,
+      "type": "tax",
+      "name": "奢侈税",
+      "amount": 100
+    },
+    {
+      "id": "uk-39",
+      "index": 39,
+      "type": "land",
+      "name": "伦敦",
+      "group": "g8",
+      "price": 360,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    }
+  ],
+  "cards": {
+    "chance": [
+      {
+        "id": "uk-card-00",
+        "name": "花园茶会",
+        "effect": "cash",
+        "amount": 85,
+        "text": "周末手工展的账房寄来分成。活动结余，收到 85。"
+      },
+      {
+        "id": "uk-card-01",
+        "name": "旧书鉴定",
+        "effect": "pay",
+        "amount": 50,
+        "text": "图书馆的木架需要整修。支付本期费用 50。"
+      },
+      {
+        "id": "uk-card-02",
+        "name": "灯塔值班",
+        "effect": "steps",
+        "amount": 3,
+        "salary": true,
+        "text": "乡间小路比原计划更快。沿路线前进 3 格。"
+      },
+      {
+        "id": "uk-card-03",
+        "name": "铜钟调音",
+        "effect": "goto",
+        "target": 0,
+        "salary": true,
+        "text": "灰岩驿站捎来了调度通知。沿路线前往启程广场。"
+      },
+      {
+        "id": "uk-card-04",
+        "name": "羊毛市集",
+        "effect": "rail",
+        "salary": true,
+        "text": "河上的轮渡今日增开一班。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "uk-card-05",
+        "name": "雨棚维修",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 54,
+        "text": "湿冷天气使屋顶需要养护。建筑检修，每栋房支付 18，每间旅馆支付 54。"
+      },
+      {
+        "id": "uk-card-06",
+        "name": "学院辩论",
+        "effect": "steps",
+        "amount": -3,
+        "salary": false,
+        "text": "「学院辩论」沿来路后退 3 格，不领取途经起点奖励。"
+      },
+      {
+        "id": "uk-card-07",
+        "name": "湖畔诗会",
+        "effect": "pass",
+        "text": "「湖畔诗会」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "uk-card-08",
+        "name": "灰岩巡检",
+        "effect": "collectEach",
+        "amount": 18,
+        "text": "「灰岩巡检」同行预订你的服务，向其他每名在局玩家收取 18。"
+      },
+      {
+        "id": "uk-card-09",
+        "name": "海岸寻鸟",
+        "effect": "payEach",
+        "amount": 20,
+        "text": "「海岸寻鸟」与同行分摊费用，向其他每名在局玩家支付 20。"
+      },
+      {
+        "id": "uk-card-10",
+        "name": "手抄图谱",
+        "effect": "utility",
+        "salary": true,
+        "text": "「手抄图谱」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "uk-card-11",
+        "name": "钟楼访客",
+        "effect": "jail",
+        "text": "「钟楼访客」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "uk-district-0",
+        "name": "运河旧书驳船",
+        "text": "运河上的旧书驳船想找一处靠岸营业的铺面。 原地交稿领 23；或付 15 前往坎特伯雷现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 16,
+        "fee": 15,
+        "reward": 23
+      },
+      {
+        "id": "uk-district-1",
+        "name": "铅字明信片",
+        "text": "来客买走了你新印的街区明信片。 收入 35。",
+        "effect": "cash",
+        "amount": 35
+      },
+      {
+        "id": "uk-district-2",
+        "name": "月台领道具",
+        "text": "铁路月台有一箱演出服装需要领取。 前往最近的交通地产，经过起点可领 200。",
+        "effect": "rail",
+        "salary": true
+      },
+      {
+        "id": "uk-district-3",
+        "name": "砖墙勾缝",
+        "text": "连日细雨后，师傅上门给砖墙补缝。 每栋房缴 18，每间旅馆缴 65。",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 65
+      }
+    ],
+    "fate": [
+      {
+        "id": "uk-card-12",
+        "name": "乡间马车",
+        "effect": "cash",
+        "amount": 100,
+        "text": "周末手工展的账房寄来分成。活动结余，收到 100。"
+      },
+      {
+        "id": "uk-card-13",
+        "name": "陶杯展销",
+        "effect": "pay",
+        "amount": 65,
+        "text": "图书馆的木架需要整修。支付本期费用 65。"
+      },
+      {
+        "id": "uk-card-14",
+        "name": "雾天改道",
+        "effect": "goto",
+        "target": 24,
+        "salary": true,
+        "text": "灰岩驿站捎来了调度通知。沿路线前往诺丁汉。"
+      },
+      {
+        "id": "uk-card-15",
+        "name": "河道疏浚",
+        "effect": "rail",
+        "salary": true,
+        "text": "河上的轮渡今日增开一班。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "uk-card-16",
+        "name": "窗框油漆",
+        "effect": "repair",
+        "amount": 20,
+        "hotelAmount": 60,
+        "text": "湿冷天气使屋顶需要养护。建筑检修，每栋房支付 20，每间旅馆支付 60。"
+      },
+      {
+        "id": "uk-card-17",
+        "name": "冬季书节",
+        "effect": "cash",
+        "amount": 45,
+        "text": "周末手工展的账房寄来分成。活动结余，收到 45。"
+      },
+      {
+        "id": "uk-card-18",
+        "name": "拱桥写生",
+        "effect": "steps",
+        "amount": 2,
+        "salary": true,
+        "text": "乡间小路比原计划更快。沿路线前进 2 格。"
+      },
+      {
+        "id": "uk-card-19",
+        "name": "石墙补缀",
+        "effect": "collectEach",
+        "amount": 15,
+        "text": "「石墙补缀」同行预订你的服务，向其他每名在局玩家收取 15。"
+      },
+      {
+        "id": "uk-card-20",
+        "name": "北海航标",
+        "effect": "payEach",
+        "amount": 15,
+        "text": "「北海航标」与同行分摊费用，向其他每名在局玩家支付 15。"
+      },
+      {
+        "id": "uk-card-21",
+        "name": "庄园果园",
+        "effect": "pass",
+        "text": "「庄园果园」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "uk-card-22",
+        "name": "田野测量",
+        "effect": "utility",
+        "salary": true,
+        "text": "「田野测量」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "uk-card-23",
+        "name": "学城乐社",
+        "effect": "jail",
+        "text": "「学城乐社」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "uk-district-4",
+        "name": "街角铜管乐",
+        "text": "社区铜管小队想为第一次露天演奏选址。 原地交稿领 23；或付 15 前往利物浦现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 31,
+        "fee": 15,
+        "reward": 23
+      },
+      {
+        "id": "uk-district-5",
+        "name": "钟面校时",
+        "text": "广场的机械钟落后了几分钟，你承担检修费。 支付 40。",
+        "effect": "pay",
+        "amount": 40
+      },
+      {
+        "id": "uk-district-6",
+        "name": "木窗修复",
+        "text": "你名下的街屋换上了修复好的窗框。 每栋房缴 30，每间旅馆缴 105。",
+        "effect": "repair",
+        "amount": 30,
+        "hotelAmount": 105
+      },
+      {
+        "id": "uk-district-7",
+        "name": "邻里茶歇",
+        "text": "一起办阅读会的商户垫付了茶点。 向其他每位在局玩家支付 12。",
+        "effect": "payEach",
+        "amount": 12
+      }
+    ]
+  }
+}

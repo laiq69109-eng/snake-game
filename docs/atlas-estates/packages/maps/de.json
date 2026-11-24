@@ -1,0 +1,734 @@
+{
+  "id": "de",
+  "name": "德国城市之旅",
+  "description": "随森林小径走进山谷集镇，穿过连绵的城墙与莱茵河畔。",
+  "color": "#395d4b",
+  "landmarks": [
+    "班贝格",
+    "汉诺威",
+    "柏林"
+  ],
+  "difficulty": "进阶",
+  "art": "./packages/maps/art/de-board.webp",
+  "icon": "./packages/maps/art/de-icon.svg",
+  "duration": "约 25–60 分钟",
+  "players": "2–4 人",
+  "theme": "林谷河港",
+  "music": [
+    55,
+    62,
+    67,
+    71,
+    69,
+    67,
+    62,
+    59
+  ],
+  "groups": {
+    "g1": {
+      "name": "第1色组",
+      "color": "#5c9d91",
+      "pattern": "circle"
+    },
+    "g2": {
+      "name": "第2色组",
+      "color": "#bd8466",
+      "pattern": "stripe"
+    },
+    "g3": {
+      "name": "第3色组",
+      "color": "#9581ac",
+      "pattern": "triangle"
+    },
+    "g4": {
+      "name": "第4色组",
+      "color": "#5885a4",
+      "pattern": "wave"
+    },
+    "g5": {
+      "name": "第5色组",
+      "color": "#d7b35b",
+      "pattern": "diamond"
+    },
+    "g6": {
+      "name": "第6色组",
+      "color": "#bd7075",
+      "pattern": "cross"
+    },
+    "g7": {
+      "name": "第7色组",
+      "color": "#679462",
+      "pattern": "leaf"
+    },
+    "g8": {
+      "name": "第8色组",
+      "color": "#84715e",
+      "pattern": "grid"
+    }
+  },
+  "tiles": [
+    {
+      "id": "de-00",
+      "index": 0,
+      "type": "start",
+      "name": "启程广场"
+    },
+    {
+      "id": "de-01",
+      "index": 1,
+      "type": "land",
+      "name": "特里尔",
+      "group": "g1",
+      "price": 80,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 8,
+      "oneHouseRent": 24,
+      "twoHouseRent": 48,
+      "hotelRent": 80
+    },
+    {
+      "id": "de-02",
+      "index": 2,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "de-03",
+      "index": 3,
+      "type": "land",
+      "name": "班贝格",
+      "group": "g1",
+      "price": 90,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 10,
+      "oneHouseRent": 30,
+      "twoHouseRent": 60,
+      "hotelRent": 100
+    },
+    {
+      "id": "de-04",
+      "index": 4,
+      "type": "tax",
+      "name": "所得税",
+      "amount": 200
+    },
+    {
+      "id": "de-05",
+      "index": 5,
+      "type": "rail",
+      "name": "林间铁路",
+      "price": 200
+    },
+    {
+      "id": "de-06",
+      "index": 6,
+      "type": "land",
+      "name": "吕贝克",
+      "group": "g2",
+      "price": 120,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 13,
+      "oneHouseRent": 39,
+      "twoHouseRent": 78,
+      "hotelRent": 130
+    },
+    {
+      "id": "de-07",
+      "index": 7,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "de-08",
+      "index": 8,
+      "type": "land",
+      "name": "埃尔福特",
+      "group": "g2",
+      "price": 130,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 15,
+      "oneHouseRent": 45,
+      "twoHouseRent": 90,
+      "hotelRent": 150
+    },
+    {
+      "id": "de-09",
+      "index": 9,
+      "type": "land",
+      "name": "雷根斯堡",
+      "group": "g3",
+      "price": 160,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "de-10",
+      "index": 10,
+      "type": "jail",
+      "name": "监狱探访"
+    },
+    {
+      "id": "de-11",
+      "index": 11,
+      "type": "land",
+      "name": "魏玛",
+      "group": "g3",
+      "price": 170,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 20,
+      "oneHouseRent": 60,
+      "twoHouseRent": 120,
+      "hotelRent": 200
+    },
+    {
+      "id": "de-12",
+      "index": 12,
+      "type": "utility",
+      "name": "河谷水务",
+      "price": 150
+    },
+    {
+      "id": "de-13",
+      "index": 13,
+      "type": "land",
+      "name": "海德堡",
+      "group": "g3",
+      "price": 160,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "de-14",
+      "index": 14,
+      "type": "land",
+      "name": "弗赖堡",
+      "group": "g4",
+      "price": 210,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "de-15",
+      "index": 15,
+      "type": "rail",
+      "name": "莱茵渡口",
+      "price": 200
+    },
+    {
+      "id": "de-16",
+      "index": 16,
+      "type": "land",
+      "name": "奥格斯堡",
+      "group": "g4",
+      "price": 200,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 23,
+      "oneHouseRent": 69,
+      "twoHouseRent": 138,
+      "hotelRent": 230
+    },
+    {
+      "id": "de-17",
+      "index": 17,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "de-18",
+      "index": 18,
+      "type": "land",
+      "name": "马格德堡",
+      "group": "g4",
+      "price": 210,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "de-19",
+      "index": 19,
+      "type": "land",
+      "name": "不来梅",
+      "group": "g5",
+      "price": 240,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "de-20",
+      "index": 20,
+      "type": "park",
+      "name": "免费停车场"
+    },
+    {
+      "id": "de-21",
+      "index": 21,
+      "type": "land",
+      "name": "波恩",
+      "group": "g5",
+      "price": 250,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 30,
+      "oneHouseRent": 90,
+      "twoHouseRent": 180,
+      "hotelRent": 300
+    },
+    {
+      "id": "de-22",
+      "index": 22,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "de-23",
+      "index": 23,
+      "type": "land",
+      "name": "美因茨",
+      "group": "g5",
+      "price": 240,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "de-24",
+      "index": 24,
+      "type": "land",
+      "name": "汉诺威",
+      "group": "g6",
+      "price": 290,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "de-25",
+      "index": 25,
+      "type": "rail",
+      "name": "北岸车站",
+      "price": 200
+    },
+    {
+      "id": "de-26",
+      "index": 26,
+      "type": "land",
+      "name": "莱比锡",
+      "group": "g6",
+      "price": 280,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 33,
+      "oneHouseRent": 99,
+      "twoHouseRent": 198,
+      "hotelRent": 330
+    },
+    {
+      "id": "de-27",
+      "index": 27,
+      "type": "land",
+      "name": "德累斯顿",
+      "group": "g6",
+      "price": 290,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "de-28",
+      "index": 28,
+      "type": "utility",
+      "name": "高丘风场",
+      "price": 150
+    },
+    {
+      "id": "de-29",
+      "index": 29,
+      "type": "land",
+      "name": "纽伦堡",
+      "group": "g7",
+      "price": 320,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "de-30",
+      "index": 30,
+      "type": "goJail",
+      "name": "前往监狱"
+    },
+    {
+      "id": "de-31",
+      "index": 31,
+      "type": "land",
+      "name": "斯图加特",
+      "group": "g7",
+      "price": 330,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 40,
+      "oneHouseRent": 120,
+      "twoHouseRent": 240,
+      "hotelRent": 400
+    },
+    {
+      "id": "de-32",
+      "index": 32,
+      "type": "land",
+      "name": "科隆",
+      "group": "g7",
+      "price": 320,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "de-33",
+      "index": 33,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "de-34",
+      "index": 34,
+      "type": "land",
+      "name": "法兰克福",
+      "group": "g8",
+      "price": 370,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    },
+    {
+      "id": "de-35",
+      "index": 35,
+      "type": "rail",
+      "name": "湖区码头",
+      "price": 200
+    },
+    {
+      "id": "de-36",
+      "index": 36,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "de-37",
+      "index": 37,
+      "type": "land",
+      "name": "汉堡",
+      "group": "g8",
+      "price": 360,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 43,
+      "oneHouseRent": 129,
+      "twoHouseRent": 258,
+      "hotelRent": 430
+    },
+    {
+      "id": "de-38",
+      "index": 38,
+      "type": "tax",
+      "name": "奢侈税",
+      "amount": 100
+    },
+    {
+      "id": "de-39",
+      "index": 39,
+      "type": "land",
+      "name": "柏林",
+      "group": "g8",
+      "price": 370,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    }
+  ],
+  "cards": {
+    "chance": [
+      {
+        "id": "de-card-00",
+        "name": "木刻作坊",
+        "effect": "cash",
+        "amount": 85,
+        "text": "森林市集的木制品供不应求。活动结余，收到 85。"
+      },
+      {
+        "id": "de-card-01",
+        "name": "胡桃采集",
+        "effect": "pay",
+        "amount": 50,
+        "text": "山中木桥需要替换承重板。支付本期费用 50。"
+      },
+      {
+        "id": "de-card-02",
+        "name": "风琴试奏",
+        "effect": "steps",
+        "amount": 3,
+        "salary": true,
+        "text": "护林人带你抄过一条近道。沿路线前进 3 格。"
+      },
+      {
+        "id": "de-card-03",
+        "name": "河船货运",
+        "effect": "goto",
+        "target": 0,
+        "salary": true,
+        "text": "林谷的调度员送来换乘凭据。沿路线前往启程广场。"
+      },
+      {
+        "id": "de-card-04",
+        "name": "钟表零件",
+        "effect": "rail",
+        "salary": true,
+        "text": "汽笛声从前方的车站传来。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "de-card-05",
+        "name": "林间向导",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 54,
+        "text": "降雪前必须加固建筑屋面。建筑检修，每栋房支付 18，每间旅馆支付 54。"
+      },
+      {
+        "id": "de-card-06",
+        "name": "冬集烛光",
+        "effect": "steps",
+        "amount": -3,
+        "salary": false,
+        "text": "「冬集烛光」沿来路后退 3 格，不领取途经起点奖励。"
+      },
+      {
+        "id": "de-card-07",
+        "name": "山屋修整",
+        "effect": "pass",
+        "text": "「山屋修整」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "de-card-08",
+        "name": "纸厂开放",
+        "effect": "collectEach",
+        "amount": 18,
+        "text": "「纸厂开放」同行预订你的服务，向其他每名在局玩家收取 18。"
+      },
+      {
+        "id": "de-card-09",
+        "name": "松脂采样",
+        "effect": "payEach",
+        "amount": 20,
+        "text": "「松脂采样」与同行分摊费用，向其他每名在局玩家支付 20。"
+      },
+      {
+        "id": "de-card-10",
+        "name": "运河通行",
+        "effect": "utility",
+        "salary": true,
+        "text": "「运河通行」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "de-card-11",
+        "name": "河堤花展",
+        "effect": "jail",
+        "text": "「河堤花展」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "de-district-0",
+        "name": "木屋装帧坊",
+        "text": "装帧学徒想在木屋街开一个手工书工作台。 原地交稿领 25；或付 17 前往海德堡现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 13,
+        "fee": 17,
+        "reward": 25
+      },
+      {
+        "id": "de-district-1",
+        "name": "木刻街景",
+        "text": "一套河谷街景木刻印完了第一版。 收入 35。",
+        "effect": "cash",
+        "amount": 35
+      },
+      {
+        "id": "de-district-2",
+        "name": "铁路运木料",
+        "text": "订好的展台木料刚进货运站。 前往最近的交通地产，经过起点可领 200。",
+        "effect": "rail",
+        "salary": true
+      },
+      {
+        "id": "de-district-3",
+        "name": "屋架检查",
+        "text": "师傅为名下物业的屋架作例行检查。 每栋房缴 18，每间旅馆缴 65。",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 65
+      }
+    ],
+    "fate": [
+      {
+        "id": "de-card-12",
+        "name": "露天排练",
+        "effect": "cash",
+        "amount": 100,
+        "text": "森林市集的木制品供不应求。活动结余，收到 100。"
+      },
+      {
+        "id": "de-card-13",
+        "name": "古城修表",
+        "effect": "pay",
+        "amount": 65,
+        "text": "山中木桥需要替换承重板。支付本期费用 65。"
+      },
+      {
+        "id": "de-card-14",
+        "name": "山谷写生",
+        "effect": "goto",
+        "target": 24,
+        "salary": true,
+        "text": "林谷的调度员送来换乘凭据。沿路线前往汉诺威。"
+      },
+      {
+        "id": "de-card-15",
+        "name": "森林回声",
+        "effect": "rail",
+        "salary": true,
+        "text": "汽笛声从前方的车站传来。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "de-card-16",
+        "name": "窑炉更新",
+        "effect": "repair",
+        "amount": 20,
+        "hotelAmount": 60,
+        "text": "降雪前必须加固建筑屋面。建筑检修，每栋房支付 20，每间旅馆支付 60。"
+      },
+      {
+        "id": "de-card-17",
+        "name": "果园花市",
+        "effect": "cash",
+        "amount": 45,
+        "text": "森林市集的木制品供不应求。活动结余，收到 45。"
+      },
+      {
+        "id": "de-card-18",
+        "name": "街坊合唱",
+        "effect": "steps",
+        "amount": 2,
+        "salary": true,
+        "text": "护林人带你抄过一条近道。沿路线前进 2 格。"
+      },
+      {
+        "id": "de-card-19",
+        "name": "景观测绘",
+        "effect": "collectEach",
+        "amount": 15,
+        "text": "「景观测绘」同行预订你的服务，向其他每名在局玩家收取 15。"
+      },
+      {
+        "id": "de-card-20",
+        "name": "铁桥巡察",
+        "effect": "payEach",
+        "amount": 15,
+        "text": "「铁桥巡察」与同行分摊费用，向其他每名在局玩家支付 15。"
+      },
+      {
+        "id": "de-card-21",
+        "name": "河畔灯节",
+        "effect": "pass",
+        "text": "「河畔灯节」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "de-card-22",
+        "name": "枫糖义卖",
+        "effect": "utility",
+        "salary": true,
+        "text": "「枫糖义卖」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "de-card-23",
+        "name": "叠木新亭",
+        "effect": "jail",
+        "text": "「叠木新亭」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "de-district-4",
+        "name": "桥边低音提琴",
+        "text": "桥边广场需要一处有顶棚的小舞台。 原地交稿领 25；或付 17 前往莱比锡现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 26,
+        "fee": 17,
+        "reward": 25
+      },
+      {
+        "id": "de-district-5",
+        "name": "印制节目单",
+        "text": "社区演出的节目单完成了排印。 支付 40。",
+        "effect": "pay",
+        "amount": 40
+      },
+      {
+        "id": "de-district-6",
+        "name": "石阶补缝",
+        "text": "你负责给临街入口的石阶补缝。 每栋房缴 30，每间旅馆缴 105。",
+        "effect": "repair",
+        "amount": 30,
+        "hotelAmount": 105
+      },
+      {
+        "id": "de-district-7",
+        "name": "邻店借长桌",
+        "text": "邻店送来做订书工作坊的长桌。 向其他每位在局玩家支付 12。",
+        "effect": "payEach",
+        "amount": 12
+      }
+    ]
+  }
+}

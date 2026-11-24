@@ -1,0 +1,734 @@
+{
+  "id": "cn",
+  "name": "中国城市之旅",
+  "description": "从水巷和茶园出发，沿江而行，最后抵达繁忙的海港。",
+  "color": "#245d63",
+  "landmarks": [
+    "扬州",
+    "重庆",
+    "北京"
+  ],
+  "difficulty": "入门",
+  "art": "./packages/maps/art/cn-board.webp",
+  "icon": "./packages/maps/art/cn-icon.svg",
+  "duration": "约 25–60 分钟",
+  "players": "2–4 人",
+  "theme": "山水长卷",
+  "music": [
+    62,
+    69,
+    74,
+    76,
+    74,
+    69,
+    67,
+    64
+  ],
+  "groups": {
+    "g1": {
+      "name": "第1色组",
+      "color": "#5c9d91",
+      "pattern": "circle"
+    },
+    "g2": {
+      "name": "第2色组",
+      "color": "#bd8466",
+      "pattern": "stripe"
+    },
+    "g3": {
+      "name": "第3色组",
+      "color": "#9581ac",
+      "pattern": "triangle"
+    },
+    "g4": {
+      "name": "第4色组",
+      "color": "#5885a4",
+      "pattern": "wave"
+    },
+    "g5": {
+      "name": "第5色组",
+      "color": "#d7b35b",
+      "pattern": "diamond"
+    },
+    "g6": {
+      "name": "第6色组",
+      "color": "#bd7075",
+      "pattern": "cross"
+    },
+    "g7": {
+      "name": "第7色组",
+      "color": "#679462",
+      "pattern": "leaf"
+    },
+    "g8": {
+      "name": "第8色组",
+      "color": "#84715e",
+      "pattern": "grid"
+    }
+  },
+  "tiles": [
+    {
+      "id": "cn-00",
+      "index": 0,
+      "type": "start",
+      "name": "启程广场"
+    },
+    {
+      "id": "cn-01",
+      "index": 1,
+      "type": "land",
+      "name": "泉州",
+      "group": "g1",
+      "price": 70,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 8,
+      "oneHouseRent": 24,
+      "twoHouseRent": 48,
+      "hotelRent": 80
+    },
+    {
+      "id": "cn-02",
+      "index": 2,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "cn-03",
+      "index": 3,
+      "type": "land",
+      "name": "扬州",
+      "group": "g1",
+      "price": 80,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 10,
+      "oneHouseRent": 30,
+      "twoHouseRent": 60,
+      "hotelRent": 100
+    },
+    {
+      "id": "cn-04",
+      "index": 4,
+      "type": "tax",
+      "name": "所得税",
+      "amount": 200
+    },
+    {
+      "id": "cn-05",
+      "index": 5,
+      "type": "rail",
+      "name": "江岸渡口",
+      "price": 200
+    },
+    {
+      "id": "cn-06",
+      "index": 6,
+      "type": "land",
+      "name": "景德镇",
+      "group": "g2",
+      "price": 110,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 13,
+      "oneHouseRent": 39,
+      "twoHouseRent": 78,
+      "hotelRent": 130
+    },
+    {
+      "id": "cn-07",
+      "index": 7,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "cn-08",
+      "index": 8,
+      "type": "land",
+      "name": "绍兴",
+      "group": "g2",
+      "price": 120,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 15,
+      "oneHouseRent": 45,
+      "twoHouseRent": 90,
+      "hotelRent": 150
+    },
+    {
+      "id": "cn-09",
+      "index": 9,
+      "type": "land",
+      "name": "洛阳",
+      "group": "g3",
+      "price": 150,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "cn-10",
+      "index": 10,
+      "type": "jail",
+      "name": "监狱探访"
+    },
+    {
+      "id": "cn-11",
+      "index": 11,
+      "type": "land",
+      "name": "桂林",
+      "group": "g3",
+      "price": 160,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 20,
+      "oneHouseRent": 60,
+      "twoHouseRent": 120,
+      "hotelRent": 200
+    },
+    {
+      "id": "cn-12",
+      "index": 12,
+      "type": "utility",
+      "name": "溪谷水厂",
+      "price": 150
+    },
+    {
+      "id": "cn-13",
+      "index": 13,
+      "type": "land",
+      "name": "昆明",
+      "group": "g3",
+      "price": 150,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "cn-14",
+      "index": 14,
+      "type": "land",
+      "name": "苏州",
+      "group": "g4",
+      "price": 200,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "cn-15",
+      "index": 15,
+      "type": "rail",
+      "name": "岭南客站",
+      "price": 200
+    },
+    {
+      "id": "cn-16",
+      "index": 16,
+      "type": "land",
+      "name": "青岛",
+      "group": "g4",
+      "price": 190,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 23,
+      "oneHouseRent": 69,
+      "twoHouseRent": 138,
+      "hotelRent": 230
+    },
+    {
+      "id": "cn-17",
+      "index": 17,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "cn-18",
+      "index": 18,
+      "type": "land",
+      "name": "武汉",
+      "group": "g4",
+      "price": 200,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "cn-19",
+      "index": 19,
+      "type": "land",
+      "name": "福州",
+      "group": "g5",
+      "price": 230,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "cn-20",
+      "index": 20,
+      "type": "park",
+      "name": "免费停车场"
+    },
+    {
+      "id": "cn-21",
+      "index": 21,
+      "type": "land",
+      "name": "厦门",
+      "group": "g5",
+      "price": 240,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 30,
+      "oneHouseRent": 90,
+      "twoHouseRent": 180,
+      "hotelRent": 300
+    },
+    {
+      "id": "cn-22",
+      "index": 22,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "cn-23",
+      "index": 23,
+      "type": "land",
+      "name": "长沙",
+      "group": "g5",
+      "price": 230,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "cn-24",
+      "index": 24,
+      "type": "land",
+      "name": "重庆",
+      "group": "g6",
+      "price": 280,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "cn-25",
+      "index": 25,
+      "type": "rail",
+      "name": "云岭索道",
+      "price": 200
+    },
+    {
+      "id": "cn-26",
+      "index": 26,
+      "type": "land",
+      "name": "西安",
+      "group": "g6",
+      "price": 270,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 33,
+      "oneHouseRent": 99,
+      "twoHouseRent": 198,
+      "hotelRent": 330
+    },
+    {
+      "id": "cn-27",
+      "index": 27,
+      "type": "land",
+      "name": "南京",
+      "group": "g6",
+      "price": 280,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "cn-28",
+      "index": 28,
+      "type": "utility",
+      "name": "城南电站",
+      "price": 150
+    },
+    {
+      "id": "cn-29",
+      "index": 29,
+      "type": "land",
+      "name": "成都",
+      "group": "g7",
+      "price": 310,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "cn-30",
+      "index": 30,
+      "type": "goJail",
+      "name": "前往监狱"
+    },
+    {
+      "id": "cn-31",
+      "index": 31,
+      "type": "land",
+      "name": "广州",
+      "group": "g7",
+      "price": 320,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 40,
+      "oneHouseRent": 120,
+      "twoHouseRent": 240,
+      "hotelRent": 400
+    },
+    {
+      "id": "cn-32",
+      "index": 32,
+      "type": "land",
+      "name": "深圳",
+      "group": "g7",
+      "price": 310,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "cn-33",
+      "index": 33,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "cn-34",
+      "index": 34,
+      "type": "land",
+      "name": "杭州",
+      "group": "g8",
+      "price": 360,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    },
+    {
+      "id": "cn-35",
+      "index": 35,
+      "type": "rail",
+      "name": "东海码头",
+      "price": 200
+    },
+    {
+      "id": "cn-36",
+      "index": 36,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "cn-37",
+      "index": 37,
+      "type": "land",
+      "name": "上海",
+      "group": "g8",
+      "price": 350,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 43,
+      "oneHouseRent": 129,
+      "twoHouseRent": 258,
+      "hotelRent": 430
+    },
+    {
+      "id": "cn-38",
+      "index": 38,
+      "type": "tax",
+      "name": "奢侈税",
+      "amount": 100
+    },
+    {
+      "id": "cn-39",
+      "index": 39,
+      "type": "land",
+      "name": "北京",
+      "group": "g8",
+      "price": 360,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    }
+  ],
+  "cards": {
+    "chance": [
+      {
+        "id": "cn-card-00",
+        "name": "手作瓷展",
+        "effect": "cash",
+        "amount": 85,
+        "text": "青瓷新烧的样品在廊下售罄。活动结余，收到 85。"
+      },
+      {
+        "id": "cn-card-01",
+        "name": "茶园新采",
+        "effect": "pay",
+        "amount": 50,
+        "text": "山路上的碎石需要清理。支付本期费用 50。"
+      },
+      {
+        "id": "cn-card-02",
+        "name": "水巷评弹",
+        "effect": "steps",
+        "amount": 3,
+        "salary": true,
+        "text": "船家捎你赶上了下一班渡船。沿路线前进 3 格。"
+      },
+      {
+        "id": "cn-card-03",
+        "name": "灯笼夜市",
+        "effect": "goto",
+        "target": 0,
+        "salary": true,
+        "text": "茶商请你返回驿站复核货单。沿路线前往启程广场。"
+      },
+      {
+        "id": "cn-card-04",
+        "name": "竹编工坊",
+        "effect": "rail",
+        "salary": true,
+        "text": "站台贴出了新一季的班次。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "cn-card-05",
+        "name": "古窑修缮",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 54,
+        "text": "连日细雨让檐瓦出现了裂缝。建筑检修，每栋房支付 18，每间旅馆支付 54。"
+      },
+      {
+        "id": "cn-card-06",
+        "name": "江面早雾",
+        "effect": "steps",
+        "amount": -3,
+        "salary": false,
+        "text": "「江面早雾」沿来路后退 3 格，不领取途经起点奖励。"
+      },
+      {
+        "id": "cn-card-07",
+        "name": "廊桥摄影",
+        "effect": "pass",
+        "text": "「廊桥摄影」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "cn-card-08",
+        "name": "山路驿递",
+        "effect": "collectEach",
+        "amount": 18,
+        "text": "「山路驿递」同行预订你的服务，向其他每名在局玩家收取 18。"
+      },
+      {
+        "id": "cn-card-09",
+        "name": "纸伞定制",
+        "effect": "payEach",
+        "amount": 20,
+        "text": "「纸伞定制」与同行分摊费用，向其他每名在局玩家支付 20。"
+      },
+      {
+        "id": "cn-card-10",
+        "name": "木版拓印",
+        "effect": "utility",
+        "salary": true,
+        "text": "「木版拓印」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "cn-card-11",
+        "name": "湖心莲市",
+        "effect": "jail",
+        "text": "「湖心莲市」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "cn-district-0",
+        "name": "水巷连环画摊",
+        "text": "修书师想借沿河的门面试办周末连环画摊。 原地交稿领 20；或付 12 前往桂林现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 11,
+        "fee": 12,
+        "reward": 20
+      },
+      {
+        "id": "cn-district-1",
+        "name": "瓷片路牌",
+        "text": "手绘瓷片路牌引来一批定制订单。 收入 35。",
+        "effect": "cash",
+        "amount": 35
+      },
+      {
+        "id": "cn-district-2",
+        "name": "码头运书箱",
+        "text": "书商在码头等你清点到货的旧书。 前往最近的交通地产，经过起点可领 200。",
+        "effect": "rail",
+        "salary": true
+      },
+      {
+        "id": "cn-district-3",
+        "name": "檐沟清淤",
+        "text": "阵雨过后，街坊约好一起清理各自的檐沟。 每栋房缴 18，每间旅馆缴 65。",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 65
+      }
+    ],
+    "fate": [
+      {
+        "id": "cn-card-12",
+        "name": "漕船调度",
+        "effect": "cash",
+        "amount": 100,
+        "text": "青瓷新烧的样品在廊下售罄。活动结余，收到 100。"
+      },
+      {
+        "id": "cn-card-13",
+        "name": "庭院花朝",
+        "effect": "pay",
+        "amount": 65,
+        "text": "山路上的碎石需要清理。支付本期费用 65。"
+      },
+      {
+        "id": "cn-card-14",
+        "name": "丝绸试色",
+        "effect": "goto",
+        "target": 24,
+        "salary": true,
+        "text": "茶商请你返回驿站复核货单。沿路线前往重庆。"
+      },
+      {
+        "id": "cn-card-15",
+        "name": "旧城测绘",
+        "effect": "rail",
+        "salary": true,
+        "text": "站台贴出了新一季的班次。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "cn-card-16",
+        "name": "檐瓦巡查",
+        "effect": "repair",
+        "amount": 20,
+        "hotelAmount": 60,
+        "text": "连日细雨让檐瓦出现了裂缝。建筑检修，每栋房支付 20，每间旅馆支付 60。"
+      },
+      {
+        "id": "cn-card-17",
+        "name": "运河船会",
+        "effect": "cash",
+        "amount": 45,
+        "text": "青瓷新烧的样品在廊下售罄。活动结余，收到 45。"
+      },
+      {
+        "id": "cn-card-18",
+        "name": "巷口书展",
+        "effect": "steps",
+        "amount": 2,
+        "salary": true,
+        "text": "船家捎你赶上了下一班渡船。沿路线前进 2 格。"
+      },
+      {
+        "id": "cn-card-19",
+        "name": "江潮观测",
+        "effect": "collectEach",
+        "amount": 15,
+        "text": "「江潮观测」同行预订你的服务，向其他每名在局玩家收取 15。"
+      },
+      {
+        "id": "cn-card-20",
+        "name": "梅林集会",
+        "effect": "payEach",
+        "amount": 15,
+        "text": "「梅林集会」与同行分摊费用，向其他每名在局玩家支付 15。"
+      },
+      {
+        "id": "cn-card-21",
+        "name": "梯田踏勘",
+        "effect": "pass",
+        "text": "「梯田踏勘」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "cn-card-22",
+        "name": "湖畔琴会",
+        "effect": "utility",
+        "salary": true,
+        "text": "「湖畔琴会」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "cn-card-23",
+        "name": "松风驿站",
+        "effect": "jail",
+        "text": "「松风驿站」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "cn-district-4",
+        "name": "茶楼小舞台",
+        "text": "茶楼要把二楼布置成放学后的即兴乐坊。 原地交稿领 20；或付 12 前往西安现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 26,
+        "fee": 12,
+        "reward": 20
+      },
+      {
+        "id": "cn-district-5",
+        "name": "雨棚换篷布",
+        "text": "夜市的书架需要一顶新雨棚。 支付 40。",
+        "effect": "pay",
+        "amount": 40
+      },
+      {
+        "id": "cn-district-6",
+        "name": "路灯换灯罩",
+        "text": "你名下的物业统一更换骑楼灯罩。 每栋房缴 30，每间旅馆缴 105。",
+        "effect": "repair",
+        "amount": 30,
+        "hotelAmount": 105
+      },
+      {
+        "id": "cn-district-7",
+        "name": "合印巷口地图",
+        "text": "几家街铺合印了一份徒步小地图。 向其他每位在局玩家支付 12。",
+        "effect": "payEach",
+        "amount": 12
+      }
+    ]
+  }
+}

@@ -1,0 +1,734 @@
+{
+  "id": "fr",
+  "name": "法国城市之旅",
+  "description": "从葡萄园与旧城屋顶启程，沿河谷前往蔚蓝的地中海岸。",
+  "color": "#745279",
+  "landmarks": [
+    "科尔马",
+    "格勒诺布尔",
+    "巴黎"
+  ],
+  "difficulty": "普通",
+  "art": "./packages/maps/art/fr-board.webp",
+  "icon": "./packages/maps/art/fr-icon.svg",
+  "duration": "约 25–60 分钟",
+  "players": "2–4 人",
+  "theme": "河谷与花园",
+  "music": [
+    62,
+    65,
+    69,
+    72,
+    70,
+    69,
+    65,
+    64
+  ],
+  "groups": {
+    "g1": {
+      "name": "第1色组",
+      "color": "#5c9d91",
+      "pattern": "circle"
+    },
+    "g2": {
+      "name": "第2色组",
+      "color": "#bd8466",
+      "pattern": "stripe"
+    },
+    "g3": {
+      "name": "第3色组",
+      "color": "#9581ac",
+      "pattern": "triangle"
+    },
+    "g4": {
+      "name": "第4色组",
+      "color": "#5885a4",
+      "pattern": "wave"
+    },
+    "g5": {
+      "name": "第5色组",
+      "color": "#d7b35b",
+      "pattern": "diamond"
+    },
+    "g6": {
+      "name": "第6色组",
+      "color": "#bd7075",
+      "pattern": "cross"
+    },
+    "g7": {
+      "name": "第7色组",
+      "color": "#679462",
+      "pattern": "leaf"
+    },
+    "g8": {
+      "name": "第8色组",
+      "color": "#84715e",
+      "pattern": "grid"
+    }
+  },
+  "tiles": [
+    {
+      "id": "fr-00",
+      "index": 0,
+      "type": "start",
+      "name": "启程广场"
+    },
+    {
+      "id": "fr-01",
+      "index": 1,
+      "type": "land",
+      "name": "阿尔勒",
+      "group": "g1",
+      "price": 75,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 8,
+      "oneHouseRent": 24,
+      "twoHouseRent": 48,
+      "hotelRent": 80
+    },
+    {
+      "id": "fr-02",
+      "index": 2,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "fr-03",
+      "index": 3,
+      "type": "land",
+      "name": "科尔马",
+      "group": "g1",
+      "price": 85,
+      "houseCost": 40,
+      "hotelCost": 65,
+      "baseRent": 10,
+      "oneHouseRent": 30,
+      "twoHouseRent": 60,
+      "hotelRent": 100
+    },
+    {
+      "id": "fr-04",
+      "index": 4,
+      "type": "tax",
+      "name": "所得税",
+      "amount": 200
+    },
+    {
+      "id": "fr-05",
+      "index": 5,
+      "type": "rail",
+      "name": "河谷车站",
+      "price": 200
+    },
+    {
+      "id": "fr-06",
+      "index": 6,
+      "type": "land",
+      "name": "鲁昂",
+      "group": "g2",
+      "price": 115,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 13,
+      "oneHouseRent": 39,
+      "twoHouseRent": 78,
+      "hotelRent": 130
+    },
+    {
+      "id": "fr-07",
+      "index": 7,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "fr-08",
+      "index": 8,
+      "type": "land",
+      "name": "梅斯",
+      "group": "g2",
+      "price": 125,
+      "houseCost": 55,
+      "hotelCost": 85,
+      "baseRent": 15,
+      "oneHouseRent": 45,
+      "twoHouseRent": 90,
+      "hotelRent": 150
+    },
+    {
+      "id": "fr-09",
+      "index": 9,
+      "type": "land",
+      "name": "兰斯",
+      "group": "g3",
+      "price": 155,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "fr-10",
+      "index": 10,
+      "type": "jail",
+      "name": "监狱探访"
+    },
+    {
+      "id": "fr-11",
+      "index": 11,
+      "type": "land",
+      "name": "第戎",
+      "group": "g3",
+      "price": 165,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 20,
+      "oneHouseRent": 60,
+      "twoHouseRent": 120,
+      "hotelRent": 200
+    },
+    {
+      "id": "fr-12",
+      "index": 12,
+      "type": "utility",
+      "name": "葡园水务",
+      "price": 150
+    },
+    {
+      "id": "fr-13",
+      "index": 13,
+      "type": "land",
+      "name": "昂热",
+      "group": "g3",
+      "price": 155,
+      "houseCost": 70,
+      "hotelCost": 105,
+      "baseRent": 18,
+      "oneHouseRent": 54,
+      "twoHouseRent": 108,
+      "hotelRent": 180
+    },
+    {
+      "id": "fr-14",
+      "index": 14,
+      "type": "land",
+      "name": "图尔",
+      "group": "g4",
+      "price": 205,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "fr-15",
+      "index": 15,
+      "type": "rail",
+      "name": "南岸渡口",
+      "price": 200
+    },
+    {
+      "id": "fr-16",
+      "index": 16,
+      "type": "land",
+      "name": "南锡",
+      "group": "g4",
+      "price": 195,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 23,
+      "oneHouseRent": 69,
+      "twoHouseRent": 138,
+      "hotelRent": 230
+    },
+    {
+      "id": "fr-17",
+      "index": 17,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "fr-18",
+      "index": 18,
+      "type": "land",
+      "name": "普瓦捷",
+      "group": "g4",
+      "price": 205,
+      "houseCost": 85,
+      "hotelCost": 125,
+      "baseRent": 25,
+      "oneHouseRent": 75,
+      "twoHouseRent": 150,
+      "hotelRent": 250
+    },
+    {
+      "id": "fr-19",
+      "index": 19,
+      "type": "land",
+      "name": "奥尔良",
+      "group": "g5",
+      "price": 235,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "fr-20",
+      "index": 20,
+      "type": "park",
+      "name": "免费停车场"
+    },
+    {
+      "id": "fr-21",
+      "index": 21,
+      "type": "land",
+      "name": "雷恩",
+      "group": "g5",
+      "price": 245,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 30,
+      "oneHouseRent": 90,
+      "twoHouseRent": 180,
+      "hotelRent": 300
+    },
+    {
+      "id": "fr-22",
+      "index": 22,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "fr-23",
+      "index": 23,
+      "type": "land",
+      "name": "阿维尼翁",
+      "group": "g5",
+      "price": 235,
+      "houseCost": 100,
+      "hotelCost": 145,
+      "baseRent": 28,
+      "oneHouseRent": 84,
+      "twoHouseRent": 168,
+      "hotelRent": 280
+    },
+    {
+      "id": "fr-24",
+      "index": 24,
+      "type": "land",
+      "name": "格勒诺布尔",
+      "group": "g6",
+      "price": 285,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "fr-25",
+      "index": 25,
+      "type": "rail",
+      "name": "山麓索道",
+      "price": 200
+    },
+    {
+      "id": "fr-26",
+      "index": 26,
+      "type": "land",
+      "name": "蒙彼利埃",
+      "group": "g6",
+      "price": 275,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 33,
+      "oneHouseRent": 99,
+      "twoHouseRent": 198,
+      "hotelRent": 330
+    },
+    {
+      "id": "fr-27",
+      "index": 27,
+      "type": "land",
+      "name": "南特",
+      "group": "g6",
+      "price": 285,
+      "houseCost": 115,
+      "hotelCost": 165,
+      "baseRent": 35,
+      "oneHouseRent": 105,
+      "twoHouseRent": 210,
+      "hotelRent": 350
+    },
+    {
+      "id": "fr-28",
+      "index": 28,
+      "type": "utility",
+      "name": "丘陵风场",
+      "price": 150
+    },
+    {
+      "id": "fr-29",
+      "index": 29,
+      "type": "land",
+      "name": "斯特拉斯堡",
+      "group": "g7",
+      "price": 315,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "fr-30",
+      "index": 30,
+      "type": "goJail",
+      "name": "前往监狱"
+    },
+    {
+      "id": "fr-31",
+      "index": 31,
+      "type": "land",
+      "name": "波尔多",
+      "group": "g7",
+      "price": 325,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 40,
+      "oneHouseRent": 120,
+      "twoHouseRent": 240,
+      "hotelRent": 400
+    },
+    {
+      "id": "fr-32",
+      "index": 32,
+      "type": "land",
+      "name": "图卢兹",
+      "group": "g7",
+      "price": 315,
+      "houseCost": 130,
+      "hotelCost": 185,
+      "baseRent": 38,
+      "oneHouseRent": 114,
+      "twoHouseRent": 228,
+      "hotelRent": 380
+    },
+    {
+      "id": "fr-33",
+      "index": 33,
+      "type": "fate",
+      "name": "命运"
+    },
+    {
+      "id": "fr-34",
+      "index": 34,
+      "type": "land",
+      "name": "里昂",
+      "group": "g8",
+      "price": 365,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    },
+    {
+      "id": "fr-35",
+      "index": 35,
+      "type": "rail",
+      "name": "海滨总站",
+      "price": 200
+    },
+    {
+      "id": "fr-36",
+      "index": 36,
+      "type": "chance",
+      "name": "机会"
+    },
+    {
+      "id": "fr-37",
+      "index": 37,
+      "type": "land",
+      "name": "马赛",
+      "group": "g8",
+      "price": 355,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 43,
+      "oneHouseRent": 129,
+      "twoHouseRent": 258,
+      "hotelRent": 430
+    },
+    {
+      "id": "fr-38",
+      "index": 38,
+      "type": "tax",
+      "name": "奢侈税",
+      "amount": 100
+    },
+    {
+      "id": "fr-39",
+      "index": 39,
+      "type": "land",
+      "name": "巴黎",
+      "group": "g8",
+      "price": 365,
+      "houseCost": 145,
+      "hotelCost": 205,
+      "baseRent": 45,
+      "oneHouseRent": 135,
+      "twoHouseRent": 270,
+      "hotelRent": 450
+    }
+  ],
+  "cards": {
+    "chance": [
+      {
+        "id": "fr-card-00",
+        "name": "薰衣草收成",
+        "effect": "cash",
+        "amount": 85,
+        "text": "河谷市集售出了最后一箱果酱。活动结余，收到 85。"
+      },
+      {
+        "id": "fr-card-01",
+        "name": "玻璃彩窗",
+        "effect": "pay",
+        "amount": 50,
+        "text": "玻璃温室需要更换破损的窗格。支付本期费用 50。"
+      },
+      {
+        "id": "fr-card-02",
+        "name": "河岸画展",
+        "effect": "steps",
+        "amount": 3,
+        "salary": true,
+        "text": "沿着河堤骑行比原定路线更快。沿路线前进 3 格。"
+      },
+      {
+        "id": "fr-card-03",
+        "name": "葡园采摘",
+        "effect": "goto",
+        "target": 0,
+        "salary": true,
+        "text": "河上信使带来了出行安排。沿路线前往启程广场。"
+      },
+      {
+        "id": "fr-card-04",
+        "name": "石屋翻新",
+        "effect": "rail",
+        "salary": true,
+        "text": "河岸火车停靠在下一座站台。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "fr-card-05",
+        "name": "旧港渔市",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 54,
+        "text": "山风吹落了屋面上的旧瓦。建筑检修，每栋房支付 18，每间旅馆支付 54。"
+      },
+      {
+        "id": "fr-card-06",
+        "name": "风车检修",
+        "effect": "steps",
+        "amount": -3,
+        "salary": false,
+        "text": "「风车检修」沿来路后退 3 格，不领取途经起点奖励。"
+      },
+      {
+        "id": "fr-card-07",
+        "name": "香草蒸馏",
+        "effect": "pass",
+        "text": "「香草蒸馏」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "fr-card-08",
+        "name": "手工纸展",
+        "effect": "collectEach",
+        "amount": 18,
+        "text": "「手工纸展」同行预订你的服务，向其他每名在局玩家收取 18。"
+      },
+      {
+        "id": "fr-card-09",
+        "name": "广场乐队",
+        "effect": "payEach",
+        "amount": 20,
+        "text": "「广场乐队」与同行分摊费用，向其他每名在局玩家支付 20。"
+      },
+      {
+        "id": "fr-card-10",
+        "name": "丘陵骑行",
+        "effect": "utility",
+        "salary": true,
+        "text": "「丘陵骑行」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "fr-card-11",
+        "name": "高山驿路",
+        "effect": "jail",
+        "text": "「高山驿路」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "fr-district-0",
+        "name": "河岸诗集摊",
+        "text": "沿岸的书摊打算为年轻作者留出一格展位。 原地交稿领 24；或付 16 前往第戎现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 11,
+        "fee": 16,
+        "reward": 24
+      },
+      {
+        "id": "fr-district-1",
+        "name": "版画编号展",
+        "text": "你的街角版画展售出了一批小幅作品。 收入 35。",
+        "effect": "cash",
+        "amount": 35
+      },
+      {
+        "id": "fr-district-2",
+        "name": "车站接画框",
+        "text": "一车装裱好的画框抵达前方车站。 前往最近的交通地产，经过起点可领 200。",
+        "effect": "rail",
+        "salary": true
+      },
+      {
+        "id": "fr-district-3",
+        "name": "遮阳篷缝补",
+        "text": "师傅拆下街铺的条纹遮阳篷，重新缝边。 每栋房缴 18，每间旅馆缴 65。",
+        "effect": "repair",
+        "amount": 18,
+        "hotelAmount": 65
+      }
+    ],
+    "fate": [
+      {
+        "id": "fr-card-12",
+        "name": "运河早餐",
+        "effect": "cash",
+        "amount": 100,
+        "text": "河谷市集售出了最后一箱果酱。活动结余，收到 100。"
+      },
+      {
+        "id": "fr-card-13",
+        "name": "博物馆夜",
+        "effect": "pay",
+        "amount": 65,
+        "text": "玻璃温室需要更换破损的窗格。支付本期费用 65。"
+      },
+      {
+        "id": "fr-card-14",
+        "name": "杏树花季",
+        "effect": "goto",
+        "target": 24,
+        "salary": true,
+        "text": "河上信使带来了出行安排。沿路线前往格勒诺布尔。"
+      },
+      {
+        "id": "fr-card-15",
+        "name": "小镇花车",
+        "effect": "rail",
+        "salary": true,
+        "text": "河岸火车停靠在下一座站台。搭乘接驳车，前往前方最近的交通站。"
+      },
+      {
+        "id": "fr-card-16",
+        "name": "酒窖测温",
+        "effect": "repair",
+        "amount": 20,
+        "hotelAmount": 60,
+        "text": "山风吹落了屋面上的旧瓦。建筑检修，每栋房支付 20，每间旅馆支付 60。"
+      },
+      {
+        "id": "fr-card-17",
+        "name": "河滩野营",
+        "effect": "cash",
+        "amount": 45,
+        "text": "河谷市集售出了最后一箱果酱。活动结余，收到 45。"
+      },
+      {
+        "id": "fr-card-18",
+        "name": "装帧工坊",
+        "effect": "steps",
+        "amount": 2,
+        "salary": true,
+        "text": "沿着河堤骑行比原定路线更快。沿路线前进 2 格。"
+      },
+      {
+        "id": "fr-card-19",
+        "name": "钟楼夜景",
+        "effect": "collectEach",
+        "amount": 15,
+        "text": "「钟楼夜景」同行预订你的服务，向其他每名在局玩家收取 15。"
+      },
+      {
+        "id": "fr-card-20",
+        "name": "海港渔灯",
+        "effect": "payEach",
+        "amount": 15,
+        "text": "「海港渔灯」与同行分摊费用，向其他每名在局玩家支付 15。"
+      },
+      {
+        "id": "fr-card-21",
+        "name": "柑橘温室",
+        "effect": "pass",
+        "text": "「柑橘温室」获得一张出狱卡，可保留或与其他玩家交易。"
+      },
+      {
+        "id": "fr-card-22",
+        "name": "蜂蜜品评",
+        "effect": "utility",
+        "salary": true,
+        "text": "「蜂蜜品评」探访前方最近的公用事业，计租时重新掷骰。"
+      },
+      {
+        "id": "fr-card-23",
+        "name": "剧院布景",
+        "effect": "jail",
+        "text": "「剧院布景」收到传讯，直接入狱，本次传送不领取起点奖励。"
+      },
+      {
+        "id": "fr-district-4",
+        "name": "阁楼爵士夜",
+        "text": "三位乐手想借街区阁楼录一段新合奏。 原地交稿领 24；或付 16 前往图卢兹现场选址，途中不领起点奖励。",
+        "effect": "commission",
+        "target": 32,
+        "fee": 16,
+        "reward": 24
+      },
+      {
+        "id": "fr-district-5",
+        "name": "印刷菜单",
+        "text": "露台小店要为周末活动增印手写菜单。 支付 40。",
+        "effect": "pay",
+        "amount": 40
+      },
+      {
+        "id": "fr-district-6",
+        "name": "阳台栏杆",
+        "text": "你名下的楼房要整修阳台铁栏杆。 每栋房缴 30，每间旅馆缴 105。",
+        "effect": "repair",
+        "amount": 30,
+        "hotelAmount": 105
+      },
+      {
+        "id": "fr-district-7",
+        "name": "拼单租展架",
+        "text": "邻铺把阅读节的折叠展架送到了。 向其他每位在局玩家支付 12。",
+        "effect": "payEach",
+        "amount": 12
+      }
+    ]
+  }
+}
