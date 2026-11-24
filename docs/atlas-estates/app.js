@@ -1,12 +1,13 @@
-import {roomLink,homeLink,invitedRoom} from './room-location.js?v=bb89845d1a9a';
-import {createGame,applyCommand,publicState,expire,migrateGame,assets,rent,buildable} from './packages/game-core/index.js?v=bb89845d1a9a';
-import {decide} from './packages/ai/index.js?v=bb89845d1a9a';
-import {validateMap} from './packages/maps/validate.js?v=bb89845d1a9a';
-import {checkSave} from './save-check.js?v=bb89845d1a9a';
-import {save,read,pref,setPref} from './storage.js?v=bb89845d1a9a';
-import {unlock,sound,configure,tracks} from './audio.js?v=bb89845d1a9a';
-import {configureShare,copy} from './share.js?v=bb89845d1a9a';
-import {RoomClient} from './net.js?v=bb89845d1a9a';
+import {DEFAULT_ROUND_LIMIT,ROUND_LIMITS,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from './packages/protocol/index.js?v=7b7b65f04cc8';
+import {roomLink,homeLink,invitedRoom} from './room-location.js?v=7b7b65f04cc8';
+import {createGame,applyCommand,publicState,expire,migrateGame,assets,rent,buildable} from './packages/game-core/index.js?v=7b7b65f04cc8';
+import {decide} from './packages/ai/index.js?v=7b7b65f04cc8';
+import {validateMap} from './packages/maps/validate.js?v=7b7b65f04cc8';
+import {checkSave} from './save-check.js?v=7b7b65f04cc8';
+import {save,read,pref,setPref} from './storage.js?v=7b7b65f04cc8';
+import {unlock,sound,configure,tracks} from './audio.js?v=7b7b65f04cc8';
+import {configureShare,copy} from './share.js?v=7b7b65f04cc8';
+import {RoomClient} from './net.js?v=7b7b65f04cc8';
 
 const app=document.querySelector('#app'),overlay=document.querySelector('#overlay'),viewport=document.querySelector('.game-viewport');
 const palette=['#b64d34','#2c6e69','#855484','#866021'];
@@ -23,7 +24,9 @@ const cmd=(type,label,disabled=false)=>btn('cmd:'+type,label,'primary',disabled)
 const svg=(paths)=>'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6">'+paths+'</svg>';
 const newRoomIcon=svg('<path d="M3 15L16 5l13 10M7 14v13h18V14M13 27v-9h6v9"/>');
 const joinIcon=svg('<path d="M16 5h11v22H16M3 16h17m-7-7 7 7-7 7"/>');
-let catalog=[],map=null,s=null,room=null,net=null,source='solo',screen='home',profile=pref('profile',{name:'旅行家',avatar:0}),selection='cn',setup='solo',prefs=pref('prefs',{music:true,sfx:true,fast:false}),config=pref('config',{mode:'quick',limit:30,difficulty:'normal',count:2,classicBuildingRules:false,aiFill:false}),saved=null;
+let catalog=[],map=null,s=null,room=null,net=null,source='solo',screen='home',profile=pref('profile',{name:'旅行家',avatar:0}),selection='cn',setup='solo',prefs=pref('prefs',{music:true,sfx:true,fast:false}),config=pref('config',{mode:'quick',limit:DEFAULT_ROUND_LIMIT,difficulty:'normal',count:2,classicBuildingRules:false,aiFill:false}),saved=null;
+const preferredLimit=migrateRoundLimit(config.limit);
+config.limit=isRoundLimit(preferredLimit)?preferredLimit:DEFAULT_ROUND_LIMIT;
 let pauseStarted=0;
 let actionTimer,busy=false,paused=false,netStatus='',toastTimer,scene=0,modal=null,lastStamp=0,animation=null,storeChain=Promise.resolve();
 const maps=new Map();
@@ -52,13 +55,13 @@ function mapCard(m){return '<button class="map-card '+(screen==='maps'&&selectio
 function mapsPage(kind){viewport.scrollTop=0;app.dataset.screen='maps';screen='maps';setup=kind;close();app.innerHTML='<div class="topline"><div><div class="folio">DESTINATIONS</div><h1>选择旅行地图</h1></div>'+btn('home','返回')+'</div><div class="maps-grid">'+catalog.map(mapCard).join('')+'</div>'}
 const opt=(value,label,current)=>'<option value="'+value+'" '+(String(value)===String(current)?'selected':'')+'>'+safe(label)+'</option>';
 function gameForm(){
- return '<div class="field-pair"><label>模式<select id="mode">'+opt('quick','快速模式',config.mode)+opt('classic','经典模式',config.mode)+'</select></label><label>快速回合数<select id="limit">'+[20,30,40].map(v=>opt(v,v+' 轮',config.limit)).join('')+'</select></label></div><div class="field-pair"><label>AI 难度<select id="difficulty">'+[['easy','简单'],['normal','普通'],['hard','困难']].map(([v,t])=>opt(v,t,config.difficulty)).join('')+'</select></label>'+(setup==='solo'?'<label>AI 对手<select id="count">'+[1,2,3].map(v=>opt(v,v+' 位',config.count)).join('')+'</select></label>':'<label class="check"><input type="checkbox" id="aiFill" '+(config.aiFill?'checked':'')+'>自动用人机补满空位</label>')+'</div><label class="check"><input type="checkbox" id="classic" '+(config.classicBuildingRules?'checked':'')+'>集齐同组并均衡建设</label>'
+ return '<div class="field-pair"><label>模式<select id="mode">'+opt('quick','快速模式',config.mode)+opt('classic','经典模式',config.mode)+'</select></label><label>快速回合数<select id="limit">'+ROUND_LIMITS.map(v=>opt(v,v===UNLIMITED_ROUNDS?'无限':'50轮',config.limit)).join('')+'</select></label></div><div class="field-pair"><label>AI 难度<select id="difficulty">'+[['easy','简单'],['normal','普通'],['hard','困难']].map(([v,t])=>opt(v,t,config.difficulty)).join('')+'</select></label>'+(setup==='solo'?'<label>AI 对手<select id="count">'+[1,2,3].map(v=>opt(v,v+' 位',config.count)).join('')+'</select></label>':'<label class="check"><input type="checkbox" id="aiFill" '+(config.aiFill?'checked':'')+'>自动用人机补满空位</label>')+'</div><label class="check"><input type="checkbox" id="classic" '+(config.classicBuildingRules?'checked':'')+'>集齐同组并均衡建设</label>'
 }
 function profileForm(){return '<div class="field-pair"><label>旅行昵称<input id="nickname" maxlength="16" value="'+safe(profile.name)+'" autocomplete="nickname"></label><label>棋子图案<select id="avatar">'+avatars.map((v,i)=>opt(i,v+' '+portraitNames[i],profile.avatar)).join('')+'</select></label></div>'}
 function setupView(){const m=catalog.find(m=>m.id===selection);modalBox(m.name,'<div class="form"><img class="map-preview" src="'+safe(m.art)+'" alt=""><p>'+safe(m.description)+'</p><span class="muted">'+safe([m.difficulty,m.duration,m.players].join(' · '))+'<br>'+safe(m.landmarks.join(' / '))+'</span>'+profileForm()+gameForm()+btn('startSetup',setup==='solo'?'开始旅行':'创建房间','go')+'<small class="room-progress" role="status"></small></div>')}
 const value=id=>document.getElementById(id)?.value;
 function capture(){if(document.getElementById('nickname')){profile={name:(value('nickname')||'旅行家').trim()||'旅行家',avatar:+value('avatar')};setPref('profile',profile)}if(document.getElementById('mode')){config={mode:value('mode'),limit:+value('limit'),difficulty:value('difficulty'),count:+value('count')||config.count,classicBuildingRules:document.querySelector('#classic').checked,aiFill:!!document.querySelector('#aiFill')?.checked};setPref('config',config)}}
-async function getMap(id){if(!catalog.some(m=>m.id===id))throw Error('地图版本不兼容');if(!maps.has(id)){const r=await fetch('./packages/maps/'+id+'.json');if(!r.ok)throw Error('地图读取失败，请重新打开');const packed=r.clone(),m=await r.json();validateMap(m);maps.set(id,m);if(window.isSecureContext&&'caches'in window){caches.open('atlas-offline-v3').then(async c=>{await c.put('./packages/maps/'+id+'.json',packed);await Promise.all([m.art,m.icon].map(async url=>{if(!await c.match(url))await c.add(url)}))}).catch(()=>{})}}return maps.get(id)}
+async function getMap(id){if(!catalog.some(m=>m.id===id))throw Error('地图版本不兼容');if(!maps.has(id)){const r=await fetch('./packages/maps/'+id+'.json');if(!r.ok)throw Error('地图读取失败，请重新打开');const packed=r.clone(),m=await r.json();validateMap(m);maps.set(id,m);if(window.isSecureContext&&'caches'in window){caches.open('atlas-offline-v4').then(async c=>{await c.put('./packages/maps/'+id+'.json',packed);await Promise.all([m.art,m.icon].map(async url=>{if(!await c.match(url))await c.add(url)}))}).catch(()=>{})}}return maps.get(id)}
 function storeGame(){const game=s,options={...config};saved={game,settings:options,version:2};storeChain=storeChain.then(()=>save(game,options)).catch(()=>toast('浏览器未能保存进度，请检查存储空间'))}
 async function startSolo(){clearTimeout(actionTimer);source='solo';map=await getMap(selection);const names=['棠舟','杉野','望舒'];const players=[{id:'human',name:profile.name,avatar:profile.avatar,ai:false},...names.slice(0,config.count).map((name,i)=>({id:'ai'+i,name,avatar:(profile.avatar+i+1)%8,ai:true}))];s=createGame(map,players,config);pauseStarted=0;aiError=null;paused=false;close();screen='game';audioSettings();storeGame();paint();schedule()}
 async function restore(previous=false){
@@ -71,9 +74,12 @@ async function restore(previous=false){
   source='solo';
   s=migrated;
   if(s.trade&&r.time)s.trade.deadline=Date.now()+Math.max(0,s.trade.deadline-r.time);
-  pauseStarted=0;aiError=null;config={...config,...r.settings};selection=map.id;paused=false;
+  pauseStarted=0;aiError=null;config={...config,...r.settings,mode:s.mode,limit:s.limit};selection=map.id;paused=false;
   close();screen='game';audioSettings();paint();
-  if(migrated!==r.game){storeGame();toast('旧棋局已更新为单骰规则')}
+  if(migrated!==r.game){
+    storeGame();
+    toast(r.game.version===1?'旧棋局已更新为单骰规则':'旧棋局的快速回合数已更新为50轮');
+  }
   schedule();
 }
 
@@ -113,7 +119,7 @@ function lobby(){
     (host?'<div class="actions">'+btn('addBot','添加一位人机','',count>=4)+btn('roomSettings','房间设置')+'</div>':'')+
     (bots.length?'<small>开局前，好友可接替满员房中的人机。</small>':'')+
     '<div class="actions">'+btn('ready',mine?.ready?'取消准备':'准备就绪','primary')+(host?btn('launch','开始联机游戏','go',count<2||!humansReady):'')+'</div></div>'+
-    '<aside class="panel stack lobby-invite"><img class="map-preview" src="'+safe(mapInfo.art)+'" alt=""><div><h3>'+safe(mapInfo.name)+'</h3><small>'+safe(settings.mode==='classic'?'经典对局':'快速 '+settings.roundLimit+' 轮')+'</small></div><div class="lobby-code"><span>邀请房间码</span><strong class="code">'+safe(room.code)+'</strong></div><span class="network">'+safe(netStatus)+'</span><p class="roomlink">'+safe(roomLink(room.code))+'</p><div class="actions">'+btn('copyCode','复制房间码')+btn('copyLink','复制链接')+btn('share','分享')+'</div></aside></div>';
+    '<aside class="panel stack lobby-invite"><img class="map-preview" src="'+safe(mapInfo.art)+'" alt=""><div><h3>'+safe(mapInfo.name)+'</h3><small>'+safe(settings.mode==='classic'?'经典对局':settings.roundLimit===UNLIMITED_ROUNDS?'快速·无限回合':'快速50轮')+'</small></div><div class="lobby-code"><span>邀请房间码</span><strong class="code">'+safe(room.code)+'</strong></div><span class="network">'+safe(netStatus)+'</span><p class="roomlink">'+safe(roomLink(room.code))+'</p><div class="actions">'+btn('copyCode','复制房间码')+btn('copyLink','复制链接')+btn('share','分享')+'</div></aside></div>';
 }
 function roomSettings(){config={...config,...room.settings,limit:room.settings.roundLimit};setup='create';modalBox('房间设置','<div class="form"><label>地图<select id="mapId">'+catalog.map(m=>opt(m.id,m.name,room.settings.mapId)).join('')+'</select></label>'+gameForm()+btn('saveRoomSettings','保存设置','primary')+'</div>')}
 function settingsPayload(){return {mapId:selection,mode:config.mode,roundLimit:config.limit,classicBuildingRules:config.classicBuildingRules,aiFill:config.aiFill,difficulty:config.difficulty}}
@@ -204,7 +210,7 @@ function turnActions(){const p=player(acting()),myTurn=p.id===me(),t=map.tiles[p
  }
  return '<div class="actions">'+controls+'</div>'
 }
-function controls(){const p=player(acting()),deadline=s.phase==='trade'?s.trade?.deadline:room?.deadline;return '<section class="turn-box"><div class="row between"><div><div class="folio">ROUND '+s.round+(s.mode==='quick'?' / '+s.limit:'')+'</div><h2>'+safe(p.name)+' · '+safe(titles[s.phase])+'</h2></div><div class="dice">'+[s.dice[0]].map(d=>'<span class="die" aria-label="'+d+' 点">'+('⚀⚁⚂⚃⚄⚅'[d-1]||'·')+'</span>').join('')+'</div></div>'+decisionPreview()+turnActions()+(deadline?'<small data-deadline="'+deadline+'"></small>':'')+'</section>'}
+function controls(){const p=player(acting()),deadline=s.phase==='trade'?s.trade?.deadline:room?.deadline;return '<section class="turn-box"><div class="row between"><div><div class="folio">ROUND '+s.round+(s.mode==='quick'?' / '+(s.limit===UNLIMITED_ROUNDS?'∞':s.limit):'')+'</div><h2>'+safe(p.name)+' · '+safe(titles[s.phase])+'</h2></div><div class="dice">'+[s.dice[0]].map(d=>'<span class="die" aria-label="'+d+' 点">'+('⚀⚁⚂⚃⚄⚅'[d-1]||'·')+'</span>').join('')+'</div></div>'+decisionPreview()+turnActions()+(deadline?'<small data-deadline="'+deadline+'"></small>':'')+'</section>'}
 function gameTools(){return btn('manage','地产管理')+btn('logs','行程日志')+btn('tileList','全图索引')+btn('zoomBoard','放大棋盘')+btn('rules','规则说明')}
 function paint(){if(app.dataset.screen!=='game')viewport.scrollTop=0;app.dataset.screen='game';if(screen!=='game'||!s)return;if(s.phase==='finished'){results();updateCard();return}app.innerHTML='<div class="topline"><div><div class="folio">'+(source==='solo'?'SOLO VOYAGE':'ROOM '+safe(room.code))+'</div><h1>'+safe(map.name)+'</h1></div><div class="actions">'+(source==='online'?'<span class="network">'+safe(netStatus)+'</span>':'')+btn('menu','对局菜单')+'</div></div><div class="arena"><div>'+board()+'<div class="actions board-tools">'+gameTools()+'</div></div><aside class="control-strip">'+controls()+(aiError?'<div class="ticket ai-error" role="alert">'+safe(aiError)+btn('retryAI','重试 AI','primary')+'</div>':'')+'<div class="stack">'+s.players.map(playerCard).join('')+'</div><div class="mobile-tiles"><div class="actions">'+gameTools()+'</div></div><div class="ticket"><h3>最新行程</h3><p>'+safe(s.log.at(-1))+'</p></div></aside></div>';if(modal)modal();clock();updateCard()}
 function results(){viewport.scrollTop=0;app.dataset.screen='results';const propCount=id=>Object.values(s.properties).filter(a=>a.ownerId===id);close();app.innerHTML='<div class="topline"><div><div class="folio">ARRIVALS</div><h1>旅程结算</h1></div></div><div class="summary-grid">'+s.ranking.map((id,i)=>{const p=player(id),props=propCount(id);return '<article class="ticket stack"><div class="folio">RANK '+(i+1)+'</div><h2>'+safe(p.name)+'</h2><strong>总资产 '+money(assets(s,map,id))+'</strong>'+grid([['现金',money(p.cash)],['地产',props.length+' 处'],['建筑',props.filter(a=>a.level===3).length+' 间旅馆，'+props.reduce((v,a)=>v+(a.level===3?0:a.level),0)+' 栋房'],['累计收租',money(p.rentReceived)],['累计支付',money(p.paid)],['状态',p.bankrupt?'破产':'完成旅行']])+'</article>'}).join('')+'</div><div class="actions section-head">'+btn('again','再来一局','primary')+btn('returnHome','返回首页')+'</div>'}
@@ -286,7 +292,7 @@ function schedule(){
 async function send(type,payload={}){if(busy||paused||!s||s.phase==='finished')return;busy=true;const revision=s.revision;try{if(source==='online')await net.command({type,...payload});else if(revision===s.revision){transition(applyCommand(s,{playerId:me(),type,...payload},map));storeGame();schedule()}sound()}finally{busy=false}}
 
 
-function rules(){modal=null;modalBox('旅行规则','<ol class="rule-list"><li>每人从起点携带 ₳ 1,500 出发。掷一枚骰子，按 1～6 点移动，经过起点领 ₳ 200。</li><li>落在无主地产时可购买或选择不买。余额不足时仍可选择不买，地产继续由银行持有。</li><li>最终停在自己未抵押的普通地产，才能建设一次。空地 → 一栋房 → 两栋房 → 一间旅馆。持有完整同色组的空地租金翻倍。</li><li>交通按持有数量计租，公用事业按单枚骰子点数乘以持有倍率计租。抵押地产免租，建筑可按升级费用的一半逐级出售。</li><li>掷骰前可交易现金、无建筑地产和出狱卡。双方确认后成交。欠款时可先出售建筑或抵押地产。因银行债务破产的地产清空产权、建筑和抵押后归还银行。</li><li>入狱可支付 ₳ 50 或使用出狱卡后正常掷骰。也可尝试掷出 6 点免费出狱并移动。前两次失败留在监狱，第三次失败支付 ₳ 50 后按本次点数移动。</li><li>街区委托可原地交稿收款，或支付路费前往指定地产。去现场途中不领起点奖励，到达后正常购地、付租或建设。</li><li>经典模式最后一名未破产玩家胜出。快速模式以轮数为限，按现金、地产、建筑投入减抵押本金排名。</li></ol>')}
+function rules(){modal=null;modalBox('旅行规则','<ol class="rule-list"><li>每人从起点携带 ₳ 1,500 出发。掷一枚骰子，按 1～6 点移动，经过起点领 ₳ 200。</li><li>落在无主地产时可购买或选择不买。余额不足时仍可选择不买，地产继续由银行持有。</li><li>最终停在自己未抵押的普通地产，才能建设一次。空地 → 一栋房 → 两栋房 → 一间旅馆。持有完整同色组的空地租金翻倍。</li><li>交通按持有数量计租，公用事业按单枚骰子点数乘以持有倍率计租。抵押地产免租，建筑可按升级费用的一半逐级出售。</li><li>掷骰前可交易现金、无建筑地产和出狱卡。双方确认后成交。欠款时可先出售建筑或抵押地产。因银行债务破产的地产清空产权、建筑和抵押后归还银行。</li><li>入狱可支付 ₳ 50 或使用出狱卡后正常掷骰。也可尝试掷出 6 点免费出狱并移动。前两次失败留在监狱，第三次失败支付 ₳ 50 后按本次点数移动。</li><li>街区委托可原地交稿收款，或支付路费前往指定地产。去现场途中不领起点奖励，到达后正常购地、付租或建设。</li><li>只剩一名未破产玩家时立即获胜。快速模式默认50轮，第50轮最后一位玩家完整结束回合后，按现金、地产、建筑投入减抵押本金排名。选择无限则按最后一名未破产玩家结算。</li></ol>')}
 function settings(){
   modal=null;
   const toggles=[['music','背景音乐'],['sfx','操作音效'],['fast','加速或跳过动画']].map(([k,t])=>

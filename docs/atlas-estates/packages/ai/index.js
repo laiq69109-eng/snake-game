@@ -1,4 +1,4 @@
-import {groupTiles,redemption,principal,refund,upgrade,buildable} from '../game-core/economy.js?v=bb89845d1a9a';
+import {groupTiles,redemption,principal,refund,upgrade,buildable} from '../game-core/economy.js?v=7b7b65f04cc8';
 
 function holdingValue(s,m,t,id){
   const held=t.type==='land'?groupTiles(m,t):m.tiles.filter(x=>x.type===t.type);

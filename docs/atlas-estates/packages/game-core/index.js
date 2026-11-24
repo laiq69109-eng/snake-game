@@ -1,7 +1,7 @@
-import {requireRule as check,validateCommand} from '../protocol/index.js?v=bb89845d1a9a';
-import {validateMap} from '../maps/validate.js?v=bb89845d1a9a';
-import {player,assets,rent,principal,redemption,upgrade,refund,buildable,groupTiles} from './economy.js?v=bb89845d1a9a';
-export {assets,rent,principal,redemption,upgrade,refund,buildable} from './economy.js?v=bb89845d1a9a';
+import {requireRule as check,validateCommand,DEFAULT_ROUND_LIMIT,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from '../protocol/index.js?v=7b7b65f04cc8';
+import {validateMap} from '../maps/validate.js?v=7b7b65f04cc8';
+import {player,assets,rent,principal,redemption,upgrade,refund,buildable,groupTiles} from './economy.js?v=7b7b65f04cc8';
+export {assets,rent,principal,redemption,upgrade,refund,buildable} from './economy.js?v=7b7b65f04cc8';
 
 const alive = s=>s.players.filter(p=>!p.bankrupt);
 const note = (s,msg)=>{s.log.push(msg);if(s.log.length>80)s.log.shift()};
@@ -16,12 +16,14 @@ export function createGame(map,seats,settings={},deps={}) {
   validateMap(map);
   check(seats.length>=2 && seats.length<=4 && seats.every(p=>typeof p.id==='string' && p.id.length>0) &&
     new Set(seats.map(p=>p.id)).size===seats.length,'INVALID_SEATS');
+  const limit=settings.limit===undefined?DEFAULT_ROUND_LIMIT:settings.limit;
+  check(isRoundLimit(limit),'INVALID_ROUND_LIMIT');
   const {random}=environment(deps);
   const players=shuffle(seats,random).map(p=>({id:p.id,name:p.name||p.id,avatar:p.avatar??0,ai:!!p.ai,
     cash:1500,pos:map.tiles.findIndex(t=>t.type==='start'),jailed:false,attempts:0,cards:[],bankrupt:false,rentReceived:0,paid:0}));
   const properties=Object.fromEntries(map.tiles.filter(t=>['land','rail','utility'].includes(t.type)).map(t=>[t.index,{ownerId:null,level:0,mortgaged:false}]));
   return {version:2,id:deps.id??Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join(''),mapId:map.id,mode:settings.mode==='quick'?'quick':'classic',
-    limit:[20,30,40].includes(settings.limit)?settings.limit:30,classicBuildingRules:!!settings.classicBuildingRules,
+    limit,classicBuildingRules:!!settings.classicBuildingRules,
     current:players[0].id,players,properties,round:1,turn:1,phase:'roll',dice:[1],lastRoll:null,
     revision:0,queue:[],debt:null,trade:null,ranking:[],decks:Object.fromEntries(['chance','fate'].map(k=>[k,shuffle(map.cards[k].map(c=>c.id),random)])),
     log:['出发顺序 · '+players.map(p=>p.name).join(' → ')],lastMove:null,lastCard:null,lastLanding:null};
@@ -35,7 +37,7 @@ function finish(s,m) {
 function next(s,m) {
   if(alive(s).length<=1)return finish(s,m);
   let i=s.players.findIndex(p=>p.id===s.current);
-  do {i=(i+1)%s.players.length;if(i===0){if(s.mode==='quick'&&s.round>=s.limit)return finish(s,m);s.round++}}
+  do {i=(i+1)%s.players.length;if(i===0){if(s.mode==='quick'&&s.limit!==UNLIMITED_ROUNDS&&s.round>=s.limit)return finish(s,m);s.round++}}
   while(s.players[i].bankrupt);
   s.current=s.players[i].id;s.turn++;s.lastTradeTurn=null;
   s.phase=active(s).jailed?'jail':'roll';
@@ -136,10 +138,13 @@ function drain(s,m,e) {
   }
 }
 export function migrateGame(state,m,now=Date.now()){
-  if(state.version===2)return state;
+  const limit=migrateRoundLimit(state.limit);
+  check(isRoundLimit(limit),'INVALID_ROUND_LIMIT','存档中的快速回合数无效');
+  if(state.version===2)return limit===state.limit?state:{...state,limit};
   check(state.version===1,'UNSUPPORTED_SAVE','无法继续此版本的棋局');
   const s=structuredClone(state);
   s.version=2;
+  s.limit=limit;
   s.dice=[Math.min(6,Math.max(1,s.dice?.[0]||1))];
   s.lastRoll=null;
   s.lastLanding=null;
