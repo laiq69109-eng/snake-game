@@ -1,7 +1,7 @@
-import {requireRule as check,validateCommand} from '../protocol/index.js';
-import {validateMap} from '../maps/validate.js';
-import {player,assets,rent,principal,redemption,upgrade,refund,buildable,groupTiles} from './economy.js';
-export {assets,rent,principal,redemption,upgrade,refund,buildable} from './economy.js';
+import {requireRule as check,validateCommand} from '../protocol/index.js?v=bb89845d1a9a';
+import {validateMap} from '../maps/validate.js?v=bb89845d1a9a';
+import {player,assets,rent,principal,redemption,upgrade,refund,buildable,groupTiles} from './economy.js?v=bb89845d1a9a';
+export {assets,rent,principal,redemption,upgrade,refund,buildable} from './economy.js?v=bb89845d1a9a';
 
 const alive = s=>s.players.filter(p=>!p.bankrupt);
 const note = (s,msg)=>{s.log.push(msg);if(s.log.length>80)s.log.shift()};
@@ -20,15 +20,15 @@ export function createGame(map,seats,settings={},deps={}) {
   const players=shuffle(seats,random).map(p=>({id:p.id,name:p.name||p.id,avatar:p.avatar??0,ai:!!p.ai,
     cash:1500,pos:map.tiles.findIndex(t=>t.type==='start'),jailed:false,attempts:0,cards:[],bankrupt:false,rentReceived:0,paid:0}));
   const properties=Object.fromEntries(map.tiles.filter(t=>['land','rail','utility'].includes(t.type)).map(t=>[t.index,{ownerId:null,level:0,mortgaged:false}]));
-  return {version:1,id:deps.id??Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join(''),mapId:map.id,mode:settings.mode==='quick'?'quick':'classic',
+  return {version:2,id:deps.id??Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join(''),mapId:map.id,mode:settings.mode==='quick'?'quick':'classic',
     limit:[20,30,40].includes(settings.limit)?settings.limit:30,classicBuildingRules:!!settings.classicBuildingRules,
-    current:players[0].id,players,properties,round:1,turn:1,phase:'roll',dice:[1,1],doubles:0,extra:false,
-    revision:0,queue:[],debt:null,trade:null,auction:null,ranking:[],decks:Object.fromEntries(['chance','fate'].map(k=>[k,shuffle(map.cards[k].map(c=>c.id),random)])),
-    log:['出发顺序 · '+players.map(p=>p.name).join(' → ')],lastMove:null,lastCard:null};
+    current:players[0].id,players,properties,round:1,turn:1,phase:'roll',dice:[1],lastRoll:null,
+    revision:0,queue:[],debt:null,trade:null,ranking:[],decks:Object.fromEntries(['chance','fate'].map(k=>[k,shuffle(map.cards[k].map(c=>c.id),random)])),
+    log:['出发顺序 · '+players.map(p=>p.name).join(' → ')],lastMove:null,lastCard:null,lastLanding:null};
 }
 export function publicState(s){const {decks,queue,...rest}=s;return structuredClone(rest)}
 function finish(s,m) {
-  s.phase='finished';s.queue=[];s.auction=s.trade=s.debt=null;
+  s.phase='finished';s.queue=[];s.trade=s.debt=null;
   s.ranking=[...s.players].sort((a,b)=>Number(a.bankrupt)-Number(b.bankrupt)||assets(s,m,b.id)-assets(s,m,a.id)).map(p=>p.id);
   note(s,'旅程结束 · '+player(s,s.ranking[0]).name+' 位列第一');
 }
@@ -37,7 +37,7 @@ function next(s,m) {
   let i=s.players.findIndex(p=>p.id===s.current);
   do {i=(i+1)%s.players.length;if(i===0){if(s.mode==='quick'&&s.round>=s.limit)return finish(s,m);s.round++}}
   while(s.players[i].bankrupt);
-  s.current=s.players[i].id;s.turn++;s.doubles=0;s.extra=false;s.lastTradeTurn=null;
+  s.current=s.players[i].id;s.turn++;s.lastTradeTurn=null;
   s.phase=active(s).jailed?'jail':'roll';
 }
 function pay(s,d) {
@@ -46,10 +46,15 @@ function pay(s,d) {
   if(p.cash<d.amount){s.phase='debt';s.debt=d;note(s,p.name+' 待清偿 '+d.amount+' · '+d.reason);return}
   p.cash-=d.amount;p.paid+=d.amount;
   if(receiver){receiver.cash+=d.amount;if(d.reason==='租金')receiver.rentReceived+=d.amount}
+  if(d.cardRevision===s.lastCard?.revision && s.lastCard){
+    if(s.lastCard.playerId===p.id)s.lastCard.spent+=d.amount;
+    if(s.lastCard.playerId===receiver?.id)s.lastCard.received+=d.amount;
+  }
   note(s,p.name+' 支付 '+d.amount+' · '+d.reason);
 }
 function jail(s,m) {
-  const p=active(s);p.pos=m.tiles.findIndex(t=>t.type==='jail');p.jailed=true;p.attempts=0;s.extra=false;s.doubles=0;
+  const p=active(s);p.pos=m.tiles.findIndex(t=>t.type==='jail');p.jailed=true;p.attempts=0;
+  s.lastLanding={index:p.pos,playerId:p.id,revision:s.revision,result:'进入监狱'};
   s.lastMove={id:s.revision,playerId:p.id,path:[p.pos]};note(s,p.name+' 进入监狱');next(s,m);
 }
 function walk(s,m,steps,salary,viaCard) {
@@ -58,23 +63,27 @@ function walk(s,m,steps,salary,viaCard) {
     p.pos=(p.pos+Math.sign(steps)+m.tiles.length)%m.tiles.length;path.push(p.pos);
     if(steps>0 && salary && m.tiles[p.pos].type==='start'){p.cash+=200;note(s,p.name+' 经过起点 +200')}
   }
+  if(viaCard && s.lastCard?.playerId===p.id){
+    s.lastCard.destination=p.pos;
+    s.lastCard.arrivalRevision=s.revision;
+  }
   if(viaCard && s.lastMove?.id===s.revision)s.lastMove.path.push(...path);
   else s.lastMove={id:s.revision,playerId:p.id,path};
   s.queue.unshift({kind:'land',viaCard});
 }
-function dice(e){return [1+Math.floor(e.random()*6),1+Math.floor(e.random()*6)]}
+function rollDie(e){return 1+Math.floor(e.random()*6)}
 function draw(s,m,kind,e) {
   const p=active(s),deck=s.decks[kind];
   if(!deck.length)deck.push(...shuffle(m.cards[kind].filter(c=>!s.players.some(x=>x.cards.includes(c.id))).map(c=>c.id),e.random));
   if(!deck.length)return;
   const id=deck.shift(),c=m.cards[kind].find(x=>x.id===id);
-  s.lastCard={...c,revision:s.revision};note(s,c.name+' · '+c.text);
+  s.lastCard={...c,kind,playerId:p.id,revision:s.revision,received:0,spent:0};note(s,c.name+' · '+c.text);
   if(c.effect==='pass'){p.cards.push(id);return}
   deck.push(id);
-  const debt=(from,to,amount)=>({kind:'pay',from,to,amount,reason:c.name});
+  const debt=(from,to,amount)=>({kind:'pay',from,to,amount,reason:c.name,cardRevision:s.lastCard.revision});
   switch(c.effect) {
     case 'commission':s.phase='commission';break;
-    case 'cash':p.cash+=c.amount;break;
+    case 'cash':p.cash+=c.amount;s.lastCard.received+=c.amount;break;
     case 'pay':s.queue.unshift(debt(p.id,null,c.amount));break;
     case 'jail':jail(s,m);break;
     case 'payEach':case 'collectEach':
@@ -91,18 +100,25 @@ function draw(s,m,kind,e) {
     }
   }
 }
-function auction(s,tile,now){s.phase='auction';s.auction={tile,bid:0,leader:null,passed:[],deadline:now+15000}}
 function land(s,m,viaCard,e){
   const p=active(s),t=m.tiles[p.pos],a=s.properties[p.pos];
+  s.lastLanding={index:t.index,playerId:p.id,revision:s.revision};
+  const result=text=>{s.lastLanding.result=text;};
   note(s,p.name+' 抵达 '+t.name);
   if(a){
-    if(!a.ownerId){if(p.cash<t.price)auction(s,t.index,e.now);else s.phase='buy';return}
-    if(a.ownerId===p.id){if(buildable(s,m,t.index,p.id))s.phase='build';return}
-    if(a.mortgaged)return;
-    const d=viaCard&&t.type==='utility'?dice(e):s.dice;
-    if(d!==s.dice)note(s,'公用事业计租骰 '+d.join(' + '));
-    pay(s,{from:p.id,to:a.ownerId,amount:rent(s,m,t.index,d[0]+d[1]),reason:'租金'});
-  }else if(t.type==='tax')pay(s,{from:p.id,to:null,amount:t.amount,reason:t.name});
+    if(!a.ownerId){s.phase='buy';result('可购买');return}
+    if(a.ownerId===p.id){if(buildable(s,m,t.index,p.id))s.phase='build';result(s.phase==='build'?'可建设':'自有地产');return}
+    if(a.mortgaged){result('已抵押，免租');return}
+    const cardUtility=viaCard&&t.type==='utility';
+    const point=cardUtility?rollDie(e):s.dice[0];
+    if(cardUtility)note(s,'公用事业计租骰 '+point+' 点');
+    const amount=rent(s,m,t.index,point);
+    pay(s,{from:p.id,to:a.ownerId,amount,reason:'租金'});
+    result((s.phase==='debt'?'待付租金 ₳':'支付租金 ₳')+amount);
+  }else if(t.type==='tax'){
+    pay(s,{from:p.id,to:null,amount:t.amount,reason:t.name});
+    result((s.phase==='debt'?'待缴税 ₳':'缴税 ₳')+t.amount);
+  }
   else if(t.type==='goJail')jail(s,m);
   else if(t.type==='chance'||t.type==='fate')draw(s,m,t.type,e);
 }
@@ -116,20 +132,33 @@ function drain(s,m,e) {
       case 'land':land(s,m,job.viaCard,e);break;
       case 'pay':pay(s,job);break;
       case 'move':if(!active(s).bankrupt)walk(s,m,job.steps,true,false);break;
-      case 'auction':auction(s,job.tile,e.now);break;
     }
   }
 }
-function closeAuction(s,m,e){
-  const a=s.auction,w=player(s,a.leader);
-  if(w){check(w.cash>=a.bid,'INSUFFICIENT_FUNDS');w.cash-=a.bid;w.paid+=a.bid;s.properties[a.tile].ownerId=w.id}
-  note(s,m.tiles[a.tile].name+(w?' 由 '+w.name+' 以 '+a.bid+' 竞得':' 流拍'));
-  s.auction=null;s.phase='resolve';drain(s,m,e);
+export function migrateGame(state,m,now=Date.now()){
+  if(state.version===2)return state;
+  check(state.version===1,'UNSUPPORTED_SAVE','无法继续此版本的棋局');
+  const s=structuredClone(state);
+  s.version=2;
+  s.dice=[Math.min(6,Math.max(1,s.dice?.[0]||1))];
+  s.lastRoll=null;
+  s.lastLanding=null;
+  if(s.lastCard){
+    const kind=['chance','fate'].find(key=>m.cards[key].some(card=>card.id===s.lastCard.id));
+    s.lastCard={...s.lastCard,kind,playerId:s.current,received:0,spent:0};
+  }
+  s.queue=s.queue.filter(job=>job.kind!=='auction');
+  if(s.phase==='auction'){
+    if(s.properties[s.auction?.tile])s.properties[s.auction.tile]={ownerId:null,level:0,mortgaged:false};
+    s.phase='resolve';
+    drain(s,m,environment({now}));
+  }else if(s.phase==='roll'&&s.doubles>0)s.phase='end';
+  delete s.auction;
+  delete s.doubles;
+  delete s.extra;
+  return s;
 }
 export function expire(state,m,now=Date.now()){
-  if(state.phase==='auction' && now>=state.auction.deadline){
-    const s=structuredClone(state);s.revision++;closeAuction(s,m,environment({now}));return s;
-  }
   if(state.phase==='trade' && now>=state.trade.deadline){
     const s=structuredClone(state);s.revision++;s.trade=null;s.phase='roll';note(s,'交易已超时');return s;
   }
@@ -137,7 +166,7 @@ export function expire(state,m,now=Date.now()){
 }
 function returnCard(s,m,id){const k=['chance','fate'].find(k=>m.cards[k].some(c=>c.id===id));s.decks[k].push(id)}
 function liquidate(s,m,p){
-  const creditor=player(s,s.debt.to),lots=[];
+  const creditor=player(s,s.debt.to);
   let possible=p.cash;
   for(const t of m.tiles){const a=s.properties[t.index];if(a?.ownerId!==p.id)continue;
     for(let l=a.level;l>0;l--)possible+=refund(t,l);
@@ -146,15 +175,15 @@ function liquidate(s,m,p){
   check(possible<s.debt.amount,'CAN_RAISE_FUNDS','仍可出售建筑或抵押筹资');
   for(const t of m.tiles){const a=s.properties[t.index];if(a?.ownerId!==p.id)continue;
     while(a.level>0)p.cash+=refund(t,a.level--);
-    a.ownerId=creditor?.id??null;if(!creditor){a.mortgaged=false;lots.push({kind:'auction',tile:t.index})}
+    a.ownerId=creditor?.id??null;if(!creditor)a.mortgaged=false;
   }
   if(creditor){creditor.cash+=p.cash;creditor.cards.push(...p.cards);if(s.debt.reason==='租金')creditor.rentReceived+=p.cash}
   else p.cards.forEach(id=>returnCard(s,m,id));
   p.paid+=p.cash;p.cash=0;p.cards=[];p.bankrupt=true;p.bankruptCause=s.debt.reason;s.debt=null;
   note(s,p.name+' 破产退出');
   if(alive(s).length===1)return finish(s,m);
-  if(p.id===s.current){s.queue=[];s.extra=false}
-  s.queue.unshift(...lots);s.phase='resolve';
+  if(p.id===s.current)s.queue=[];
+  s.phase='resolve';
 }
 function checkSide(s,id,side){
   const p=player(s,id);
@@ -178,10 +207,9 @@ export function applyCommand(state,c,m,deps={}){
   check(p&&!p.bankrupt,'INVALID_PLAYER');
   const ph=s.phase;
   check(ph!=='finished','GAME_OVER');
-  if(ph==='auction')check(e.now<s.auction.deadline,'EXPIRED');
   if(ph==='trade')check(e.now<s.trade.deadline,'EXPIRED');
   if(ph==='trade')check([s.trade.from,s.trade.to].includes(p.id),'NOT_PARTICIPANT');
-  else if(ph!=='auction')check(p.id===(ph==='debt'?s.debt.from:s.current),'NOT_YOUR_TURN');
+  else check(p.id===(ph==='debt'?s.debt.from:s.current),'NOT_YOUR_TURN');
   const phase=(...allowed)=>check(allowed.includes(ph),'WRONG_PHASE');
   const t=m.tiles[p.pos],a=s.properties[p.pos];
   s.revision++;
@@ -193,22 +221,27 @@ export function applyCommand(state,c,m,deps={}){
       check(card?.effect==='commission','NO_COMMISSION');
       s.phase='resolve';
       if(c.type==='takeFee'){
-        p.cash+=card.reward;
+        p.cash+=card.reward;card.received+=card.reward;
         note(s,p.name+' 交付街区提案，收到稿费 '+card.reward);
       }else{
         check(p.cash>=card.fee,'INSUFFICIENT_FUNDS');
-        pay(s,{from:p.id,to:null,amount:card.fee,reason:'委托路费'});
+        pay(s,{from:p.id,to:null,amount:card.fee,reason:'委托路费',cardRevision:card.revision});
         walk(s,m,(card.target-p.pos+m.tiles.length)%m.tiles.length,false,true);
       }
       break;
     }
     case 'roll':{
-      phase('roll','jail');s.dice=dice(e);const [x,y]=s.dice;s.extra=false;note(s,p.name+' 掷出 '+x+' + '+y);
+      phase('roll','jail');
+      const point=rollDie(e);
+      s.dice=[point];
+      s.lastRoll=s.revision;
+      note(s,p.name+' 掷出 '+point+' 点');
       if(ph==='jail'){
-        if(x!==y && ++p.attempts<3){s.phase='end';break}
-        p.jailed=false;p.attempts=0;if(x!==y)s.queue.push({kind:'pay',from:p.id,to:null,amount:50,reason:'出狱费'});
-      }else if(x===y){if(++s.doubles===3){jail(s,m);break}s.extra=true}
-      s.phase='resolve';s.queue.push({kind:'move',steps:x+y});break;
+        if(point!==6 && ++p.attempts<3){note(s,'尝试出狱失败');s.phase='end';break}
+        p.jailed=false;p.attempts=0;
+        if(point!==6)s.queue.push({kind:'pay',from:p.id,to:null,amount:50,reason:'出狱费'});
+      }
+      s.phase='resolve';s.queue.push({kind:'move',steps:point});break;
     }
     case 'useCard':case 'bail':
       phase('jail');if(c.type==='useCard'){check(p.cards.length,'NO_CARD');returnCard(s,m,p.cards.shift())}
@@ -217,21 +250,14 @@ export function applyCommand(state,c,m,deps={}){
     case 'buy':
       phase('buy');check(a&&!a.ownerId&&p.cash>=t.price,'CANNOT_BUY');a.ownerId=p.id;p.cash-=t.price;p.paid+=t.price;
       note(s,p.name+' 购入 '+t.name+' · '+t.price);s.phase='resolve';break;
-    case 'decline':phase('buy');auction(s,p.pos,e.now);break;
+    case 'decline':phase('buy');note(s,p.name+' 放弃购买 '+t.name);s.phase='resolve';break;
     case 'build':{
       phase('build');check(buildable(s,m,p.pos,p.id),'CANNOT_BUILD');
       const cost=upgrade(t,a.level);check(p.cash>=cost,'INSUFFICIENT_FUNDS');p.cash-=cost;p.paid+=cost;a.level++;
       note(s,t.name+' 建成'+['','一栋房','两栋房','旅馆'][a.level]+' · '+cost);s.phase='resolve';break;
     }
     case 'skip':phase('build');s.phase='resolve';break;
-    case 'end':phase('end');if(s.extra){s.extra=false;s.phase='roll'}else next(s,m);break;
-    case 'bid':case 'pass':{
-      phase('auction');const b=s.auction;
-      check(!b.passed.includes(p.id)&&b.leader!==p.id,'BID_INELIGIBLE');
-      if(c.type==='bid'){check(c.amount>=b.bid+10&&c.amount<=p.cash,'INVALID_BID');b.bid=c.amount;b.leader=p.id;b.deadline=e.now+15000;note(s,p.name+' 出价 '+b.bid)}
-      else b.passed.push(p.id);
-      if(alive(s).every(x=>x.id===b.leader||b.passed.includes(x.id)))closeAuction(s,m,e);break;
-    }
+    case 'end':phase('end');next(s,m);break;
     case 'sell':case 'mortgage':case 'redeem':{
       phase('roll','jail','debt');const prop=s.properties[c.tile],tile=m.tiles[c.tile];check(prop?.ownerId===p.id,'NOT_OWNER');
       if(c.type==='sell'){check(prop.level>0,'NO_BUILDINGS');

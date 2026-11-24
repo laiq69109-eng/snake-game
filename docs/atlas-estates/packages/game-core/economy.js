@@ -6,12 +6,12 @@ export const redemption = t => Math.floor((principal(t)*110+99)/100);
 export const upgrade = (t,level) => level===2?t.hotelCost:t.houseCost;
 export const invested = (t,level) => level ? Math.min(2,level)*t.houseCost+(level===3?t.hotelCost:0) : 0;
 export const refund = (t,level) => Math.floor(upgrade(t,level-1)/2);
-export function rent(s,m,i,diceTotal = s.dice[0]+s.dice[1]) {
+export function rent(s,m,i,dicePoint = s.dice[0]) {
   const a=s.properties[i],t=m.tiles[i];
   if(!a?.ownerId || a.mortgaged) return 0;
   if(t.type==='land') return [t.baseRent*(complete(s,m,t,a.ownerId)?2:1),t.oneHouseRent,t.twoHouseRent,t.hotelRent][a.level];
   const n=m.tiles.filter(x=>x.type===t.type && s.properties[x.index].ownerId===a.ownerId).length;
-  return t.type==='rail'?[25,50,100,200][n-1]:diceTotal*(n===2?10:4);
+  return t.type==='rail'?[25,50,100,200][n-1]:dicePoint*(n===2?10:4);
 }
 export function assets(s,m,id) {
   return m.tiles.reduce((sum,t)=>{
