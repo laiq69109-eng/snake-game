@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: atlas-estates-laiq69109
+    repo: https://github.com/laiq69109-eng/snake-game
+    branch: atlas-rooms-deploy
+    runtime: docker
+    region: singapore
+    plan: free
+    dockerfilePath: ./atlas-service/Dockerfile
+    dockerContext: ./atlas-service
+    healthCheckPath: /healthz
+    envVars:
+      - key: PUBLIC_ORIGINS
+        value: https://laiq69109-eng.github.io
+      - key: DATABASE_URL
+        fromDatabase:
+          name: atlas-estates-rooms
+          property: connectionString
+databases:
+  - name: atlas-estates-rooms
+    databaseName: atlas_estates_rooms
+    user: atlas_estates_rooms_user
+    postgresMajorVersion: "16"
+    region: singapore
+    plan: free
+    ipAllowList: []
