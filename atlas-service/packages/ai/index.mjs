@@ -33,12 +33,6 @@ export function decide(s,m,id,difficulty='normal',rng=Math.random){
   const reserve=easy?40:hard?Math.min(430,110+exposure):150;
   const cmd=(type,data={})=>({playerId:id,type,...data});
   const a=s.properties[p.pos],t=m.tiles[p.pos];
-  if(s.phase==='auction'){
-    const b=s.auction;if(b.passed.includes(id)||b.leader===id)return null;
-    const lot=m.tiles[b.tile],value=holdingValue(s,m,lot,id)*(easy?0.7+rng()*0.6:hard?1.1:0.96);
-    const ceiling=Math.min(Math.floor(value),Math.max(0,p.cash-reserve));
-    return b.bid+10<=ceiling?cmd('bid',{amount:Math.min(ceiling,b.bid+Math.max(10,Math.floor(lot.price/5))) }):cmd('pass');
-  }
   if(s.phase==='trade'){
     const tr=s.trade;if(![tr.from,tr.to].includes(id)||tr.confirmed.includes(id))return null;
     const outgoing=tr.from===id?tr.give:tr.take;

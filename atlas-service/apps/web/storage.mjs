@@ -11,7 +11,7 @@ function openDB() {
 }
 export async function save(game,settings) {
   const db=await openDB();
-  const record={version:1,time:Date.now(),game,settings};
+  const record={version:2,time:Date.now(),game,settings};
   return new Promise((resolve,reject)=>{
     const tx=db.transaction('voyages','readwrite'),store=tx.objectStore('voyages');
     const prev=store.get(key);

@@ -5,15 +5,25 @@ const schema = `
 CREATE TABLE IF NOT EXISTS rooms(code TEXT PRIMARY KEY, state TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS events(code TEXT NOT NULL, revision INTEGER NOT NULL, actor TEXT, command_id TEXT, action TEXT NOT NULL, payload TEXT NOT NULL, time_ms BIGINT NOT NULL, PRIMARY KEY(code,revision), UNIQUE(code,actor,command_id));
 `;
-export async function openStore() {
+export async function openStore({onWaiting}={}) {
   let run, query, close;
   if (process.env.DATABASE_URL) {
     const { Client } = await import('pg');
     const client = new Client({ connectionString: process.env.DATABASE_URL });
-    await client.connect();
-    const result = await client.query("SELECT pg_try_advisory_lock(8651023) AS acquired");
-    if (!result.rows[0].acquired) throw Error('数据库已有运行中的游戏实例');
-    await client.query(schema);
+    try {
+      await client.connect();
+      const result = await client.query("SELECT pg_try_advisory_lock(8651023) AS acquired");
+      if (!result.rows[0].acquired) {
+        if(!onWaiting)throw Error('数据库已有运行中的游戏实例');
+        // Render checks the replacement before stopping the previous writer.
+        onWaiting();
+        await client.query("SELECT pg_advisory_lock(8651023)");
+      }
+      await client.query(schema);
+    }catch(error){
+      await client.end();
+      throw error;
+    }
     run = (sql, params=[]) => client.query(sql,params);
     query = async (sql,params=[]) => (await run(sql,params)).rows;
     close = () => client.end();

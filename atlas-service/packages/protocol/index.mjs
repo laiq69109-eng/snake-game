@@ -1,6 +1,6 @@
 const fields = {
   takeFee: [], visitSite: [], roll: [], bail: [], useCard: [], buy: [], decline: [], build: [], skip: [], end: [],
-  bid: ['amount'], pass: [], sell: ['tile'], mortgage: ['tile'], redeem: ['tile'],
+  sell: ['tile'], mortgage: ['tile'], redeem: ['tile'],
   settle: [], bankrupt: [], offer: ['to','give','take'], edit: ['give','take'], confirm: [], cancel: []
 };
 export function requireRule(test, code, message = code) {
@@ -20,7 +20,6 @@ export function validateCommand(c) {
     keys.every(k=>Object.hasOwn(c,k)), 'INVALID_PAYLOAD');
   if ('commandId' in c) requireRule(identity(c.commandId),'INVALID_ID');
   if ('tile' in c) requireRule(integer(c.tile,39),'INVALID_TILE');
-  if ('amount' in c) requireRule(integer(c.amount) && c.amount>0,'INVALID_AMOUNT');
   if ('give' in c) requireRule(side(c.give) && side(c.take),'INVALID_TERMS');
   if ('to' in c) requireRule(identity(c.to),'INVALID_PARTNER');
   return c;

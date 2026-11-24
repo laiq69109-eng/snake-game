@@ -4,7 +4,7 @@ import {pathToFileURL} from 'node:url';
 import WS from './vendor/node_modules/faye-websocket/lib/faye/websocket.js';
 import {openStore} from './store.mjs';
 import {createHttp} from './http.mjs';
-import {createGame,applyCommand,publicState,expire} from '../../packages/game-core/index.mjs';
+import {createGame,applyCommand,publicState,expire,migrateGame} from '../../packages/game-core/index.mjs';
 import {decide} from '../../packages/ai/index.mjs';
 import {validateCommand} from '../../packages/protocol/index.mjs';
 import {validateMap} from '../../packages/maps/validate.mjs';
@@ -73,17 +73,14 @@ function arm(r,old){
   if(!r.game)return;
   const g=r.game,prev=old?.game;
   if(g.phase==='finished'){r.deadline=null;return;}
-  if(g.phase==='auction'||g.phase==='trade'){r.deadline=(g.auction||g.trade).deadline;return;}
+  if(g.phase==='trade'){r.deadline=g.trade.deadline;return;}
   if(!prev||prev.phase!==g.phase||prev.current!==g.current||prev.debt?.from!==g.debt?.from||!r.deadline)r.deadline=Date.now()+45000;
 }
 function elect(r){if(!r.players.some(p=>p.id===r.hostId&&p.online))r.hostId=r.players.find(p=>p.online)?.id||r.hostId;}
 export async function serve(port=Number(process.env.PORT||3000)){
-  const store=await openStore(),rooms=new Map(),sockets=new Set(),nextAI=new Map();
-  for(const r of await store.load()){
-    for(const p of r.players){if(p.online)p.offlineSince=Date.now();p.online=false;}
-    r.emptySince??=Date.now();rooms.set(r.code,r);
-  }
-  const {server,allowed,rate}=createHttp(rooms,port);
+  const rooms=new Map(),sockets=new Set(),nextAI=new Map();
+  let store,ready=false,awaitingPredecessor=false;
+  const {server,allowed,rate}=createHttp(rooms,port,()=>ready||awaitingPredecessor);
   let chain=Promise.resolve(),stopping=false,scheduled=false;
   function enqueue(fn){const p=chain.then(fn);chain=p.catch(e=>console.error('room operation:',e.code||e.name));return p;}
   function send(ws,obj){if(ws.readyState===1)ws.send(JSON.stringify(obj));}
@@ -166,7 +163,7 @@ export async function serve(port=Number(process.env.PORT||3000)){
     respond({revision:r.revision});
   }
   server.on('upgrade',(req,socket,head)=>{
-    if(stopping||req.url!=='/socket'||!allowed(req)||!rate(req,'upgrade',180)||!WS.isWebSocket(req)||req.headers['sec-websocket-version']!=='13'){socket.destroy();return;}
+    if(!ready||stopping||req.url!=='/socket'||!allowed(req)||!rate(req,'upgrade',180)||!WS.isWebSocket(req)||req.headers['sec-websocket-version']!=='13'){socket.destroy();return;}
     const ws=new WS(req,socket,head,undefined,{maxLength:8192,ping:30});sockets.add(ws);
     let epoch=Date.now(),count=0,outstanding=0;
     ws.on('message',e=>{
@@ -199,7 +196,7 @@ export async function serve(port=Number(process.env.PORT||3000)){
       const g=old.game,map=await loadMap(old.settings.mapId);
       let result=g,cmd;
       if(old.deadline&&now>=old.deadline){
-        if(['trade','auction'].includes(g.phase))result=expire(g,map,now);
+        if(g.phase==='trade')result=expire(g,map,now);
         else if(['roll','jail','end','buy','build','commission'].includes(g.phase))cmd={playerId:g.current,type:{roll:'roll',jail:'roll',end:'end',buy:'decline',build:'skip',commission:'takeFee'}[g.phase]};
         else cmd=decide(publicState(g),map,g.debt?.from||g.current,old.settings.difficulty);
       }else if((nextAI.get(old.code)||0)<=now){
@@ -214,8 +211,32 @@ export async function serve(port=Number(process.env.PORT||3000)){
       if(result!==g){const r=structuredClone(old);r.game=result;r.deadline=null;await commit(r,cmd?.playerId||null,null,'game:auto',cmd||{phase:g.phase});}
     }
   }
-  const timer=setInterval(()=>{if(stopping||scheduled)return;scheduled=true;enqueue(tick).finally(()=>{scheduled=false;}).catch(()=>{});},180);
   await new Promise((ok,no)=>{server.once('error',no);server.listen(port,process.env.HOST||'0.0.0.0',ok);});
+  try {
+    store=await openStore({
+      onWaiting:process.env.RENDER==='true'?()=>{awaitingPredecessor=true}:undefined
+    });
+    awaitingPredecessor=false;
+    for(const r of await store.load()){
+      for(const p of r.players){if(p.online)p.offlineSince=Date.now();p.online=false;}
+      r.emptySince??=Date.now();
+      if(r.game&&r.game.version===1){
+        r.game=migrateGame(r.game,await loadMap(r.settings.mapId));
+        r.game.revision++;
+        r.revision++;
+        r.deadline=null;
+        arm(r);
+        await store.save(r,null,null,'game:migrate');
+      }
+      rooms.set(r.code,r);
+    }
+    ready=true;
+  }catch(error){
+    await new Promise(ok=>server.close(ok));
+    await store?.close();
+    throw error;
+  }
+  const timer=setInterval(()=>{if(stopping||scheduled)return;scheduled=true;enqueue(tick).finally(()=>{scheduled=false;}).catch(()=>{});},180);
   console.log('ATLAS_PORT='+server.address().port);
   return {server,async close(){stopping=true;clearInterval(timer);for(const ws of sockets)ws.close(4001,'restart');await chain;await new Promise(ok=>server.close(ok));await store.close();}};
 }

@@ -6,7 +6,7 @@ import {sign} from './wechat.mjs';
 
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const mime={'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml','.webp':'image/webp','.png':'image/png','.ico':'image/x-icon','.woff2':'font/woff2','.mp3':'audio/mpeg'};
-export function createHttp(rooms,port) {
+export function createHttp(rooms,port,isHealthy=()=>true) {
   const origins=new Set((process.env.PUBLIC_ORIGINS||'').split(',').map(v=>v.trim()).filter(Boolean));
   if(process.env.RENDER_EXTERNAL_URL)origins.add(new URL(process.env.RENDER_EXTERNAL_URL).origin);
   const counters=new Map();
@@ -35,7 +35,11 @@ export function createHttp(rooms,port) {
       const url=new URL(req.url,'http://atlas.local');
       const p=decodeURIComponent(url.pathname);
       const sendJson=v=>{res.setHeader('Content-Type',mime['.json']);res.end(JSON.stringify(v));};
-      if(p==='/healthz') return sendJson({ok:true,rooms:rooms.size});
+      if(p==='/healthz'){
+        const ok=isHealthy();
+        if(!ok)res.statusCode=503;
+        return sendJson({ok,rooms:rooms.size});
+      }
       if(p==='/api/wechat/sign'){
         if(!rate(req,'sign',60)){res.writeHead(429);return res.end();}
         try { return sendJson(await sign(url.searchParams.get('url')||'',origins)); } catch(err) { console.warn('wechat',err.message);res.statusCode=503; return sendJson({}); }
