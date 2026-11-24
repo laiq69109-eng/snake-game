@@ -1,3 +1,4 @@
+import {socketLink} from './room-location.js';
 const sessionKey=code=>'atlas:room:'+code;
 const makeId=()=>Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
 export class RoomClient {
@@ -10,11 +11,11 @@ export class RoomClient {
   async connect() {
     if(this.ws?.readyState===1)return;
     if(this.connecting)return this.connecting;
-    this.onStatus(this.code?'重连中':'连接中');
-    const ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/socket');
+    this.onStatus(this.code?'正在恢复连接':'正在连接房间服务，首次唤醒可能需要约一分钟');
+    const ws=new WebSocket(socketLink());
     this.ws=ws;
     this.connecting=new Promise((resolve,reject)=>{
-      const guard=setTimeout(()=>ws.close(),10000);
+      const guard=setTimeout(()=>ws.close(),90000);
       ws.onopen=()=>{clearTimeout(guard);this.connecting=null;this.onStatus('在线');resolve();};
       ws.onmessage=e=>{
         let msg;try {msg=JSON.parse(e.data);} catch{return;}
@@ -69,6 +70,8 @@ export class RoomClient {
   }
   async resync(){if(!this.ws||this.ws.readyState!==1)return this.resume(this.code);const r=await this.request('room:sync');this.accept(r.room,true);return this.room;}
   ready(ready){return this.request('room:ready',{ready});}
+  addBot(){return this.request('room:addBot',{});}
+  removeBot(id){return this.request('room:removeBot',{id});}
   settings(settings){return this.request('room:settings',settings);}
   start(){return this.request('game:start');}
   command(cmd){return this.request('game:command',{command:cmd,revision:this.room.game.revision},cmd.commandId||makeId());}

@@ -69,3 +69,25 @@
 @media(max-height:530px) and (orientation:landscape),(max-width:540px){.arena .cell .building-piece{width:16px;height:13px}}
 
 .turn-box .decision-note{font-size:14px;line-height:1.45;color:#fff4d8;margin:5px 0;padding-left:8px;border-left:3px solid #f4c979}
+.lobby-roster{display:grid;gap:8px}.lobby-roster .bot-seat button{margin-left:auto}
+.lobby-code{display:grid}.lobby-code>span{font-size:14px}
+@media(orientation:landscape) and (max-height:530px) and (min-width:560px){
+ main[data-screen="lobby"]{padding-top:5px;padding-bottom:max(5px,env(safe-area-inset-bottom))}
+ main[data-screen="lobby"] .topline{margin-bottom:5px}
+ main[data-screen="lobby"] .folio{display:none}
+ main[data-screen="lobby"] .panel{padding:8px;gap:5px}
+ .lobby-party h2{font-size:19px}.lobby-party p{font-size:13px}
+ .lobby-roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+ .lobby-roster .player{min-width:0;gap:4px;padding:3px;font-size:13px}
+ .lobby-roster .player span:nth-child(2){min-width:0;overflow-wrap:anywhere}
+ .lobby-roster .avatar{width:25px;height:25px;flex:none}.lobby-roster .player small{font-size:10px}
+ .lobby-roster button{padding:2px 5px;font-size:12px}
+ .lobby-party>.actions button,.lobby-invite button{padding:4px 9px;font-size:14px}
+ .lobby-invite{position:relative;overflow:hidden}
+ main[data-screen="lobby"] .lobby-invite .map-preview{width:35%;height:50px;position:absolute;right:8px;top:8px}
+ .lobby-invite h3{padding-right:35%}.lobby-code .code{font-size:26px}
+}
+@media(orientation:landscape) and (max-height:530px) and (min-width:560px){
+ body:has(main[data-screen="lobby"])>header{display:none}
+ main[data-screen="lobby"]{padding-top:max(5px,env(safe-area-inset-top))}
+}

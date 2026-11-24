@@ -1,16 +1,17 @@
+import {roomOrigin} from './room-location.js';
 const once=new Map();
 export async function configureShare(link,title='环球置业之旅'){
  if(!/MicroMessenger/i.test(navigator.userAgent))return;
  const page=location.href.split('#')[0];
  try{
    if(!once.has(page))once.set(page,(async()=>{
-    const res=await fetch('/api/wechat/sign?url='+encodeURIComponent(page));
+    const res=await fetch(roomOrigin+'/api/wechat/sign?url='+encodeURIComponent(page));
     if(!res.ok)return false;
     const cfg=await res.json();if(!cfg.appId)return false;
     if(!window.wx)await new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://res.wx.qq.com/open/js/jweixin-1.6.0.js';s.onload=ok;s.onerror=no;document.head.append(s)});
     return await new Promise((ok,no)=>{wx.ready(()=>ok(true));wx.error(no);wx.config({...cfg,debug:false,jsApiList:['updateAppMessageShareData','updateTimelineShareData']})});
    })());
-   if(await once.get(page)){const data={title,desc:'加入我的地产棋局，一起出发。',link,imgUrl:location.origin+'/share-icon.png'};wx.updateAppMessageShareData(data);wx.updateTimelineShareData(data)}
+   if(await once.get(page)){const data={title,desc:'加入我的地产棋局，一起出发。',link,imgUrl:roomOrigin+'/share-icon.png'};wx.updateAppMessageShareData(data);wx.updateTimelineShareData(data)}
  }catch(err){console.info('微信分享配置未就绪',err?.errMsg||err?.message)}
 }
 export async function copy(text){
