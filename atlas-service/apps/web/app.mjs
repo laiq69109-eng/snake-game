@@ -78,12 +78,11 @@ function lobby(){
   const opponents=bots.map((p,i)=>'<div class="player bot-seat"><span class="avatar" style="--pin:'+palette[room.players.length+i]+'">'+portrait(p)+'</span><span>'+safe(p.name)+'<small>人机 · '+safe(difficulty)+'</small></span>'+(host?btn('removeBot:'+p.id,'移除人机'):'<b>已就绪</b>')+'</div>');
   const seatInfo=room.players.length+' 位真人 · '+bots.length+' 位人机 · '+(4-count)+' 个空位';
   app.innerHTML='<div class="topline"><div><div class="folio">DEPARTURE LOUNGE</div><h1>出发大厅</h1></div>'+btn('leave','离开房间')+'</div>'+
-    '<div class="arena"><div class="panel stack"><img class="map-preview" src="'+safe(mapInfo.art)+'" alt=""><h2>'+safe(mapInfo.name)+'</h2><p>'+safe(mapInfo.description)+'</p>'+
-    '<div>'+safe(settings.mode==='classic'?'经典对局':'快速 '+settings.roundLimit+' 轮')+' · '+seatInfo+'</div><div class="stack">'+people.join('')+opponents.join('')+'</div>'+
+    '<div class="arena"><div class="panel stack lobby-party"><div><h2>房间席位</h2><p>'+seatInfo+'</p></div><div class="lobby-roster">'+people.join('')+opponents.join('')+'</div>'+
     (host?'<div class="actions">'+btn('addBot','添加一位人机','',count>=4)+btn('roomSettings','房间设置')+'</div>':'')+
     (bots.length?'<small>开局前，好友可接替满员房中的人机。</small>':'')+
     '<div class="actions">'+btn('ready',mine?.ready?'取消准备':'准备就绪','primary')+(host?btn('launch','开始联机游戏','go',count<2||!humansReady):'')+'</div></div>'+
-    '<aside class="panel stack"><h3>邀请好友</h3><strong class="code">'+safe(room.code)+'</strong><span class="network">'+safe(netStatus)+'</span><p class="roomlink">'+safe(roomLink(room.code))+'</p><div class="actions">'+btn('copyCode','复制房间码')+btn('copyLink','复制链接')+btn('share','分享')+'</div></aside></div>';
+    '<aside class="panel stack lobby-invite"><img class="map-preview" src="'+safe(mapInfo.art)+'" alt=""><div><h3>'+safe(mapInfo.name)+'</h3><small>'+safe(settings.mode==='classic'?'经典对局':'快速 '+settings.roundLimit+' 轮')+'</small></div><div class="lobby-code"><span>邀请房间码</span><strong class="code">'+safe(room.code)+'</strong></div><span class="network">'+safe(netStatus)+'</span><p class="roomlink">'+safe(roomLink(room.code))+'</p><div class="actions">'+btn('copyCode','复制房间码')+btn('copyLink','复制链接')+btn('share','分享')+'</div></aside></div>';
 }
 function roomSettings(){config={...config,...room.settings,limit:room.settings.roundLimit};setup='create';modalBox('房间设置','<div class="form"><label>地图<select id="mapId">'+catalog.map(m=>opt(m.id,m.name,room.settings.mapId)).join('')+'</select></label>'+gameForm()+btn('saveRoomSettings','保存设置','primary')+'</div>')}
 function settingsPayload(){return {mapId:selection,mode:config.mode,roundLimit:config.limit,classicBuildingRules:config.classicBuildingRules,aiFill:config.aiFill,difficulty:config.difficulty}}
