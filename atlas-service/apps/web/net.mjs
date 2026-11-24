@@ -70,6 +70,8 @@ export class RoomClient {
   }
   async resync(){if(!this.ws||this.ws.readyState!==1)return this.resume(this.code);const r=await this.request('room:sync');this.accept(r.room,true);return this.room;}
   ready(ready){return this.request('room:ready',{ready});}
+  addBot(){return this.request('room:addBot',{});}
+  removeBot(id){return this.request('room:removeBot',{id});}
   settings(settings){return this.request('room:settings',settings);}
   start(){return this.request('game:start');}
   command(cmd){return this.request('game:command',{command:cmd,revision:this.room.game.revision},cmd.commandId||makeId());}

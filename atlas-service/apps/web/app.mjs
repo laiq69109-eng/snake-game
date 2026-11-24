@@ -53,7 +53,7 @@ function mapCard(m){return '<button class="map-card '+(screen==='maps'&&selectio
 function mapsPage(kind){app.dataset.screen='maps';screen='maps';setup=kind;close();app.innerHTML='<div class="topline"><div><div class="folio">DESTINATIONS</div><h1>选择旅行地图</h1></div>'+btn('home','返回')+'</div><div class="maps-grid">'+catalog.map(mapCard).join('')+'</div>'}
 const opt=(value,label,current)=>'<option value="'+value+'" '+(String(value)===String(current)?'selected':'')+'>'+safe(label)+'</option>';
 function gameForm(){
- return '<div class="field-pair"><label>模式<select id="mode">'+opt('quick','快速模式',config.mode)+opt('classic','经典模式',config.mode)+'</select></label><label>快速回合数<select id="limit">'+[20,30,40].map(v=>opt(v,v+' 轮',config.limit)).join('')+'</select></label></div><div class="field-pair"><label>AI 难度<select id="difficulty">'+[['easy','简单'],['normal','普通'],['hard','困难']].map(([v,t])=>opt(v,t,config.difficulty)).join('')+'</select></label>'+(setup==='solo'?'<label>AI 对手<select id="count">'+[1,2,3].map(v=>opt(v,v+' 位',config.count)).join('')+'</select></label>':'<label class="check"><input type="checkbox" id="aiFill" '+(config.aiFill?'checked':'')+'>AI 补足四人</label>')+'</div><label class="check"><input type="checkbox" id="classic" '+(config.classicBuildingRules?'checked':'')+'>集齐同组并均衡建设</label>'
+ return '<div class="field-pair"><label>模式<select id="mode">'+opt('quick','快速模式',config.mode)+opt('classic','经典模式',config.mode)+'</select></label><label>快速回合数<select id="limit">'+[20,30,40].map(v=>opt(v,v+' 轮',config.limit)).join('')+'</select></label></div><div class="field-pair"><label>AI 难度<select id="difficulty">'+[['easy','简单'],['normal','普通'],['hard','困难']].map(([v,t])=>opt(v,t,config.difficulty)).join('')+'</select></label>'+(setup==='solo'?'<label>AI 对手<select id="count">'+[1,2,3].map(v=>opt(v,v+' 位',config.count)).join('')+'</select></label>':'<label class="check"><input type="checkbox" id="aiFill" '+(config.aiFill?'checked':'')+'>自动用人机补满空位</label>')+'</div><label class="check"><input type="checkbox" id="classic" '+(config.classicBuildingRules?'checked':'')+'>集齐同组并均衡建设</label>'
 }
 function profileForm(){return '<div class="field-pair"><label>旅行昵称<input id="nickname" maxlength="16" value="'+safe(profile.name)+'" autocomplete="nickname"></label><label>棋子图案<select id="avatar">'+avatars.map((v,i)=>opt(i,v+' '+portraitNames[i],profile.avatar)).join('')+'</select></label></div>'}
 function setupView(){const m=catalog.find(m=>m.id===selection);modalBox(m.name,'<div class="form"><img class="map-preview" src="'+safe(m.art)+'" alt=""><p>'+safe(m.description)+'</p><span class="muted">'+safe([m.difficulty,m.duration,m.players].join(' · '))+'<br>'+safe(m.landmarks.join(' / '))+'</span>'+profileForm()+gameForm()+btn('startSetup',setup==='solo'?'开始旅行':'创建房间','go')+'<small class="room-progress" role="status"></small></div>')}
@@ -67,7 +67,24 @@ function joinView(code=''){modalBox('加入好友房间','<div class="form">'+pr
 function getNet(){if(!net)net=new RoomClient({onStatus:status=>{netStatus=status;document.querySelectorAll('.network,.room-progress').forEach(el=>el.textContent=status)},onSnapshot:async next=>{try{await snapshot(next)}catch(e){toast(e.message)}}});return net}
 async function snapshot(next){if(!next)return;if(room&&room.code===next.code&&next.revision<room.revision)return;const ticket=++scene;room=next;source='online';if(!next.game){s=null;screen='lobby';lobby();return}const loaded=await getMap(next.game.mapId);if(ticket!==scene)return;map=loaded;screen='game';audioSettings();transition(next.game)}
 async function opened(next){close();history.replaceState(null,'',roomLink(next.code));configureShare(location.href,'加入「'+next.code+'」的环球置业之旅');await snapshot(next)}
-function lobby(){app.dataset.screen='lobby';const m=catalog.find(m=>m.id===room.settings.mapId)||catalog[0],host=net?.playerId===room.hostId,mine=room.players.find(p=>p.id===net?.playerId),sett=room.settings;app.innerHTML='<div class="topline"><div><div class="folio">DEPARTURE LOUNGE</div><h1>出发大厅</h1></div>'+btn('leave','离开房间')+'</div><div class="arena"><div class="panel stack"><img class="map-preview" src="'+safe(m.art)+'" alt=""><h2>'+safe(m.name)+'</h2><p>'+safe(m.description)+'</p><div>'+safe((sett.mode==='classic'?'经典对局':'快速 '+sett.roundLimit+' 轮')+' · '+(sett.aiFill?'AI 补位':'真人席位'))+'</div><div class="stack">'+room.players.map((p,i)=>'<div class="player"><span class="avatar" style="--pin:'+palette[i]+'">'+portrait(p)+'</span><span>'+safe(p.name)+'<small>'+[p.id===room.hostId?'房主':'玩家',p.online?'在线':'离线'].join(' · ')+'</small></span><b>'+(p.ready?'已准备':'未准备')+'</b></div>').join('')+'</div><div class="actions">'+btn('ready',mine?.ready?'取消准备':'准备就绪','primary')+(host?btn('launch','开始联机游戏','go',room.players.length<2||!room.players.every(p=>p.online&&p.ready))+btn('roomSettings','房间设置'):'')+'</div></div><aside class="panel stack"><h3>邀请好友</h3><strong class="code">'+safe(room.code)+'</strong><span class="network">'+safe(netStatus)+'</span><p class="roomlink">'+safe(roomLink(room.code))+'</p><div class="actions">'+btn('copyCode','复制房间码')+btn('copyLink','复制链接')+btn('share','分享')+'</div></aside></div>'}
+function lobby(){
+  app.dataset.screen='lobby';
+  const settings=room.settings, mapInfo=catalog.find(m=>m.id===settings.mapId)||catalog[0];
+  const host=net.playerId===room.hostId, mine=room.players.find(p=>p.id===net.playerId);
+  const bots=room.bots||[], count=room.players.length+bots.length;
+  const difficulty={easy:'简单',normal:'普通',hard:'困难'}[settings.difficulty];
+  const humansReady=room.players.every(p=>p.online&&p.ready);
+  const people=room.players.map((p,i)=>'<div class="player"><span class="avatar" style="--pin:'+palette[i]+'">'+portrait(p)+'</span><span>'+safe(p.name)+'<small>'+[p.id===room.hostId?'房主':'玩家',p.online?'在线':'离线'].join(' · ')+'</small></span><b>'+(p.ready?'已准备':'未准备')+'</b></div>');
+  const opponents=bots.map((p,i)=>'<div class="player bot-seat"><span class="avatar" style="--pin:'+palette[room.players.length+i]+'">'+portrait(p)+'</span><span>'+safe(p.name)+'<small>人机 · '+safe(difficulty)+'</small></span>'+(host?btn('removeBot:'+p.id,'移除人机'):'<b>已就绪</b>')+'</div>');
+  const seatInfo=room.players.length+' 位真人 · '+bots.length+' 位人机 · '+(4-count)+' 个空位';
+  app.innerHTML='<div class="topline"><div><div class="folio">DEPARTURE LOUNGE</div><h1>出发大厅</h1></div>'+btn('leave','离开房间')+'</div>'+
+    '<div class="arena"><div class="panel stack"><img class="map-preview" src="'+safe(mapInfo.art)+'" alt=""><h2>'+safe(mapInfo.name)+'</h2><p>'+safe(mapInfo.description)+'</p>'+
+    '<div>'+safe(settings.mode==='classic'?'经典对局':'快速 '+settings.roundLimit+' 轮')+' · '+seatInfo+'</div><div class="stack">'+people.join('')+opponents.join('')+'</div>'+
+    (host?'<div class="actions">'+btn('addBot','添加一位人机','',count>=4)+btn('roomSettings','房间设置')+'</div>':'')+
+    (bots.length?'<small>开局前，好友可接替满员房中的人机。</small>':'')+
+    '<div class="actions">'+btn('ready',mine?.ready?'取消准备':'准备就绪','primary')+(host?btn('launch','开始联机游戏','go',count<2||!humansReady):'')+'</div></div>'+
+    '<aside class="panel stack"><h3>邀请好友</h3><strong class="code">'+safe(room.code)+'</strong><span class="network">'+safe(netStatus)+'</span><p class="roomlink">'+safe(roomLink(room.code))+'</p><div class="actions">'+btn('copyCode','复制房间码')+btn('copyLink','复制链接')+btn('share','分享')+'</div></aside></div>';
+}
 function roomSettings(){config={...config,...room.settings,limit:room.settings.roundLimit};setup='create';modalBox('房间设置','<div class="form"><label>地图<select id="mapId">'+catalog.map(m=>opt(m.id,m.name,room.settings.mapId)).join('')+'</select></label>'+gameForm()+btn('saveRoomSettings','保存设置','primary')+'</div>')}
 function settingsPayload(){return {mapId:selection,mode:config.mode,roundLimit:config.limit,classicBuildingRules:config.classicBuildingRules,aiFill:config.aiFill,difficulty:config.difficulty}}
 
@@ -194,6 +211,8 @@ async function dispatch(act){
  case 'submitJoin':{capture();const code=value('joinCode').trim().toUpperCase();if(!/^[A-Z0-9]{6}$/.test(code))throw Error('请输入六位字母或数字房间码');await opened(await getNet().join({...profile,code}));break}
  case 'continue':try{await restore()}catch{modalBox('存档读取失败','<p>可尝试恢复上一次操作前的备份。</p>'+btn('recover','读取备份','primary'))}break;
  case 'recover':await restore(true);break;
+ case 'addBot':await net.addBot();break;
+ case 'removeBot':await net.removeBot(arg);break;
  case 'ready':await net.ready(!room.players.find(p=>p.id===me()).ready);break;
  case 'roomSettings':roomSettings();break;
  case 'saveRoomSettings':capture();selection=value('mapId');await net.settings(settingsPayload());close();break;

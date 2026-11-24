@@ -37,13 +37,37 @@ function makePlayer(input){
   const token=randomBytes(32).toString('hex');
   return {token,player:{id:randomBytes(8).toString('hex'),name:input.name.trim(),avatar,tokenHash:tokenHash(token),ready:false,online:true,offlineSince:null}};
 }
+// Human seats carry reconnect credentials. Lobby bots never get sessions or host privileges.
+const bots = [
+  {id:'ai-1',name:'阿澜',avatar:4,ai:true},
+  {id:'ai-2',name:'白栎',avatar:5,ai:true},
+  {id:'ai-3',name:'南星',avatar:6,ai:true}
+];
+function lobbyBots(room){
+  if(room.game)return room.game.players.filter(p=>p.ai).map(({id,name,avatar,ai})=>({id,name,avatar,ai}));
+  const chosen=room.settings.aiFill?bots:bots.filter(b=>(room.botIds||[]).includes(b.id));
+  return chosen.slice(0,Math.max(0,4-room.players.length));
+}
+function editBot(room,removeId){
+  const current=lobbyBots(room);
+  if(removeId!==undefined){
+    requireThat(current.some(b=>b.id===removeId),'NO_BOT','该人机席位已改变');
+    room.botIds=current.filter(b=>b.id!==removeId).map(b=>b.id);
+  }else{
+    requireThat(room.players.length+current.length<4,'ROOM_FULL','所有席位已满');
+    const next=bots.find(b=>!current.some(p=>p.id===b.id));
+    room.botIds=[...current.map(b=>b.id),next.id];
+  }
+  room.settings.aiFill=false;
+  for(const p of room.players)p.ready=false;
+}
 function view(r){
   const game=r.game?publicState(r.game):null;
   if(game)for(const p of game.players){
     const seat=r.players.find(seat=>seat.id===p.id);
     p.aiControlled=!!p.ai||!!seat?.proxy;
   }
-  return {code:r.code,hostId:r.hostId,revision:r.revision,settings:r.settings,deadline:r.deadline,players:r.players.map(({tokenHash:_,...p})=>p),game};
+  return {code:r.code,hostId:r.hostId,revision:r.revision,settings:r.settings,deadline:r.deadline,bots:lobbyBots(r),players:r.players.map(({tokenHash:_,...p})=>p),game};
 }
 function arm(r,old){
   if(!r.game)return;
@@ -94,6 +118,7 @@ export async function serve(port=Number(process.env.PORT||3000)){
       }else{
         requireThat(!r.game&&r.players.length<4,'ROOM_FULL','房间已满或已开局');
         const created=makePlayer(d);p=created.player;token=created.token;r.players.push(p);
+        if(!r.settings.aiFill)r.botIds=lobbyBots(r).map(b=>b.id);
       }
       r.emptySince=null;elect(r);
       await commit(r,p.id,id,action);bind(ws,r,p);
@@ -108,11 +133,20 @@ export async function serve(port=Number(process.env.PORT||3000)){
     const lobby=()=>requireThat(!r.game,'ROOM_LOCKED','开局后已锁定设置');
     switch(action){
       case 'room:ready': fields(d,['ready']);lobby();requireThat(typeof d.ready==='boolean','BAD_SCHEMA','准备状态无效');p.ready=d.ready;break;
-      case 'room:settings': owner();lobby();r.settings=settings(d,r.settings);r.players.forEach(p=>p.ready=false);break;
+      case 'room:addBot':fields(d,[]);owner();lobby();editBot(r);break;
+      case 'room:removeBot':
+        fields(d,['id']);owner();lobby();requireThat(typeof d.id==='string','BAD_SCHEMA','请选择人机席位');
+        editBot(r,d.id);break;
+      case 'room:settings': {
+        owner();lobby();const updated=settings(d,r.settings);
+        if(updated.aiFill!==r.settings.aiFill)r.botIds=[];
+        r.settings=updated;r.players.forEach(p=>p.ready=false);break;
+      }
       case 'game:start': {
-        fields(d,[]);owner();lobby();requireThat(r.players.length>=2&&r.players.every(p=>p.ready&&p.online),'NOT_READY','至少两位真人，且所有人都要在线并准备');
-        const seats=r.players.map(({id,name,avatar})=>({id,name,avatar,ai:false}));
-        while(r.settings.aiFill&&seats.length<4)seats.push({id:'ai-'+seats.length,name:['','阿澜','白栎','南星'][seats.length],avatar:seats.length,ai:true});
+        fields(d,[]);owner();lobby();
+        const seats=[...r.players.map(({id,name,avatar})=>({id,name,avatar,ai:false})),...lobbyBots(r)];
+        requireThat(seats.length>=2&&seats.length<=4&&r.players.every(p=>p.ready&&p.online),
+          'NOT_READY','至少需要两名参与者，且所有真人都要在线并准备');
         r.game=createGame(await loadMap(r.settings.mapId),seats,{...r.settings,limit:r.settings.roundLimit},{random});
         break;
       }
