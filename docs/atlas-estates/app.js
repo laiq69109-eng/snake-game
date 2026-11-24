@@ -67,6 +67,7 @@ function joinView(code=''){modalBox('加入好友房间','<div class="form">'+pr
 function getNet(){if(!net)net=new RoomClient({onStatus:status=>{netStatus=status;document.querySelectorAll('.network,.room-progress').forEach(el=>el.textContent=status)},onSnapshot:async next=>{try{await snapshot(next)}catch(e){toast(e.message)}}});return net}
 async function snapshot(next){if(!next)return;if(room&&room.code===next.code&&next.revision<room.revision)return;const ticket=++scene;room=next;source='online';if(!next.game){s=null;screen='lobby';lobby();return}const loaded=await getMap(next.game.mapId);if(ticket!==scene)return;map=loaded;screen='game';audioSettings();transition(next.game)}
 async function opened(next){close();history.replaceState(null,'',roomLink(next.code));configureShare(location.href,'加入「'+next.code+'」的环球置业之旅');await snapshot(next)}
+let lobbyLayout;
 function lobby(){
   app.dataset.screen='lobby';
   const settings=room.settings, mapInfo=catalog.find(m=>m.id===settings.mapId)||catalog[0];
@@ -74,6 +75,21 @@ function lobby(){
   const bots=room.bots||[], count=room.players.length+bots.length;
   const difficulty={easy:'简单',normal:'普通',hard:'困难'}[settings.difficulty];
   const humansReady=room.players.every(p=>p.online&&p.ready);
+  // Preserve touch targets while another player's ready or connection status changes.
+  const layout=JSON.stringify([room.code,room.hostId,net.playerId,settings,room.players.map(p=>p.id),bots.map(p=>p.id)]);
+  const readyButton=app.querySelector('[data-do="ready"]');
+  if(layout===lobbyLayout && readyButton){
+    const rows=app.querySelectorAll('.lobby-roster .player:not(.bot-seat)');
+    room.players.forEach((p,i)=>{
+      rows[i].querySelector('small').textContent=(p.id===room.hostId?'房主':'玩家')+' · '+(p.online?'在线':'离线');
+      rows[i].querySelector('b').textContent=p.ready?'已准备':'未准备';
+    });
+    readyButton.textContent=mine?.ready?'取消准备':'准备就绪';
+    const launch=app.querySelector('[data-do="launch"]');
+    if(launch)launch.disabled=count<2||!humansReady;
+    return;
+  }
+  lobbyLayout=layout;
   const people=room.players.map((p,i)=>'<div class="player"><span class="avatar" style="--pin:'+palette[i]+'">'+portrait(p)+'</span><span>'+safe(p.name)+'<small>'+[p.id===room.hostId?'房主':'玩家',p.online?'在线':'离线'].join(' · ')+'</small></span><b>'+(p.ready?'已准备':'未准备')+'</b></div>');
   const opponents=bots.map((p,i)=>'<div class="player bot-seat"><span class="avatar" style="--pin:'+palette[room.players.length+i]+'">'+portrait(p)+'</span><span>'+safe(p.name)+'<small>人机 · '+safe(difficulty)+'</small></span>'+(host?btn('removeBot:'+p.id,'移除人机'):'<b>已就绪</b>')+'</div>');
   const seatInfo=room.players.length+' 位真人 · '+bots.length+' 位人机 · '+(4-count)+' 个空位';
