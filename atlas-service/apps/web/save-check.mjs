@@ -1,8 +1,10 @@
+import {isRoundLimit} from '../../packages/protocol/index.mjs';
+
 export function checkSave(record,map){
  const fail=()=>{throw Error('存档结构损坏，请尝试上一份备份')};
  const g=record.game,valid=(v,min,max)=>Number.isSafeInteger(v)&&v>=min&&v<=max;
  const amount=v=>valid(v,0,Number.MAX_SAFE_INTEGER);
- if(![1,2].includes(record.version)||g.version!==2||g.dice?.length!==1||!valid(g.dice[0],1,6)||g.mapId!==map.id||!valid(g.players?.length,2,4)||!Array.isArray(g.queue)||!Array.isArray(g.log)||!Array.isArray(g.ranking)||!valid(g.round,1,1e9)||!valid(g.revision,0,1e12))fail();
+ if(![1,2].includes(record.version)||g.version!==2||!isRoundLimit(g.limit)||g.dice?.length!==1||!valid(g.dice[0],1,6)||g.mapId!==map.id||!valid(g.players?.length,2,4)||!Array.isArray(g.queue)||!Array.isArray(g.log)||!Array.isArray(g.ranking)||!valid(g.round,1,1e9)||!valid(g.revision,0,1e12))fail();
  const ids=new Set(g.players.map(p=>p.id)),cardIds=new Set([...map.cards.chance,...map.cards.fate].map(c=>c.id));
  if(ids.size!==g.players.length||!ids.has('human')||!ids.has(g.current))fail();
  for(const p of g.players){if(!amount(p.cash)||!valid(p.pos,0,map.tiles.length-1)||typeof p.name!=='string'||!Array.isArray(p.cards)||p.cards.some(id=>!cardIds.has(id)))fail()}

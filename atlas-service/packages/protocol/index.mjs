@@ -1,3 +1,12 @@
+export const DEFAULT_ROUND_LIMIT = 50;
+export const UNLIMITED_ROUNDS = 0;
+export const ROUND_LIMITS = Object.freeze([DEFAULT_ROUND_LIMIT, UNLIMITED_ROUNDS]);
+export const isRoundLimit = value => ROUND_LIMITS.includes(value);
+
+export function migrateRoundLimit(value) {
+  return value === undefined || [20,30,40].includes(value) ? DEFAULT_ROUND_LIMIT : value;
+}
+
 const fields = {
   takeFee: [], visitSite: [], roll: [], bail: [], useCard: [], buy: [], decline: [], build: [], skip: [], end: [],
   sell: ['tile'], mortgage: ['tile'], redeem: ['tile'],

@@ -6,7 +6,7 @@ import {openStore} from './store.mjs';
 import {createHttp} from './http.mjs';
 import {createGame,applyCommand,publicState,expire,migrateGame} from '../../packages/game-core/index.mjs';
 import {decide} from '../../packages/ai/index.mjs';
-import {validateCommand} from '../../packages/protocol/index.mjs';
+import {validateCommand,DEFAULT_ROUND_LIMIT,isRoundLimit,migrateRoundLimit} from '../../packages/protocol/index.mjs';
 import {validateMap} from '../../packages/maps/validate.mjs';
 
 const mapIds=['cn','world','us','uk','fr','de','jp','it'];
@@ -19,7 +19,7 @@ async function loadMap(id){
   }
   return maps.get(id);
 }
-const defaultSettings={mapId:'cn',mode:'classic',roundLimit:30,classicBuildingRules:false,aiFill:false,difficulty:'normal'};
+const defaultSettings={mapId:'cn',mode:'classic',roundLimit:DEFAULT_ROUND_LIMIT,classicBuildingRules:false,aiFill:false,difficulty:'normal'};
 const tokenHash=s=>createHash('sha256').update(s).digest('hex');
 const random=()=>randomInt(0x100000000)/0x100000000;
 function requireThat(ok,code,message){if(!ok)throw Object.assign(Error(message),{code});}
@@ -28,7 +28,7 @@ function fields(v,keys){
 }
 function settings(data,initial){
   fields(data,Object.keys(defaultSettings));const s={...initial,...data};
-  requireThat(mapIds.includes(s.mapId)&&['classic','quick'].includes(s.mode)&&[20,30,40].includes(s.roundLimit)&&typeof s.aiFill==='boolean'&&typeof s.classicBuildingRules==='boolean'&&['easy','normal','hard'].includes(s.difficulty),'BAD_SETTINGS','房间设置无效');return s;
+  requireThat(mapIds.includes(s.mapId)&&['classic','quick'].includes(s.mode)&&isRoundLimit(s.roundLimit)&&typeof s.aiFill==='boolean'&&typeof s.classicBuildingRules==='boolean'&&['easy','normal','hard'].includes(s.difficulty),'BAD_SETTINGS','房间设置无效');return s;
 }
 function makePlayer(input){
   requireThat(typeof input.name==='string'&&input.name.trim()&&[...input.name].length<=20&&!/[\x00-\x1f]/.test(input.name),'BAD_NAME','昵称应为 1 至 20 个字符');
@@ -220,12 +220,19 @@ export async function serve(port=Number(process.env.PORT||3000)){
     for(const r of await store.load()){
       for(const p of r.players){if(p.online)p.offlineSince=Date.now();p.online=false;}
       r.emptySince??=Date.now();
-      if(r.game&&r.game.version===1){
-        r.game=migrateGame(r.game,await loadMap(r.settings.mapId));
-        r.game.revision++;
+      const oldLimit=r.settings.roundLimit;
+      r.settings.roundLimit=migrateRoundLimit(oldLimit);
+      const previousGame=r.game;
+      if(previousGame){
+        r.game=migrateGame(previousGame,previousGame.version===1?await loadMap(r.settings.mapId):null);
+        if(r.game!==previousGame)r.game.revision++;
+        if(previousGame.version===1){
+          r.deadline=null;
+          arm(r);
+        }
+      }
+      if(oldLimit!==r.settings.roundLimit || r.game!==previousGame){
         r.revision++;
-        r.deadline=null;
-        arm(r);
         await store.save(r,null,null,'game:migrate');
       }
       rooms.set(r.code,r);
