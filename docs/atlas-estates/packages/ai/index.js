@@ -1,5 +1,5 @@
-import {JAIL_BAIL_COST} from '../protocol/index.js?v=203f0a2d42db';
-import {groupTiles,redemption,principal,refund,upgrade,buildable} from '../game-core/economy.js?v=203f0a2d42db';
+import {JAIL_BAIL_COST} from '../protocol/index.js?v=30617823abbb';
+import {groupTiles,redemption,principal,refund,upgrade,buildable} from '../game-core/economy.js?v=30617823abbb';
 
 function holdingValue(s,m,t,id){
   const held=t.type==='land'?groupTiles(m,t):m.tiles.filter(x=>x.type===t.type);

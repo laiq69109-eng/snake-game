@@ -1,5 +1,5 @@
-import {tracks,scheduleStep,makeMix} from './scores.js?v=203f0a2d42db';
-export {tracks} from './scores.js?v=203f0a2d42db';
+import {tracks,scheduleStep,makeMix} from './scores.js?v=30617823abbb';
+export {tracks} from './scores.js?v=30617823abbb';
 const defaultMotif=[60,64,67,71];
 let context, timer, mix, master, step=0, next=0;
 let music=false,effects=true,track=tracks.cafe,volume=.45,motif=defaultMotif;

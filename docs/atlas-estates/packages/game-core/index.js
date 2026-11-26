@@ -1,7 +1,7 @@
-import {requireRule as check,validateCommand,JAIL_STAY_TURNS,JAIL_BAIL_COST,DEFAULT_ROUND_LIMIT,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from '../protocol/index.js?v=203f0a2d42db';
-import {validateMap} from '../maps/validate.js?v=203f0a2d42db';
-import {player,assets,rent,principal,redemption,upgrade,refund,buildable,groupTiles} from './economy.js?v=203f0a2d42db';
-export {assets,rent,principal,redemption,upgrade,refund,buildable} from './economy.js?v=203f0a2d42db';
+import {requireRule as check,validateCommand,JAIL_STAY_TURNS,JAIL_BAIL_COST,DEFAULT_ROUND_LIMIT,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from '../protocol/index.js?v=30617823abbb';
+import {validateMap} from '../maps/validate.js?v=30617823abbb';
+import {player,assets,rent,principal,redemption,upgrade,refund,buildable,groupTiles} from './economy.js?v=30617823abbb';
+export {assets,rent,principal,redemption,upgrade,refund,buildable} from './economy.js?v=30617823abbb';
 
 const alive = s=>s.players.filter(p=>!p.bankrupt);
 const note = (s,msg)=>{s.log.push(msg);if(s.log.length>80)s.log.shift()};

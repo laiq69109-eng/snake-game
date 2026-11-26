@@ -1,4 +1,4 @@
-import {socketLink} from './room-location.js?v=203f0a2d42db';
+import {socketLink} from './room-location.js?v=30617823abbb';
 const sessionKey=code=>'atlas:room:'+code;
 const makeId=()=>Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
 export class RoomClient {

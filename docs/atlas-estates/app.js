@@ -1,13 +1,13 @@
-import {JAIL_BAIL_COST,DEFAULT_ROUND_LIMIT,ROUND_LIMITS,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from './packages/protocol/index.js?v=203f0a2d42db';
-import {roomLink,homeLink,invitedRoom} from './room-location.js?v=203f0a2d42db';
-import {createGame,applyCommand,publicState,expire,migrateGame,assets,rent,buildable} from './packages/game-core/index.js?v=203f0a2d42db';
-import {decide} from './packages/ai/index.js?v=203f0a2d42db';
-import {validateMap} from './packages/maps/validate.js?v=203f0a2d42db';
-import {checkSave} from './save-check.js?v=203f0a2d42db';
-import {save,read,pref,setPref} from './storage.js?v=203f0a2d42db';
-import {unlock,sound,configure,tracks} from './audio.js?v=203f0a2d42db';
-import {configureShare,copy} from './share.js?v=203f0a2d42db';
-import {RoomClient} from './net.js?v=203f0a2d42db';
+import {JAIL_BAIL_COST,DEFAULT_ROUND_LIMIT,ROUND_LIMITS,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from './packages/protocol/index.js?v=30617823abbb';
+import {roomLink,homeLink,invitedRoom} from './room-location.js?v=30617823abbb';
+import {createGame,applyCommand,publicState,expire,migrateGame,assets,rent,buildable} from './packages/game-core/index.js?v=30617823abbb';
+import {decide} from './packages/ai/index.js?v=30617823abbb';
+import {validateMap} from './packages/maps/validate.js?v=30617823abbb';
+import {checkSave} from './save-check.js?v=30617823abbb';
+import {save,read,pref,setPref} from './storage.js?v=30617823abbb';
+import {unlock,sound,configure,tracks} from './audio.js?v=30617823abbb';
+import {configureShare,copy} from './share.js?v=30617823abbb';
+import {RoomClient} from './net.js?v=30617823abbb';
 
 const app=document.querySelector('#app'),overlay=document.querySelector('#overlay'),viewport=document.querySelector('.game-viewport');
 const seatColor=(seat,role)=>'var(--seat-'+seat+'-'+role+')';
@@ -61,7 +61,7 @@ function profileForm(){return '<div class="field-pair"><label>旅行昵称<input
 function setupView(){const m=catalog.find(m=>m.id===selection);modalBox(m.name,'<div class="form"><img class="map-preview" src="'+safe(m.art)+'" alt=""><p>'+safe(m.description)+'</p><span class="muted">'+safe([m.difficulty,m.duration,m.players].join(' · '))+'<br>'+safe(m.landmarks.join(' / '))+'</span>'+profileForm()+gameForm()+btn('startSetup',setup==='solo'?'开始旅行':'创建房间','go')+'<small class="room-progress" role="status"></small></div>')}
 const value=id=>document.getElementById(id)?.value;
 function capture(){if(document.getElementById('nickname')){profile={name:(value('nickname')||'旅行家').trim()||'旅行家',avatar:+value('avatar')};setPref('profile',profile)}if(document.getElementById('mode')){config={mode:value('mode'),limit:+value('limit'),difficulty:value('difficulty'),count:+value('count')||config.count,classicBuildingRules:document.querySelector('#classic').checked,aiFill:!!document.querySelector('#aiFill')?.checked};setPref('config',config)}}
-async function getMap(id){if(!catalog.some(m=>m.id===id))throw Error('地图版本不兼容');if(!maps.has(id)){const r=await fetch('./packages/maps/'+id+'.json');if(!r.ok)throw Error('地图读取失败，请重新打开');const packed=r.clone(),m=await r.json();validateMap(m);maps.set(id,m);if(window.isSecureContext&&'caches'in window){caches.open('atlas-offline-v6').then(async c=>{await c.put('./packages/maps/'+id+'.json',packed);await Promise.all([m.art,m.icon].map(async url=>{if(!await c.match(url))await c.add(url)}))}).catch(()=>{})}}return maps.get(id)}
+async function getMap(id){if(!catalog.some(m=>m.id===id))throw Error('地图版本不兼容');if(!maps.has(id)){const r=await fetch('./packages/maps/'+id+'.json');if(!r.ok)throw Error('地图读取失败，请重新打开');const packed=r.clone(),m=await r.json();validateMap(m);maps.set(id,m);if(window.isSecureContext&&'caches'in window){caches.open('atlas-offline-v7').then(async c=>{await c.put('./packages/maps/'+id+'.json',packed);await Promise.all([m.art,m.icon].map(async url=>{if(!await c.match(url))await c.add(url)}))}).catch(()=>{})}}return maps.get(id)}
 function storeGame(){const game=s,options={...config};saved={game,settings:options,version:2};storeChain=storeChain.then(()=>save(game,options)).catch(()=>toast('浏览器未能保存进度，请检查存储空间'))}
 async function startSolo(){clearTimeout(actionTimer);source='solo';map=await getMap(selection);const names=['棠舟','杉野','望舒'];const players=[{id:'human',name:profile.name,avatar:profile.avatar,ai:false},...names.slice(0,config.count).map((name,i)=>({id:'ai'+i,name,avatar:(profile.avatar+i+1)%8,ai:true}))];s=createGame(map,players,config);pauseStarted=0;aiError=null;paused=false;close();screen='game';audioSettings();storeGame();paint();schedule()}
 async function restore(previous=false){
