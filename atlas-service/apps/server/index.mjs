@@ -197,7 +197,7 @@ export async function serve(port=Number(process.env.PORT||3000)){
       let result=g,cmd;
       if(old.deadline&&now>=old.deadline){
         if(g.phase==='trade')result=expire(g,map,now);
-        else if(['roll','jail','end','buy','build','commission'].includes(g.phase))cmd={playerId:g.current,type:{roll:'roll',jail:'roll',end:'end',buy:'decline',build:'skip',commission:'takeFee'}[g.phase]};
+        else if(['roll','jail','end','buy','build','commission'].includes(g.phase))cmd={playerId:g.current,type:{roll:'roll',jail:'stayInJail',end:'end',buy:'decline',build:'skip',commission:'takeFee'}[g.phase]};
         else cmd=decide(publicState(g),map,g.debt?.from||g.current,old.settings.difficulty);
       }else if((nextAI.get(old.code)||0)<=now){
         for(const p of g.players){const seat=old.players.find(v=>v.id===p.id);
@@ -226,7 +226,7 @@ export async function serve(port=Number(process.env.PORT||3000)){
       if(previousGame){
         r.game=migrateGame(previousGame,previousGame.version===1?await loadMap(r.settings.mapId):null);
         if(r.game!==previousGame)r.game.revision++;
-        if(previousGame.version===1){
+        if(previousGame.version===1||r.game.phase!==previousGame.phase){
           r.deadline=null;
           arm(r);
         }

@@ -1,4 +1,4 @@
-import {DEFAULT_ROUND_LIMIT,ROUND_LIMITS,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from '/packages/protocol/index.mjs';
+import {JAIL_BAIL_COST,DEFAULT_ROUND_LIMIT,ROUND_LIMITS,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from '/packages/protocol/index.mjs';
 import {roomLink,homeLink,invitedRoom} from './room-location.mjs';
 import {createGame,applyCommand,publicState,expire,migrateGame,assets,rent,buildable} from '/packages/game-core/index.mjs';
 import {decide} from '/packages/ai/index.mjs';
@@ -16,7 +16,7 @@ const kinds={land:'街区地产',rail:'交通地产',utility:'公用事业',chan
 const patterns={circle:'●',stripe:'╱',triangle:'▲',wave:'≈',diamond:'◆',cross:'+',leaf:'❧',grid:'#'};
 const icons={land:'⌂',rail:'⇄',utility:'ϟ',chance:'✦',fate:'☾',start:'⚑',jail:'▥',goJail:'⇥',park:'♧',tax:'§'};
 const levels=['空地','一栋房','两栋房','旅馆'],buildText=['盖一栋房','盖第二栋房','升级旅馆'];
-const titles={commission:'街区委托',roll:'掷骰启程',jail:'选择出狱方式',buy:'购入这处地产？',build:'开发你的地产',debt:'筹集偿债资金',trade:'协商交易',end:'落点结算完成',finished:'本次旅程结束'};
+const titles={commission:'街区委托',roll:'掷骰启程',jail:'选择如何离开监狱',buy:'购入这处地产？',build:'开发你的地产',debt:'筹集偿债资金',trade:'协商交易',end:'落点结算完成',finished:'本次旅程结束'};
 const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const n=v=>Number(v||0).toLocaleString('zh-CN');
 const btn=(act,label,cl='',disabled=false)=>'<button data-do="'+safe(act)+'" class="'+cl+'" '+(disabled?'disabled':'')+'>'+safe(label)+'</button>';
@@ -50,7 +50,7 @@ function toast(text){const el=document.querySelector('#toast');el.textContent=te
 function modalBox(title,body){const had=!!overlay.firstChild;overlay.innerHTML='<div class="veil"><section role="dialog" aria-modal="true" aria-label="'+safe(title)+'" class="sheet"><div class="sheet-head"><h2>'+safe(title)+'</h2>'+btn('close','×','close')+'</div>'+body+'</section></div>';if(!had)overlay.querySelector('button')?.focus()}
 function close(){modal=null;overlay.replaceChildren()}
 function detail(title,body){modal=()=>modalBox(title,body());modal()}
-function home(){viewport.scrollTop=0;app.dataset.screen='home';screen='home';notice.hidden=true;close();clearTimeout(actionTimer);const first=catalog.find(m=>m.id===selection)||catalog[0];app.innerHTML='<section class="poster"><img class="poster-art" src="'+safe(first.art)+'" alt="'+safe(first.name)+'主题插画"><div><div class="folio">ATLAS ESTATES</div><h1>环球置业之旅</h1><p>掷骰前进，沿途置业。下一站，由你经营。</p><div class="actions">'+btn('solo','开始单机旅行')+(saved?btn('continue','继续上次棋局','quiet'):'')+'</div></div></section><div class="section-head"><h2>与好友同行</h2></div><div class="home-grid"><button class="entry" data-do="create">'+newRoomIcon+'<span>创建房间<small>邀请好友加入棋局</small></span></button><button class="entry" data-do="join">'+joinIcon+'<span>加入房间<small>输入六位房间码</small></span></button></div><div class="section-head"><h2>旅行目的地</h2>'+btn('solo','全部地图','quiet')+'</div><div class="preview-strip">'+catalog.slice(0,4).map(mapCard).join('')+'</div>'}
+function home(){viewport.scrollTop=0;app.dataset.screen='home';screen='home';notice.hidden=true;landingNotice.hidden=true;close();clearTimeout(actionTimer);const first=catalog.find(m=>m.id===selection)||catalog[0];app.innerHTML='<section class="poster"><img class="poster-art" src="'+safe(first.art)+'" alt="'+safe(first.name)+'主题插画"><div><div class="folio">ATLAS ESTATES</div><h1>环球置业之旅</h1><p>掷骰前进，沿途置业。下一站，由你经营。</p><div class="actions">'+btn('solo','开始单机旅行')+(saved?btn('continue','继续上次棋局','quiet'):'')+'</div></div></section><div class="section-head"><h2>与好友同行</h2></div><div class="home-grid"><button class="entry" data-do="create">'+newRoomIcon+'<span>创建房间<small>邀请好友加入棋局</small></span></button><button class="entry" data-do="join">'+joinIcon+'<span>加入房间<small>输入六位房间码</small></span></button></div><div class="section-head"><h2>旅行目的地</h2>'+btn('solo','全部地图','quiet')+'</div><div class="preview-strip">'+catalog.slice(0,4).map(mapCard).join('')+'</div>'}
 function mapCard(m){return '<button class="map-card '+(screen==='maps'&&selection===m.id?'active':'')+'" data-do="map:'+m.id+'"><img loading="lazy" src="'+safe(m.art)+'" alt=""><span class="map-desc"><strong>'+safe(m.name)+'</strong><small>'+safe(m.theme||m.difficulty)+'</small></span></button>'}
 function mapsPage(kind){viewport.scrollTop=0;app.dataset.screen='maps';screen='maps';setup=kind;close();app.innerHTML='<div class="topline"><div><div class="folio">DESTINATIONS</div><h1>选择旅行地图</h1></div>'+btn('home','返回')+'</div><div class="maps-grid">'+catalog.map(mapCard).join('')+'</div>'}
 const opt=(value,label,current)=>'<option value="'+value+'" '+(String(value)===String(current)?'selected':'')+'>'+safe(label)+'</option>';
@@ -61,7 +61,7 @@ function profileForm(){return '<div class="field-pair"><label>旅行昵称<input
 function setupView(){const m=catalog.find(m=>m.id===selection);modalBox(m.name,'<div class="form"><img class="map-preview" src="'+safe(m.art)+'" alt=""><p>'+safe(m.description)+'</p><span class="muted">'+safe([m.difficulty,m.duration,m.players].join(' · '))+'<br>'+safe(m.landmarks.join(' / '))+'</span>'+profileForm()+gameForm()+btn('startSetup',setup==='solo'?'开始旅行':'创建房间','go')+'<small class="room-progress" role="status"></small></div>')}
 const value=id=>document.getElementById(id)?.value;
 function capture(){if(document.getElementById('nickname')){profile={name:(value('nickname')||'旅行家').trim()||'旅行家',avatar:+value('avatar')};setPref('profile',profile)}if(document.getElementById('mode')){config={mode:value('mode'),limit:+value('limit'),difficulty:value('difficulty'),count:+value('count')||config.count,classicBuildingRules:document.querySelector('#classic').checked,aiFill:!!document.querySelector('#aiFill')?.checked};setPref('config',config)}}
-async function getMap(id){if(!catalog.some(m=>m.id===id))throw Error('地图版本不兼容');if(!maps.has(id)){const r=await fetch('/packages/maps/'+id+'.json');if(!r.ok)throw Error('地图读取失败，请重新打开');const packed=r.clone(),m=await r.json();validateMap(m);maps.set(id,m);if(window.isSecureContext&&'caches'in window){caches.open('atlas-offline-v4').then(async c=>{await c.put('/packages/maps/'+id+'.json',packed);await Promise.all([m.art,m.icon].map(async url=>{if(!await c.match(url))await c.add(url)}))}).catch(()=>{})}}return maps.get(id)}
+async function getMap(id){if(!catalog.some(m=>m.id===id))throw Error('地图版本不兼容');if(!maps.has(id)){const r=await fetch('/packages/maps/'+id+'.json');if(!r.ok)throw Error('地图读取失败，请重新打开');const packed=r.clone(),m=await r.json();validateMap(m);maps.set(id,m);if(window.isSecureContext&&'caches'in window){caches.open('atlas-offline-v5').then(async c=>{await c.put('/packages/maps/'+id+'.json',packed);await Promise.all([m.art,m.icon].map(async url=>{if(!await c.match(url))await c.add(url)}))}).catch(()=>{})}}return maps.get(id)}
 function storeGame(){const game=s,options={...config};saved={game,settings:options,version:2};storeChain=storeChain.then(()=>save(game,options)).catch(()=>toast('浏览器未能保存进度，请检查存储空间'))}
 async function startSolo(){clearTimeout(actionTimer);source='solo';map=await getMap(selection);const names=['棠舟','杉野','望舒'];const players=[{id:'human',name:profile.name,avatar:profile.avatar,ai:false},...names.slice(0,config.count).map((name,i)=>({id:'ai'+i,name,avatar:(profile.avatar+i+1)%8,ai:true}))];s=createGame(map,players,config);pauseStarted=0;aiError=null;paused=false;close();screen='game';audioSettings();storeGame();paint();schedule()}
 async function restore(previous=false){
@@ -78,14 +78,14 @@ async function restore(previous=false){
   close();screen='game';audioSettings();paint();
   if(migrated!==r.game){
     storeGame();
-    toast(r.game.version===1?'旧棋局已更新为单骰规则':'旧棋局的快速回合数已更新为50轮');
+    toast('旧棋局已更新为当前规则');
   }
   schedule();
 }
 
 function joinView(code=''){modalBox('加入好友房间','<div class="form">'+profileForm()+'<label>六位房间码<input id="joinCode" maxlength="6" autocapitalize="characters" value="'+safe(code)+'"></label>'+btn('submitJoin','加入房间','primary')+'<small class="room-progress" role="status"></small></div>')}
 function getNet(){if(!net)net=new RoomClient({onStatus:status=>{netStatus=status;document.querySelectorAll('.network,.room-progress').forEach(el=>el.textContent=status)},onSnapshot:async next=>{try{await snapshot(next)}catch(e){toast(e.message)}}});return net}
-async function snapshot(next){if(!next)return;if(room&&room.code===next.code&&next.revision<room.revision)return;const ticket=++scene;room=next;source='online';if(!next.game){s=null;screen='lobby';notice.hidden=true;lobby();return}const loaded=await getMap(next.game.mapId);if(ticket!==scene)return;map=loaded;screen='game';audioSettings();transition(next.game)}
+async function snapshot(next){if(!next)return;if(room&&room.code===next.code&&next.revision<room.revision)return;const ticket=++scene;room=next;source='online';if(!next.game){s=null;screen='lobby';notice.hidden=true;landingNotice.hidden=true;lobby();return}const loaded=await getMap(next.game.mapId);if(ticket!==scene)return;map=loaded;screen='game';audioSettings();transition(next.game)}
 async function opened(next){close();history.replaceState(null,'',roomLink(next.code));configureShare(location.href,'加入「'+next.code+'」的环球置业之旅');await snapshot(next)}
 let lobbyLayout;
 function lobby(){
@@ -141,7 +141,7 @@ function foregroundColor(color){
 function tileCell(t){
   const i=t.index,[row,col]=position(i),a=own(i),group=map.groups?.[t.group];
   const color=a.ownerId?pColor(a.ownerId):null;
-  const classes=['cell',i%10===0?'corner':'',player(s.current)?.pos===i?'landed':'',color?'owned':'',a.mortgaged?'mortgaged':''];
+  const classes=['cell',i%10===0?'corner':'',color?'owned':'',a.mortgaged?'mortgaged':''];
   const label=[t.name,kinds[t.type],a.ownerId?pName(a.ownerId):'',t.price?money(t.price):'',a.level?levels[a.level]:'',a.mortgaged?'已抵押':''].filter(Boolean).join('，');
   const colors=color?';--owner:'+color+';--owner-ink:'+foregroundColor(color):'';
   return '<button class="'+classes.join(' ')+'" id="tile-'+i+'" data-do="tile:'+i+'" aria-label="'+safe(label)+'" style="grid-area:'+row+'/'+col+';--band:'+safe(group?.color||'#c4b17f')+colors+'">'+
@@ -165,7 +165,7 @@ function pieces(){
   }).join('');
 }
 function board(){return '<div class="board-scroll"><div class="board"><div class="center-art"><img alt="'+safe(map.name)+'中心插画" src="'+safe(map.art)+'"><span class="board-tag">'+safe(map.name)+'</span></div>'+map.tiles.map(tileCell).join('')+'<div class="pieces">'+pieces()+'</div></div></div>'}
-function playerCard(p){return '<div class="player '+(s.current===p.id?'active':'')+'"><span class="avatar" style="--pin:'+pColor(p.id)+'">'+portrait(p)+'</span><span>'+safe(p.name)+'<small>'+[p.id===me()?'你':p.ai?'AI':'玩家',p.bankrupt?'已破产':p.jailed?'入狱 · 已试 '+p.attempts+' 次':tileName(p.pos),p.cards.length?'出狱卡 ×'+p.cards.length:''].filter(Boolean).map(safe).join(' · ')+'</small></span><b data-cash="'+safe(p.id)+'">'+money(p.cash)+'</b></div>'}
+function playerCard(p){return '<div class="player '+(s.current===p.id?'active':'')+'"><span class="avatar" style="--pin:'+pColor(p.id)+'">'+portrait(p)+'</span><span>'+safe(p.name)+'<small>'+[p.id===me()?'你':p.ai?'AI':'玩家',p.bankrupt?'已破产':p.jailed?(p.jailTurnsRemaining?'还需停留'+p.jailTurnsRemaining+'回合':'入狱'):tileName(p.pos),p.cards.length?'监狱许可证 ×'+p.cards.length:''].filter(Boolean).map(safe).join(' · ')+'</small></span><b data-cash="'+safe(p.id)+'">'+money(p.cash)+'</b></div>'}
 function purchasePreview(tile,id){
   const prop=s.properties[tile.index];
   const state={...s,properties:{...s.properties,[tile.index]:{...prop,ownerId:id}}};
@@ -174,6 +174,10 @@ function purchasePreview(tile,id){
 }
 function decisionPreview(){
   const p=player(acting()),tile=map.tiles[p.pos];
+  if(s.phase==='jail'&&p.id===me()){
+    const hints=[p.cash<JAIL_BAIL_COST?'现金不足':'',p.cards.length?'':'暂无监狱许可证'].filter(Boolean);
+    return hints.length?'<p class="decision-note">'+hints.join(' · ')+'</p>':'';
+  }
   if(s.phase==='buy'){
     const balance=p.cash-tile.price;
     return '<p class="decision-note">'+safe(tile.name)+' · '+purchasePreview(tile,p.id)+'<br>'+
@@ -202,7 +206,11 @@ function turnActions(){const p=player(acting()),myTurn=p.id===me(),t=map.tiles[p
  switch(s.phase){
  case 'commission':controls=cmd('takeFee','交稿 +'+money(s.lastCard.reward))+cmd('visitSite','去现场 −'+money(s.lastCard.fee),p.cash<s.lastCard.fee);break;
  case 'roll':controls=cmd('roll','掷骰子')+btn('trade','发起交易');break;
- case 'jail':controls=cmd('roll','掷出 6 点出狱')+cmd('bail','支付 ₳ 50',p.cash<50)+cmd('useCard','使用出狱卡',!p.cards.length);break;
+ case 'jail':
+   controls=cmd('stayInJail','停留两回合')+
+     cmd('bail','支付 ₳'+JAIL_BAIL_COST+' 出狱',p.cash<JAIL_BAIL_COST)+
+     cmd('useCard','使用监狱许可证出狱',!p.cards.length);
+   break;
  case 'buy':controls=cmd('buy','购买 '+money(t.price),p.cash<t.price)+btn('cmd:decline','不买');break;
  case 'build':{const cost=a.level===2?t.hotelCost:t.houseCost;controls=cmd('build',buildText[a.level]+' '+money(cost),p.cash<cost)+cmd('skip','放弃建设')+(p.cash<cost?'<small>还差 '+money(cost-p.cash)+'</small>':'');break}
  case 'debt':controls='<p>应付 '+safe(pName(s.debt.to))+' '+money(s.debt.amount)+' · '+safe(s.debt.reason)+'</p>'+btn('manage','筹集资金')+cmd('settle','清偿',p.cash<s.debt.amount)+btn('bankruptcy','宣布破产');break;
@@ -212,16 +220,34 @@ function turnActions(){const p=player(acting()),myTurn=p.id===me(),t=map.tiles[p
 }
 function controls(){const p=player(acting()),deadline=s.phase==='trade'?s.trade?.deadline:room?.deadline;return '<section class="turn-box"><div class="row between"><div><div class="folio">ROUND '+s.round+(s.mode==='quick'?' / '+(s.limit===UNLIMITED_ROUNDS?'∞':s.limit):'')+'</div><h2>'+safe(p.name)+' · '+safe(titles[s.phase])+'</h2></div><div class="dice">'+[s.dice[0]].map(d=>'<span class="die" aria-label="'+d+' 点">'+('⚀⚁⚂⚃⚄⚅'[d-1]||'·')+'</span>').join('')+'</div></div>'+decisionPreview()+turnActions()+(deadline?'<small data-deadline="'+deadline+'"></small>':'')+'</section>'}
 function gameTools(){return btn('manage','地产管理')+btn('logs','行程日志')+btn('tileList','全图索引')+btn('zoomBoard','放大棋盘')+btn('rules','规则说明')}
-function paint(){if(app.dataset.screen!=='game')viewport.scrollTop=0;app.dataset.screen='game';if(screen!=='game'||!s)return;if(s.phase==='finished'){results();updateCard();return}app.innerHTML='<div class="topline"><div><div class="folio">'+(source==='solo'?'SOLO VOYAGE':'ROOM '+safe(room.code))+'</div><h1>'+safe(map.name)+'</h1></div><div class="actions">'+(source==='online'?'<span class="network">'+safe(netStatus)+'</span>':'')+btn('menu','对局菜单')+'</div></div><div class="arena"><div>'+board()+'<div class="actions board-tools">'+gameTools()+'</div></div><aside class="control-strip">'+controls()+(aiError?'<div class="ticket ai-error" role="alert">'+safe(aiError)+btn('retryAI','重试 AI','primary')+'</div>':'')+'<div class="stack">'+s.players.map(playerCard).join('')+'</div><div class="mobile-tiles"><div class="actions">'+gameTools()+'</div></div><div class="ticket"><h3>最新行程</h3><p>'+safe(s.log.at(-1))+'</p></div></aside></div>';if(modal)modal();clock();updateCard()}
+function paint(){if(app.dataset.screen!=='game')viewport.scrollTop=0;app.dataset.screen='game';if(screen!=='game'||!s)return;if(s.phase==='finished'){results();updateCard();updateLanding();return}app.innerHTML='<div class="topline"><div><div class="folio">'+(source==='solo'?'SOLO VOYAGE':'ROOM '+safe(room.code))+'</div><h1>'+safe(map.name)+'</h1></div><div class="actions">'+(source==='online'?'<span class="network">'+safe(netStatus)+'</span>':'')+btn('menu','对局菜单')+'</div></div><div class="arena"><div>'+board()+'<div class="actions board-tools">'+gameTools()+'</div></div><aside class="control-strip">'+controls()+(aiError?'<div class="ticket ai-error" role="alert">'+safe(aiError)+btn('retryAI','重试 AI','primary')+'</div>':'')+'<div class="stack">'+s.players.map(playerCard).join('')+'</div><div class="mobile-tiles"><div class="actions">'+gameTools()+'</div></div><div class="ticket"><h3>最新行程</h3><p>'+safe(s.log.at(-1))+'</p></div></aside></div>';if(modal)modal();clock();updateCard();updateLanding()}
 function results(){viewport.scrollTop=0;app.dataset.screen='results';const propCount=id=>Object.values(s.properties).filter(a=>a.ownerId===id);close();app.innerHTML='<div class="topline"><div><div class="folio">ARRIVALS</div><h1>旅程结算</h1></div></div><div class="summary-grid">'+s.ranking.map((id,i)=>{const p=player(id),props=propCount(id);return '<article class="ticket stack"><div class="folio">RANK '+(i+1)+'</div><h2>'+safe(p.name)+'</h2><strong>总资产 '+money(assets(s,map,id))+'</strong>'+grid([['现金',money(p.cash)],['地产',props.length+' 处'],['建筑',props.filter(a=>a.level===3).length+' 间旅馆，'+props.reduce((v,a)=>v+(a.level===3?0:a.level),0)+' 栋房'],['累计收租',money(p.rentReceived)],['累计支付',money(p.paid)],['状态',p.bankrupt?'破产':'完成旅行']])+'</article>'}).join('')+'</div><div class="actions section-head">'+btn('again','再来一局','primary')+btn('returnHome','返回首页')+'</div>'}
 const grid=items=>'<div class="details">'+items.map(([k,v])=>'<div><small>'+safe(k)+'</small><b>'+safe(v)+'</b></div>').join('')+'</div>';
 function tileInfo(i){const t=map.tiles[i],a=own(i),bank=Math.floor((t.price||0)/2),manage=a.ownerId===me()&&((s.phase==='roll'||s.phase==='jail')&&s.current===me()||s.phase==='debt'&&s.debt.from===me());return '<div class="stack"><div class="row"><img width="42" height="42" src="'+safe(map.icon)+'" alt=""><strong>'+safe(kinds[t.type])+'</strong>'+(a.level?building(a.level)+'<b>'+levels[a.level]+'</b>':'')+'</div>'+grid([['位置',i+' / 39'],['地块组',map.groups?.[t.group]?.name||kinds[t.type]],...(t.price?[['标价',money(t.price)],['所有者',a.ownerId?pName(a.ownerId):'银行 · 可购'],['抵押',a.mortgaged?'已抵押':'未抵押'],['抵押 / 赎回',money(bank)+' / '+money(Math.ceil(bank*110/100))]]:[]),...(t.type==='land'?[['当前开发',levels[a.level]],['盖房 / 旅馆',money(t.houseCost)+' / '+money(t.hotelCost)],...['baseRent','oneHouseRent','twoHouseRent','hotelRent'].map((k,j)=>[levels[j]+'租金',money(t[k])])]:[]),...(a.ownerId?[['本次骰点计租',money(rent(s,map,i,s.dice[0]))]]:[])])+(manage?'<div class="actions">'+(a.level?btn('asset:sell:'+i,'出售一级建筑'):(a.mortgaged?btn('asset:redeem:'+i,'赎回', '',s.phase==='debt'||player(me()).cash<Math.ceil(bank*110/100)):btn('asset:mortgage:'+i,'抵押')))+'</div>':'')+'</div>'}
 function manage(){detail('地产管理',()=>{const ownTiles=map.tiles.filter(t=>own(t.index).ownerId===me());return '<p>现金 '+money(player(me()).cash)+'</p><div class="manage-list">'+(ownTiles.length?ownTiles.map(t=>btn('tile:'+t.index,t.name+' · '+(own(t.index).mortgaged?'已抵押':levels[own(t.index).level]))).join(''):'尚未持有地产。')+'</div>'})}
-function tradeSide(label,id,key,v={cash:0,cards:0,tiles:[]}){const p=player(id);return '<fieldset><legend>'+label+' · '+safe(p.name)+'</legend><div class="field-pair"><label>现金<input type="number" min="0" max="'+p.cash+'" id="'+key+'Cash" value="'+v.cash+'"></label><label>出狱卡<input type="number" min="0" max="'+p.cards.length+'" id="'+key+'Cards" value="'+v.cards+'"></label></div>'+map.tiles.filter(t=>own(t.index).ownerId===id&&!own(t.index).level&&!own(t.index).mortgaged).map(t=>'<label class="check"><input type="checkbox" name="'+key+'Tiles" value="'+t.index+'" '+(v.tiles.includes(t.index)?'checked':'')+'>'+safe(t.name)+(own(t.index).mortgaged?'（抵押）':'')+'</label>').join('')+'</fieldset>'}
+function tradeSide(label,id,key,v={cash:0,cards:0,tiles:[]}){const p=player(id);return '<fieldset><legend>'+label+' · '+safe(p.name)+'</legend><div class="field-pair"><label>现金<input type="number" min="0" max="'+p.cash+'" id="'+key+'Cash" value="'+v.cash+'"></label><label>监狱许可证<input type="number" min="0" max="'+p.cards.length+'" id="'+key+'Cards" value="'+v.cards+'"></label></div>'+map.tiles.filter(t=>own(t.index).ownerId===id&&!own(t.index).level&&!own(t.index).mortgaged).map(t=>'<label class="check"><input type="checkbox" name="'+key+'Tiles" value="'+t.index+'" '+(v.tiles.includes(t.index)?'checked':'')+'>'+safe(t.name)+(own(t.index).mortgaged?'（抵押）':'')+'</label>').join('')+'</fieldset>'}
 function tradeForm(to,editing=false){const from=editing?s.trade.from:me();to=editing?s.trade.to:to;const others=s.players.filter(p=>p.id!==from&&!p.bankrupt);to||=others[0]?.id;if(!to)return;modal=null;modalBox(editing?'修改交易':'发起交易','<div class="form">'+(!editing?'<label>交易对象<select id="tradeTo">'+others.map(p=>opt(p.id,p.name,to)).join('')+'</select></label>':'')+tradeSide('转出',from,'give',editing?s.trade.give:undefined)+tradeSide('换取',to,'take',editing?s.trade.take:undefined)+btn(editing?'sendEdit':'sendOffer','提交条款','primary')+'</div>')}
 const readSide=k=>({cash:Number(value(k+'Cash')),cards:Number(value(k+'Cards')),tiles:[...document.querySelectorAll('input[name="'+k+'Tiles"]:checked')].map(e=>+e.value)});
-function inspectTrade(){detail('交易条款',()=>{if(s.phase!=='trade')return '<p>交易已结束</p>';const tr=s.trade;const side=[tr.from,tr.to].includes(me());return '<div class="stack">'+[tr.from,tr.to].map((id,i)=>{const terms=i?tr.take:tr.give;return '<div class="ticket"><h3>'+safe(pName(id))+' 转出</h3><p>'+money(terms.cash)+' · 出狱卡 '+terms.cards+' 张<br>'+safe(terms.tiles.map(tileName).join('、')||'无地产')+'</p><strong>'+(tr.confirmed.includes(id)?'已确认':'待确认')+'</strong></div>'}).join('')+(side?'<div class="actions">'+btn('editTrade','修改')+cmd('confirm','确认',tr.confirmed.includes(me()))+cmd('cancel','取消交易')+'</div>':'')+'</div>'})}
+function inspectTrade(){detail('交易条款',()=>{if(s.phase!=='trade')return '<p>交易已结束</p>';const tr=s.trade;const side=[tr.from,tr.to].includes(me());return '<div class="stack">'+[tr.from,tr.to].map((id,i)=>{const terms=i?tr.take:tr.give;return '<div class="ticket"><h3>'+safe(pName(id))+' 转出</h3><p>'+money(terms.cash)+' · 监狱许可证 '+terms.cards+' 张<br>'+safe(terms.tiles.map(tileName).join('、')||'无地产')+'</p><strong>'+(tr.confirmed.includes(id)?'已确认':'待确认')+'</strong></div>'}).join('')+(side?'<div class="actions">'+btn('editTrade','修改')+cmd('confirm','确认',tr.confirmed.includes(me()))+cmd('cancel','取消交易')+'</div>':'')+'</div>'})}
 const notice=document.getElementById('card-notice');
+const landingNotice=document.getElementById('landing-notice');
+let landingKey,landingTimer;
+function updateLanding(){
+  const landing=s?.lastLanding;
+  if(app.dataset.screen!=='game'||!landing||s.lastCard?.revision===landing.revision||s.lastCard?.arrivalRevision===landing.revision){
+    landingNotice.hidden=true;
+    return;
+  }
+  const key=s.id+':'+landing.revision;
+  if(key===landingKey)return;
+  landingKey=key;
+  const name=landing.playerId===me()?'你':pName(landing.playerId);
+  landingNotice.textContent=name+'抵达 '+tileName(landing.index)+(landing.result?' · '+landing.result:'');
+  landingNotice.hidden=false;
+  clearTimeout(landingTimer);
+  landingTimer=setTimeout(()=>{landingNotice.hidden=true},3500);
+}
+
 let cardKey,cardUntil,cardTimer,cardSignature;
 function updateCard(){
   const card=s?.lastCard;
@@ -292,7 +318,7 @@ function schedule(){
 async function send(type,payload={}){if(busy||paused||!s||s.phase==='finished')return;busy=true;const revision=s.revision;try{if(source==='online')await net.command({type,...payload});else if(revision===s.revision){transition(applyCommand(s,{playerId:me(),type,...payload},map));storeGame();schedule()}sound()}finally{busy=false}}
 
 
-function rules(){modal=null;modalBox('旅行规则','<ol class="rule-list"><li>每人从起点携带 ₳ 1,500 出发。掷一枚骰子，按 1～6 点移动，经过起点领 ₳ 200。</li><li>落在无主地产时可购买或选择不买。余额不足时仍可选择不买，地产继续由银行持有。</li><li>最终停在自己未抵押的普通地产，才能建设一次。空地 → 一栋房 → 两栋房 → 一间旅馆。持有完整同色组的空地租金翻倍。</li><li>交通按持有数量计租，公用事业按单枚骰子点数乘以持有倍率计租。抵押地产免租，建筑可按升级费用的一半逐级出售。</li><li>掷骰前可交易现金、无建筑地产和出狱卡。双方确认后成交。欠款时可先出售建筑或抵押地产。因银行债务破产的地产清空产权、建筑和抵押后归还银行。</li><li>入狱可支付 ₳ 50 或使用出狱卡后正常掷骰。也可尝试掷出 6 点免费出狱并移动。前两次失败留在监狱，第三次失败支付 ₳ 50 后按本次点数移动。</li><li>街区委托可原地交稿收款，或支付路费前往指定地产。去现场途中不领起点奖励，到达后正常购地、付租或建设。</li><li>只剩一名未破产玩家时立即获胜。快速模式默认50轮，第50轮最后一位玩家完整结束回合后，按现金、地产、建筑投入减抵押本金排名。选择无限则按最后一名未破产玩家结算。</li></ol>')}
+function rules(){modal=null;modalBox('旅行规则','<ol class="rule-list"><li>每人从起点携带 ₳ 1,500 出发。掷一枚骰子，按 1～6 点移动，经过起点领 ₳ 200。</li><li>落在无主地产时可购买或选择不买。余额不足时仍可选择不买，地产继续由银行持有。</li><li>最终停在自己未抵押的普通地产，才能建设一次。空地 → 一栋房 → 两栋房 → 一间旅馆。持有完整同色组的空地租金翻倍。</li><li>交通按持有数量计租，公用事业按单枚骰子点数乘以持有倍率计租。抵押地产免租，建筑可按升级费用的一半逐级出售。</li><li>掷骰前可交易现金、无建筑地产和监狱许可证。双方确认后成交。欠款时可先出售建筑或抵押地产。因银行债务破产的地产清空产权、建筑和抵押后归还银行。</li><li>入狱后可选择停留两回合、支付 ₳50 出狱或使用监狱许可证出狱。支付或使用许可证后可在本回合掷骰。选择停留会结束当前回合，接下来的两个自己的回合自动跳过。停留期满免费出狱，下一次轮到自己时可正常行动。期间仍可收租。</li><li>街区委托可原地交稿收款，或支付路费前往指定地产。去现场途中不领起点奖励，到达后正常购地、付租或建设。</li><li>只剩一名未破产玩家时立即获胜。快速模式默认50轮，第50轮最后一位玩家完整结束回合后，按现金、地产、建筑投入减抵押本金排名。选择无限则按最后一名未破产玩家结算。</li></ol>')}
 function settings(){
   modal=null;
   const toggles=[['music','背景音乐'],['sfx','操作音效'],['fast','加速或跳过动画']].map(([k,t])=>
@@ -309,7 +335,7 @@ document.addEventListener('change',e=>{
 async function goHome(){if(source==='online'&&room){await net.leave();net=null;room=null;s=null;history.replaceState(null,'',homeLink())}paused=true;home()}
 function menu(){if(source==='solo'){pauseStarted=Date.now();paused=true;clearTimeout(actionTimer)}modal=null;modalBox('对局菜单','<div class="stack">'+(source==='solo'?'<p>已暂停，当前进度自动保存。</p>'+btn('resume','继续游戏','primary')+btn('manualSave','保存进度')+btn('restart','重新开始'):btn('close','继续查看','primary'))+btn('settings','音乐与设置')+btn('returnHome','返回首页')+'</div>')}
 function soloUnpause(){if(paused&&screen==='game'&&source==='solo'){const timed=s.trade;if(timed&&pauseStarted)timed.deadline+=Date.now()-pauseStarted;pauseStarted=0;paused=false;paint();schedule()}}
-const knownErrors={EXPIRED:'操作已超时，正在更新棋局',WRONG_PHASE:'当前阶段已改变，请查看最新操作',INSUFFICIENT_FUNDS:'可用资金不足',TRADE_BALANCE:'现金或出狱卡数量不足，请调整条款',INVALID_TERMS:'交易数量须为非负整数',EMPTY_TRADE:'请至少选择一项交易内容',ALREADY_CONFIRMED:'你已确认这笔交易',CAN_RAISE_FUNDS:'仍可筹款，请先出售建筑或抵押地产',UNEVEN_SALE:'请先出售同色组中等级最高的建筑',CANNOT_REDEEM:'当前无法赎回，请检查资金与抵押状态',NOT_OWNER:'这处地产属于其他玩家',INVALID_PLAYER:'该玩家已退出棋局',NOT_YOUR_TURN:'请等待自己的回合',INSUFFICIENT_CASH:'可用现金不足',ROOM_FULL:'房间席位已满',NOT_FOUND:'找不到该房间',STALE:'棋局已经更新，请按最新状态操作'};
+const knownErrors={NO_CARD:'暂无监狱许可证',EXPIRED:'操作已超时，正在更新棋局',WRONG_PHASE:'当前阶段已改变，请查看最新操作',INSUFFICIENT_FUNDS:'可用资金不足',TRADE_BALANCE:'现金或监狱许可证数量不足，请调整条款',INVALID_TERMS:'交易数量须为非负整数',EMPTY_TRADE:'请至少选择一项交易内容',ALREADY_CONFIRMED:'你已确认这笔交易',CAN_RAISE_FUNDS:'仍可筹款，请先出售建筑或抵押地产',UNEVEN_SALE:'请先出售同色组中等级最高的建筑',CANNOT_REDEEM:'当前无法赎回，请检查资金与抵押状态',NOT_OWNER:'这处地产属于其他玩家',INVALID_PLAYER:'该玩家已退出棋局',NOT_YOUR_TURN:'请等待自己的回合',INSUFFICIENT_CASH:'可用现金不足',ROOM_FULL:'房间席位已满',NOT_FOUND:'找不到该房间',STALE:'棋局已经更新，请按最新状态操作'};
 async function dispatch(act){
  const [verb,arg,arg2]=act.split(':');
  switch(verb){

@@ -1,4 +1,4 @@
-const VERSION='atlas-offline-v4';
+const VERSION='atlas-offline-v5';
 const CORE=['/','/app.mjs','/style.css','/mark.svg','/storage.mjs','/save-check.mjs','/audio.mjs','/scores.mjs','/avatars.webp','/share.mjs','/net.mjs','/room-location.mjs','/packages/game-core/index.mjs','/packages/ai/index.mjs','/packages/game-core/economy.mjs','/packages/protocol/index.mjs','/packages/maps/cn.json','/packages/maps/art/cn-board.webp','/packages/maps/art/cn-icon.svg','/packages/maps/validate.mjs','/packages/maps/catalog.json'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(VERSION).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('atlas-offline-')&&k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
