@@ -1,4 +1,4 @@
-import {roomOrigin} from './room-location.js?v=56c198d0e35e';
+import {roomOrigin} from './room-location.js?v=203f0a2d42db';
 const once=new Map();
 export async function configureShare(link,title='环球置业之旅'){
  if(!/MicroMessenger/i.test(navigator.userAgent))return;
