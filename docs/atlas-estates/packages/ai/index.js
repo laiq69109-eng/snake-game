@@ -1,4 +1,5 @@
-import {groupTiles,redemption,principal,refund,upgrade,buildable} from '../game-core/economy.js?v=7b7b65f04cc8';
+import {JAIL_BAIL_COST} from '../protocol/index.js?v=56c198d0e35e';
+import {groupTiles,redemption,principal,refund,upgrade,buildable} from '../game-core/economy.js?v=56c198d0e35e';
 
 function holdingValue(s,m,t,id){
   const held=t.type==='land'?groupTiles(m,t):m.tiles.filter(x=>x.type===t.type);
@@ -62,7 +63,7 @@ export function decide(s,m,id,difficulty='normal',rng=Math.random){
       }
       return cmd('roll');
     }
-    case 'jail':return cmd(p.cards.length?'useCard':p.cash>reserve+150&&s.round<12?'bail':'roll');
+    case 'jail':return cmd(p.cards.length?'useCard':p.cash>=reserve+JAIL_BAIL_COST&&s.round<12?'bail':'stayInJail');
     case 'end':return cmd('end');
     case 'buy':return cmd(p.cash>=t.price && (easy?rng()>0.18:p.cash-t.price>=reserve || holdingValue(s,m,t,id)>t.price*1.65)?'buy':'decline');
     case 'build':{

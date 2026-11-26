@@ -1,7 +1,7 @@
-import {requireRule as check,validateCommand,DEFAULT_ROUND_LIMIT,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from '../protocol/index.js?v=7b7b65f04cc8';
-import {validateMap} from '../maps/validate.js?v=7b7b65f04cc8';
-import {player,assets,rent,principal,redemption,upgrade,refund,buildable,groupTiles} from './economy.js?v=7b7b65f04cc8';
-export {assets,rent,principal,redemption,upgrade,refund,buildable} from './economy.js?v=7b7b65f04cc8';
+import {requireRule as check,validateCommand,JAIL_STAY_TURNS,JAIL_BAIL_COST,DEFAULT_ROUND_LIMIT,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from '../protocol/index.js?v=56c198d0e35e';
+import {validateMap} from '../maps/validate.js?v=56c198d0e35e';
+import {player,assets,rent,principal,redemption,upgrade,refund,buildable,groupTiles} from './economy.js?v=56c198d0e35e';
+export {assets,rent,principal,redemption,upgrade,refund,buildable} from './economy.js?v=56c198d0e35e';
 
 const alive = s=>s.players.filter(p=>!p.bankrupt);
 const note = (s,msg)=>{s.log.push(msg);if(s.log.length>80)s.log.shift()};
@@ -20,7 +20,7 @@ export function createGame(map,seats,settings={},deps={}) {
   check(isRoundLimit(limit),'INVALID_ROUND_LIMIT');
   const {random}=environment(deps);
   const players=shuffle(seats,random).map(p=>({id:p.id,name:p.name||p.id,avatar:p.avatar??0,ai:!!p.ai,
-    cash:1500,pos:map.tiles.findIndex(t=>t.type==='start'),jailed:false,attempts:0,cards:[],bankrupt:false,rentReceived:0,paid:0}));
+    cash:1500,pos:map.tiles.findIndex(t=>t.type==='start'),jailed:false,jailTurnsRemaining:0,cards:[],bankrupt:false,rentReceived:0,paid:0}));
   const properties=Object.fromEntries(map.tiles.filter(t=>['land','rail','utility'].includes(t.type)).map(t=>[t.index,{ownerId:null,level:0,mortgaged:false}]));
   return {version:2,id:deps.id??Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join(''),mapId:map.id,mode:settings.mode==='quick'?'quick':'classic',
     limit,classicBuildingRules:!!settings.classicBuildingRules,
@@ -37,10 +37,32 @@ function finish(s,m) {
 function next(s,m) {
   if(alive(s).length<=1)return finish(s,m);
   let i=s.players.findIndex(p=>p.id===s.current);
-  do {i=(i+1)%s.players.length;if(i===0){if(s.mode==='quick'&&s.limit!==UNLIMITED_ROUNDS&&s.round>=s.limit)return finish(s,m);s.round++}}
-  while(s.players[i].bankrupt);
-  s.current=s.players[i].id;s.turn++;s.lastTradeTurn=null;
-  s.phase=active(s).jailed?'jail':'roll';
+  while(true){
+    i=(i+1)%s.players.length;
+    if(i===0){
+      if(s.mode==='quick'&&s.limit!==UNLIMITED_ROUNDS&&s.round>=s.limit)return finish(s,m);
+      s.round++;
+    }
+    const p=s.players[i];
+    if(p.bankrupt)continue;
+    s.current=p.id;
+    s.turn++;
+    s.lastTradeTurn=null;
+    if(p.jailed&&p.jailTurnsRemaining>0){
+      p.jailTurnsRemaining--;
+      if(p.jailTurnsRemaining===0){
+        releaseFromJail(p);
+        note(s,p.name+' 停留期满，下一回合可正常行动');
+      }else note(s,p.name+' 在监狱停留一回合，还需停留'+p.jailTurnsRemaining+'回合');
+      continue;
+    }
+    s.phase=p.jailed?'jail':'roll';
+    return;
+  }
+}
+function releaseFromJail(p){
+  p.jailed=false;
+  p.jailTurnsRemaining=0;
 }
 function pay(s,d) {
   const p=player(s,d.from),receiver=player(s,d.to);
@@ -55,7 +77,7 @@ function pay(s,d) {
   note(s,p.name+' 支付 '+d.amount+' · '+d.reason);
 }
 function jail(s,m) {
-  const p=active(s);p.pos=m.tiles.findIndex(t=>t.type==='jail');p.jailed=true;p.attempts=0;
+  const p=active(s);p.pos=m.tiles.findIndex(t=>t.type==='jail');p.jailed=true;p.jailTurnsRemaining=0;
   s.lastLanding={index:p.pos,playerId:p.id,revision:s.revision,result:'进入监狱'};
   s.lastMove={id:s.revision,playerId:p.id,path:[p.pos]};note(s,p.name+' 进入监狱');next(s,m);
 }
@@ -138,13 +160,31 @@ function drain(s,m,e) {
   }
 }
 export function migrateGame(state,m,now=Date.now()){
+  check([1,2].includes(state.version),'UNSUPPORTED_SAVE','无法继续此版本的棋局');
   const limit=migrateRoundLimit(state.limit);
   check(isRoundLimit(limit),'INVALID_ROUND_LIMIT','存档中的快速回合数无效');
-  if(state.version===2)return limit===state.limit?state:{...state,limit};
-  check(state.version===1,'UNSUPPORTED_SAVE','无法继续此版本的棋局');
+  const legacyJail=state.players.some(p=>Object.hasOwn(p,'attempts')||p.jailTurnsRemaining===undefined);
+  if(state.version===2&&!legacyJail)return limit===state.limit?state:{...state,limit};
   const s=structuredClone(state);
-  s.version=2;
   s.limit=limit;
+  if(legacyJail){
+    const current=active(s);
+    // An unpaid compulsory fee from the previous rules has never moved the player.
+    if(s.phase==='debt'&&s.debt?.from===s.current&&s.debt.reason==='出狱费'&&s.queue[0]?.kind==='move'){
+      current.jailed=true;
+      s.debt=null;
+      s.queue.shift();
+      s.phase='jail';
+    }else if(s.phase==='end'&&current.jailed&&current.attempts>0)s.phase='jail';
+    for(const p of s.players){
+      p.jailTurnsRemaining??=0;
+      delete p.attempts;
+    }
+    s.log=s.log.filter(line=>!line.includes('尝试出狱失败')).map(line=>line.replaceAll('出狱卡','监狱许可证'));
+    if(s.lastCard?.text)s.lastCard.text=s.lastCard.text.replaceAll('出狱卡','监狱许可证');
+  }
+  if(s.version===2)return s;
+  s.version=2;
   s.dice=[Math.min(6,Math.max(1,s.dice?.[0]||1))];
   s.lastRoll=null;
   s.lastLanding=null;
@@ -236,22 +276,32 @@ export function applyCommand(state,c,m,deps={}){
       break;
     }
     case 'roll':{
-      phase('roll','jail');
+      phase('roll');check(!p.jailed,'WRONG_PHASE');
       const point=rollDie(e);
       s.dice=[point];
       s.lastRoll=s.revision;
       note(s,p.name+' 掷出 '+point+' 点');
-      if(ph==='jail'){
-        if(point!==6 && ++p.attempts<3){note(s,'尝试出狱失败');s.phase='end';break}
-        p.jailed=false;p.attempts=0;
-        if(point!==6)s.queue.push({kind:'pay',from:p.id,to:null,amount:50,reason:'出狱费'});
-      }
       s.phase='resolve';s.queue.push({kind:'move',steps:point});break;
     }
-    case 'useCard':case 'bail':
-      phase('jail');if(c.type==='useCard'){check(p.cards.length,'NO_CARD');returnCard(s,m,p.cards.shift())}
-      else {check(p.cash>=50,'INSUFFICIENT_FUNDS');p.cash-=50;p.paid+=50}
-      p.jailed=false;p.attempts=0;s.phase='roll';break;
+    case 'stayInJail':
+      phase('jail');check(p.jailed&&p.jailTurnsRemaining===0,'WRONG_PHASE');
+      p.jailTurnsRemaining=JAIL_STAY_TURNS;
+      note(s,p.name+' 选择停留，还需停留'+JAIL_STAY_TURNS+'回合');
+      next(s,m);
+      break;
+    case 'useCard':
+    case 'bail':
+      phase('jail');check(p.jailed&&p.jailTurnsRemaining===0,'WRONG_PHASE');
+      if(c.type==='useCard'){
+        check(p.cards.length,'NO_CARD');
+        returnCard(s,m,p.cards.shift());
+        note(s,p.name+' 使用监狱许可证出狱');
+      }else{
+        check(p.cash>=JAIL_BAIL_COST,'INSUFFICIENT_FUNDS');
+        p.cash-=JAIL_BAIL_COST;p.paid+=JAIL_BAIL_COST;
+        note(s,p.name+' 支付 ₳'+JAIL_BAIL_COST+' 出狱');
+      }
+      releaseFromJail(p);s.phase='roll';break;
     case 'buy':
       phase('buy');check(a&&!a.ownerId&&p.cash>=t.price,'CANNOT_BUY');a.ownerId=p.id;p.cash-=t.price;p.paid+=t.price;
       note(s,p.name+' 购入 '+t.name+' · '+t.price);s.phase='resolve';break;

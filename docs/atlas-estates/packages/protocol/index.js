@@ -7,8 +7,11 @@ export function migrateRoundLimit(value) {
   return value === undefined || [20,30,40].includes(value) ? DEFAULT_ROUND_LIMIT : value;
 }
 
+export const JAIL_STAY_TURNS = 2;
+export const JAIL_BAIL_COST = 50;
+
 const fields = {
-  takeFee: [], visitSite: [], roll: [], bail: [], useCard: [], buy: [], decline: [], build: [], skip: [], end: [],
+  takeFee: [], visitSite: [], roll: [], stayInJail: [], bail: [], useCard: [], buy: [], decline: [], build: [], skip: [], end: [],
   sell: ['tile'], mortgage: ['tile'], redeem: ['tile'],
   settle: [], bankrupt: [], offer: ['to','give','take'], edit: ['give','take'], confirm: [], cancel: []
 };
