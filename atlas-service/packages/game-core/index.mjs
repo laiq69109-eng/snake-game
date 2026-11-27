@@ -1,15 +1,24 @@
 import {requireRule as check,validateCommand,JAIL_STAY_TURNS,JAIL_BAIL_COST,DEFAULT_ROUND_LIMIT,UNLIMITED_ROUNDS,isRoundLimit,migrateRoundLimit} from '../protocol/index.mjs';
 import {validateMap} from '../maps/validate.mjs';
+import {secureRandomBelow,randomId,rollDie} from './random.mjs';
 import {player,assets,rent,principal,redemption,upgrade,refund,buildable,groupTiles} from './economy.mjs';
 export {assets,rent,principal,redemption,upgrade,refund,buildable} from './economy.mjs';
 
 const alive = s=>s.players.filter(p=>!p.bankrupt);
 const note = (s,msg)=>{s.log.push(msg);if(s.log.length>80)s.log.shift()};
 const active = s=>player(s,s.current);
-const environment = deps=>({random:deps?.random??Math.random,now:deps?.now??Date.now()});
-function shuffle(list,rng) {
+function environment(deps){
+  // The fractional callback remains available to deterministic test and simulation callers.
+  const randomBelow=deps?.randomBelow??(deps?.random?max=>Math.floor(deps.random()*max):secureRandomBelow);
+  return {randomBelow,now:deps?.now??Date.now()};
+}
+function shuffle(list,randomBelow) {
   const a=[...list];
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+  for(let i=a.length-1;i>0;i--){
+    const j=randomBelow(i+1);
+    check(Number.isInteger(j)&&j>=0&&j<=i,'INVALID_RANDOM_VALUE');
+    [a[i],a[j]]=[a[j],a[i]];
+  }
   return a;
 }
 export function createGame(map,seats,settings={},deps={}) {
@@ -18,14 +27,14 @@ export function createGame(map,seats,settings={},deps={}) {
     new Set(seats.map(p=>p.id)).size===seats.length,'INVALID_SEATS');
   const limit=settings.limit===undefined?DEFAULT_ROUND_LIMIT:settings.limit;
   check(isRoundLimit(limit),'INVALID_ROUND_LIMIT');
-  const {random}=environment(deps);
-  const players=shuffle(seats,random).map(p=>({id:p.id,name:p.name||p.id,avatar:p.avatar??0,ai:!!p.ai,
+  const {randomBelow}=environment(deps);
+  const players=shuffle(seats,randomBelow).map(p=>({id:p.id,name:p.name||p.id,avatar:p.avatar??0,ai:!!p.ai,
     cash:1500,pos:map.tiles.findIndex(t=>t.type==='start'),jailed:false,jailTurnsRemaining:0,cards:[],bankrupt:false,rentReceived:0,paid:0}));
   const properties=Object.fromEntries(map.tiles.filter(t=>['land','rail','utility'].includes(t.type)).map(t=>[t.index,{ownerId:null,level:0,mortgaged:false}]));
-  return {version:2,id:deps.id??Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join(''),mapId:map.id,mode:settings.mode==='quick'?'quick':'classic',
+  return {version:2,id:deps.id??randomId(),mapId:map.id,mode:settings.mode==='quick'?'quick':'classic',
     limit,classicBuildingRules:!!settings.classicBuildingRules,
     current:players[0].id,players,properties,round:1,turn:1,phase:'roll',dice:[1],lastRoll:null,
-    revision:0,queue:[],debt:null,trade:null,ranking:[],decks:Object.fromEntries(['chance','fate'].map(k=>[k,shuffle(map.cards[k].map(c=>c.id),random)])),
+    revision:0,queue:[],debt:null,trade:null,ranking:[],decks:Object.fromEntries(['chance','fate'].map(k=>[k,shuffle(map.cards[k].map(c=>c.id),randomBelow)])),
     log:['出发顺序 · '+players.map(p=>p.name).join(' → ')],lastMove:null,lastCard:null,lastLanding:null};
 }
 export function publicState(s){const {decks,queue,...rest}=s;return structuredClone(rest)}
@@ -95,10 +104,9 @@ function walk(s,m,steps,salary,viaCard) {
   else s.lastMove={id:s.revision,playerId:p.id,path};
   s.queue.unshift({kind:'land',viaCard});
 }
-function rollDie(e){return 1+Math.floor(e.random()*6)}
 function draw(s,m,kind,e) {
   const p=active(s),deck=s.decks[kind];
-  if(!deck.length)deck.push(...shuffle(m.cards[kind].filter(c=>!s.players.some(x=>x.cards.includes(c.id))).map(c=>c.id),e.random));
+  if(!deck.length)deck.push(...shuffle(m.cards[kind].filter(c=>!s.players.some(x=>x.cards.includes(c.id))).map(c=>c.id),e.randomBelow));
   if(!deck.length)return;
   const id=deck.shift(),c=m.cards[kind].find(x=>x.id===id);
   s.lastCard={...c,kind,playerId:p.id,revision:s.revision,received:0,spent:0};note(s,c.name+' · '+c.text);
@@ -134,7 +142,8 @@ function land(s,m,viaCard,e){
     if(a.ownerId===p.id){if(buildable(s,m,t.index,p.id))s.phase='build';result(s.phase==='build'?'可建设':'自有地产');return}
     if(a.mortgaged){result('已抵押，免租');return}
     const cardUtility=viaCard&&t.type==='utility';
-    const point=cardUtility?rollDie(e):s.dice[0];
+    const point=cardUtility?rollDie(e.randomBelow):s.dice[0];
+    if(t.type==='utility')s.lastLanding.rentPoint=point;
     if(cardUtility)note(s,'公用事业计租骰 '+point+' 点');
     const amount=rent(s,m,t.index,point);
     pay(s,{from:p.id,to:a.ownerId,amount,reason:'租金'});
@@ -277,7 +286,7 @@ export function applyCommand(state,c,m,deps={}){
     }
     case 'roll':{
       phase('roll');check(!p.jailed,'WRONG_PHASE');
-      const point=rollDie(e);
+      const point=rollDie(e.randomBelow);
       s.dice=[point];
       s.lastRoll=s.revision;
       note(s,p.name+' 掷出 '+point+' 点');

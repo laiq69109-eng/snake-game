@@ -2,6 +2,7 @@ import {randomBytes,randomInt,createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 import WS from './vendor/node_modules/faye-websocket/lib/faye/websocket.js';
+import {serverRandomBelow} from './random.mjs';
 import {openStore} from './store.mjs';
 import {createHttp} from './http.mjs';
 import {createGame,applyCommand,publicState,expire,migrateGame} from '../../packages/game-core/index.mjs';
@@ -21,7 +22,6 @@ async function loadMap(id){
 }
 const defaultSettings={mapId:'cn',mode:'classic',roundLimit:DEFAULT_ROUND_LIMIT,classicBuildingRules:false,aiFill:false,difficulty:'normal'};
 const tokenHash=s=>createHash('sha256').update(s).digest('hex');
-const random=()=>randomInt(0x100000000)/0x100000000;
 function requireThat(ok,code,message){if(!ok)throw Object.assign(Error(message),{code});}
 function fields(v,keys){
   requireThat(v&&typeof v==='object'&&!Array.isArray(v)&&Object.keys(v).every(k=>keys.includes(k)),'BAD_SCHEMA','请求字段无效');
@@ -77,8 +77,8 @@ function arm(r,old){
   if(!prev||prev.phase!==g.phase||prev.current!==g.current||prev.debt?.from!==g.debt?.from||!r.deadline)r.deadline=Date.now()+45000;
 }
 function elect(r){if(!r.players.some(p=>p.id===r.hostId&&p.online))r.hostId=r.players.find(p=>p.online)?.id||r.hostId;}
-export async function serve(port=Number(process.env.PORT||3000)){
-  const rooms=new Map(),sockets=new Set(),nextAI=new Map();
+export async function serve(port=Number(process.env.PORT||3000),{randomBelow=serverRandomBelow}={}){
+  const rooms=new Map(),sockets=new Set(),nextAI=new Map(),randomRetryAt=new Map();
   let store,ready=false,awaitingPredecessor=false;
   const {server,allowed,rate}=createHttp(rooms,port,()=>ready||awaitingPredecessor);
   let chain=Promise.resolve(),stopping=false,scheduled=false;
@@ -144,7 +144,7 @@ export async function serve(port=Number(process.env.PORT||3000)){
         const seats=[...r.players.map(({id,name,avatar})=>({id,name,avatar,ai:false})),...lobbyBots(r)];
         requireThat(seats.length>=2&&seats.length<=4&&r.players.every(p=>p.ready&&p.online),
           'NOT_READY','至少需要两名参与者，且所有真人都要在线并准备');
-        r.game=createGame(await loadMap(r.settings.mapId),seats,{...r.settings,limit:r.settings.roundLimit},{random});
+        r.game=createGame(await loadMap(r.settings.mapId),seats,{...r.settings,limit:r.settings.roundLimit},{randomBelow});
         break;
       }
       case 'game:command': {
@@ -153,12 +153,13 @@ export async function serve(port=Number(process.env.PORT||3000)){
         requireThat(!r.deadline||Date.now()<r.deadline,'EXPIRED','操作阶段已超时');
         requireThat(d.command&&typeof d.command==='object'&&(!Object.hasOwn(d.command,'playerId')||d.command.playerId===p.id),'BAD_ACTOR','身份不匹配');
         const cmd={...d.command,playerId:p.id,commandId:id};validateCommand(cmd);
-        r.game=applyCommand(r.game,cmd,await loadMap(r.settings.mapId),{now:Date.now(),random});break;
+        r.game=applyCommand(r.game,cmd,await loadMap(r.settings.mapId),{now:Date.now(),randomBelow});break;
       }
       case 'room:leave': fields(d,[]);if(r.game){p.online=false;p.offlineSince=Date.now();}else r.players=r.players.filter(v=>v!==p);elect(r);if(!r.players.some(v=>v.online))r.emptySince=Date.now();break;
       default: requireThat(false,'UNKNOWN_ACTION','未知操作');
     }
     await commit(r,p.id,id,action,d);
+    if(action==='game:command')randomRetryAt.delete(r.code);
     if(action==='room:leave'){ws.room=null;ws.actor=null;}
     respond({revision:r.revision});
   }
@@ -185,9 +186,9 @@ export async function serve(port=Number(process.env.PORT||3000)){
   async function tick(){
     const now=Date.now();
     for(const old of rooms.values()){
-      if(old.emptySince&&now-old.emptySince>=1800000){await store.remove(old.code);rooms.delete(old.code);nextAI.delete(old.code);continue;}
+      if(old.emptySince&&now-old.emptySince>=1800000){await store.remove(old.code);rooms.delete(old.code);nextAI.delete(old.code);randomRetryAt.delete(old.code);continue;}
       if(!old.game){const stale=old.players.filter(p=>!p.online&&now-p.offlineSince>=120000);if(stale.length){const r=structuredClone(old);r.players=r.players.filter(p=>!stale.some(v=>v.id===p.id));elect(r);await commit(r,null,null,'room:release');}continue;}
-      if(old.game.phase==='finished'||old.emptySince)continue;
+      if(old.game.phase==='finished'||old.emptySince||now<(randomRetryAt.get(old.code)||0))continue;
       if(old.players.some(p=>!p.online&&!p.proxy&&now-p.offlineSince>=120000)){
         const r=structuredClone(old);
         for(const p of r.players)if(!p.online&&now-p.offlineSince>=120000)p.proxy=true;
@@ -207,7 +208,19 @@ export async function serve(port=Number(process.env.PORT||3000)){
         }
         nextAI.set(old.code,now+300+randomInt(501));
       }
-      if(cmd)result=applyCommand(g,cmd,map,{now,random});
+      if(cmd){
+        try{
+          result=applyCommand(g,cmd,map,{now,randomBelow});
+        }catch(error){
+          if(error.code!=='RNG_UNAVAILABLE')throw error;
+          if(!randomRetryAt.has(old.code)){
+            for(const ws of sockets)if(ws.room===old.code)send(ws,{event:'gameError',error:error.code,message:error.message});
+          }
+          randomRetryAt.set(old.code,now+5000);
+          continue;
+        }
+        randomRetryAt.delete(old.code);
+      }
       if(result!==g){const r=structuredClone(old);r.game=result;r.deadline=null;await commit(r,cmd?.playerId||null,null,'game:auto',cmd||{phase:g.phase});}
     }
   }
