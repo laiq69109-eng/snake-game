@@ -1,9 +1,9 @@
-import {socketLink} from './room-location.js?v=30617823abbb';
+import {socketLink} from './room-location.js?v=0501d660236e';
 const sessionKey=code=>'atlas:room:'+code;
-const makeId=()=>Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
+import {randomId} from './packages/game-core/random.js?v=0501d660236e';
 export class RoomClient {
-  constructor({onSnapshot=()=>{},onStatus=()=>{}}={}) {
-    this.onSnapshot=onSnapshot; this.onStatus=onStatus; this.calls=new Map(); this.retry=500;
+  constructor({onSnapshot=()=>{},onStatus=()=>{},onError=()=>{}}={}) {
+    this.onSnapshot=onSnapshot; this.onStatus=onStatus; this.onError=onError; this.calls=new Map(); this.retry=500;
     this.foreground=()=>{if(document.visibilityState==='visible'&&this.code)this.resync().catch(()=>this.reconnect());};
     document.addEventListener('visibilitychange',this.foreground);
     window.addEventListener('online',this.foreground);
@@ -20,6 +20,7 @@ export class RoomClient {
       ws.onmessage=e=>{
         let msg;try {msg=JSON.parse(e.data);} catch{return;}
         if(msg.event==='snapshot'){this.accept(msg.room);return;}
+        if(msg.event==='gameError'){this.onError(msg.message);return;}
         const call=this.calls.get(msg.id);if(!call)return;
         this.calls.delete(msg.id);clearTimeout(call.timeout);
         msg.ok?call.resolve(msg):call.reject(Object.assign(Error(msg.message),{code:msg.error}));
@@ -41,7 +42,7 @@ export class RoomClient {
       catch(e) {if(['BAD_TOKEN','ROOM_NOT_FOUND'].includes(e.code)){this.code=null;return;} this.retry=Math.min(8000,this.retry*2);this.reconnect();}
     },this.retry);
   }
-  async request(action,payload={},id=makeId()){
+  async request(action,payload={},id=randomId()){
     await this.connect();
     return new Promise((resolve,reject)=>{
       const timeout=setTimeout(()=>{this.calls.delete(id);reject(Error('房间操作超时'));},12000);
@@ -74,7 +75,7 @@ export class RoomClient {
   removeBot(id){return this.request('room:removeBot',{id});}
   settings(settings){return this.request('room:settings',settings);}
   start(){return this.request('game:start');}
-  command(cmd){return this.request('game:command',{command:cmd,revision:this.room.game.revision},cmd.commandId||makeId());}
+  command(cmd){return this.request('game:command',{command:cmd,revision:this.room.game.revision},cmd.commandId||randomId());}
   async leave(){
     if(this.code && this.ws?.readyState===1) await this.request('room:leave');
     try{localStorage.removeItem(sessionKey(this.code));}catch{}

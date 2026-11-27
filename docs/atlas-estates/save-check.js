@@ -1,4 +1,4 @@
-import {isRoundLimit,JAIL_STAY_TURNS} from './packages/protocol/index.js?v=30617823abbb';
+import {isRoundLimit,JAIL_STAY_TURNS} from './packages/protocol/index.js?v=0501d660236e';
 
 export function checkSave(record,map){
  const fail=()=>{throw Error('存档结构损坏，请尝试上一份备份')};
